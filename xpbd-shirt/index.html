@@ -334,6 +334,24 @@ tbody tr.on td{background:var(--teal-soft)}
 .outgrid u{text-decoration:none;color:var(--madder);font-weight:600;text-align:right}
 .outgrid span:nth-child(2),.outgrid span:nth-child(3){text-align:right;letter-spacing:.06em}
 
+/* verdict */
+.verdicts{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.verdict{
+  background:var(--panel);border:1px solid var(--rule);
+  padding:20px 22px 22px;display:flex;flex-direction:column;gap:13px;
+}
+.verdict-v{border-top:3px solid var(--brass)}
+.verdict-x{border-top:3px solid var(--teal)}
+.verdict h3{font-size:1.06rem}
+.verdict-v h3{color:var(--brass-name)}
+.verdict-x h3{color:var(--teal-name)}
+.verdict ul{
+  margin:0;padding-left:1.15em;display:flex;flex-direction:column;gap:10px;
+  font-size:14.5px;color:var(--ink-2);
+}
+.verdict li::marker{color:var(--ink-3)}
+.verdict li b{color:var(--ink);font-weight:600}
+
 /* build steps — a real sequence, so it is numbered */
 .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1px;background:var(--rule);border:1px solid var(--rule)}
 .step{background:var(--panel);padding:18px 20px;display:flex;flex-direction:column;gap:8px}
@@ -357,6 +375,7 @@ footer{
 @media (max-width:820px){
   .beds{grid-template-columns:1fr}
   .codes{grid-template-columns:1fr}
+  .verdicts{grid-template-columns:1fr}
   body{padding:0 16px 64px;font-size:16px}
   .mast{padding-top:36px}
 }
@@ -665,6 +684,49 @@ p2 += w2 * dl * d/L
   KES&#8209;F or FAST rig as tensile and bending moduli, and convert into per&#8209;edge compliance once you
   know your mesh spacing. That conversion is possible <em>because</em> the parameter has units. There is no
   equivalent conversion for a Verlet relaxation factor.</p>
+</section>
+
+<section>
+  <div class="sechead">
+    <div class="tag">The verdict</div>
+    <h2>Which one to reach for</h2>
+    <p>What XPBD does <em>not</em> buy you is accuracy on a shoestring &mdash; the chain table above has both
+    solvers wrong at four substeps, one too soft and one too stiff. What it buys you is a target. Verlet has
+    none: whatever fabric you asked for, the thing it is converging towards is a rigid sheet.</p>
+  </div>
+
+  <div class="verdicts">
+    <div class="verdict verdict-v">
+      <h3>Verlet, when the cloth is scenery</h3>
+      <ul>
+        <li><b>Nobody will check the material.</b> A flag, a curtain, a cape, hair. No one is going to
+        audit your flag&rsquo;s modulus, and <span class="mono">k = 1</span> looks convincing.</li>
+        <li><b>You want five lines you can hold in your head.</b> No per&#8209;constraint state, no velocity
+        array &mdash; position history is the velocity.</li>
+        <li><b>You need a projection that cannot overshoot.</b> It is a geometric clamp. Making it explode
+        takes real effort.</li>
+      </ul>
+    </div>
+
+    <div class="verdict verdict-x">
+      <h3>XPBD, when the number has to mean something</h3>
+      <ul>
+        <li><b>The result has to agree with a physical sample</b> &mdash; or travel to someone else&rsquo;s
+        machine, at someone else&rsquo;s framerate, and still be the same cloth.</li>
+        <li><b>The material is soft.</b> The softer it is, the further the two diverge. At the stiff end
+        they converge on the same near&#8209;rigid answer and the argument stops mattering.</li>
+        <li><b>You want to keep the option open.</b> <span class="mono">&alpha; = 0</span> recovers PBD
+        exactly, so adopting it costs one float per constraint and forecloses nothing.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="note"><b>The rule, and the trap.</b> Ask whether anyone will ever have to justify the stiffness
+  number. If not, use Verlet and enjoy the simplicity. If so &mdash; a spec, a shared fabric library, a
+  result a colleague has to reproduce &mdash; Verlet cannot help, because the number it accepts is not a
+  property of the cloth. And if you do take XPBD: reset <span class="mono">lam</span> once per substep,
+  never per pass. Reset it per pass and you have quietly rewritten position&#8209;based dynamics with extra
+  arithmetic, and it will look like it is working.</div>
 </section>
 
 <section>

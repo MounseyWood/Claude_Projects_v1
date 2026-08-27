@@ -1,0 +1,967 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<!--ARTIFACT-START-->
+<title>Draft</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,300..700;1,6..72,400;1,6..72,600&display=swap">
+
+<style>
+:root{
+  --paper:#ECEDE8;
+  --panel:#F7F7F4;
+  --panel-2:#E0E1DA;
+  --ink:#16181D;
+  --ink-2:#4E525C;
+  --ink-3:#858A94;
+  --rule:#D3D5CC;
+  --rule-2:#B4B7AC;
+
+  --indigo:#2E3E6B;
+  --indigo-2:#1F2B4D;
+  --indigo-soft:#DDE1ED;
+  --ecru:#96814F;
+  --ecru-2:#7A6840;
+  --madder:#A8402F;
+  --madder-soft:#F0DCD6;
+
+  --stage:#DBDAD1;
+  --stage-2:#C5C4BA;
+  --grid:#C3C5BA;
+
+  --warp-rgb:46,62,107;
+  --weft-rgb:206,190,152;
+  --shadow:0 1px 2px rgba(22,24,29,.05),0 10px 28px -18px rgba(22,24,29,.35);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#111319; --panel:#171A21; --panel-2:#1E222A;
+    --ink:#E7E8E2; --ink-2:#A0A4AC; --ink-3:#757A84;
+    --rule:#252A32; --rule-2:#39404A;
+    --indigo:#8D9BDC; --indigo-2:#AEB8EA; --indigo-soft:#1A2038;
+    --ecru:#CFBF9C; --ecru-2:#E2D6B9;
+    --madder:#E07A66; --madder-soft:#3A1C16;
+    --stage:#0E1015; --stage-2:#171B22; --grid:#232830;
+    --warp-rgb:104,122,196; --weft-rgb:214,200,167;
+    --shadow:0 1px 2px rgba(0,0,0,.5),0 12px 34px -20px rgba(0,0,0,.9);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#111319; --panel:#171A21; --panel-2:#1E222A;
+  --ink:#E7E8E2; --ink-2:#A0A4AC; --ink-3:#757A84;
+  --rule:#252A32; --rule-2:#39404A;
+  --indigo:#8D9BDC; --indigo-2:#AEB8EA; --indigo-soft:#1A2038;
+  --ecru:#CFBF9C; --ecru-2:#E2D6B9;
+  --madder:#E07A66; --madder-soft:#3A1C16;
+  --stage:#0E1015; --stage-2:#171B22; --grid:#232830;
+  --warp-rgb:104,122,196; --weft-rgb:214,200,167;
+  --shadow:0 1px 2px rgba(0,0,0,.5),0 12px 34px -20px rgba(0,0,0,.9);
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0; padding:0 20px 84px;
+  background:var(--paper); color:var(--ink);
+  font-family:"Newsreader",Georgia,"Times New Roman",serif;
+  font-size:18px; line-height:1.62;
+  font-optical-sizing:auto;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1140px;margin:0 auto;display:flex;flex-direction:column;gap:46px}
+.prose{max-width:66ch}
+p{margin:0}
+h1,h2,h3{font-family:"Newsreader",Georgia,serif;margin:0;line-height:1.14;text-wrap:balance;font-weight:600}
+h1{font-size:clamp(2.6rem,7vw,4.4rem);letter-spacing:-.02em;font-weight:600}
+h2{font-size:clamp(1.5rem,2.8vw,2rem);letter-spacing:-.012em}
+h3{font-size:1.1rem}
+
+.mono{font-family:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;white-space:nowrap}
+.tag{
+  font-family:"IBM Plex Mono",ui-monospace,monospace;
+  font-size:11px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-3);
+}
+
+/* ── masthead ─────────────────────────────────────────────────────────── */
+.mast{padding:56px 0 0;display:flex;flex-direction:column;gap:16px}
+.mast .tag{display:flex;flex-wrap:wrap;gap:6px 20px}
+.mast h1{max-width:14ch}
+.mast p{font-size:1.2rem;color:var(--ink-2);max-width:56ch}
+.mast em{font-style:italic;color:var(--ink)}
+
+/* ── the loom ─────────────────────────────────────────────────────────── */
+.loom{
+  border:1px solid var(--rule); background:var(--panel);
+  box-shadow:var(--shadow); display:flex; flex-direction:column;
+}
+.benches{display:grid;grid-template-columns:minmax(300px,0.82fr) 1fr;gap:1px;background:var(--rule)}
+.bench{background:var(--panel);display:flex;flex-direction:column;min-width:0}
+.bench-head{
+  padding:13px 16px 11px;border-bottom:1px solid var(--rule);
+  display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;
+}
+.bench-head b{font-size:1rem;font-weight:600}
+.bench-head span{font-size:12.5px;color:var(--ink-3);line-height:1.35;
+  font-family:"IBM Plex Mono",monospace}
+
+.paperwrap{padding:14px;display:flex;justify-content:center;background:var(--panel)}
+#cv-draft{width:100%;max-width:430px;height:auto;display:block;cursor:crosshair}
+.clothwrap{position:relative;width:100%;aspect-ratio:1/0.92;background:var(--stage-2)}
+#cv-cloth{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none;cursor:grab}
+#cv-cloth:active{cursor:grabbing}
+
+.presets{
+  padding:0 14px 14px;display:flex;flex-wrap:wrap;gap:6px;
+}
+.gauges{
+  border-top:1px solid var(--rule);padding:12px 16px 14px;
+  display:flex;flex-wrap:wrap;gap:10px 26px;
+}
+.gauge{display:flex;flex-direction:column;gap:1px}
+.gauge i{font-style:normal;font-family:"IBM Plex Mono",monospace;font-size:11px;
+  letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3)}
+.gauge b{font-family:"IBM Plex Mono",monospace;font-size:18px;font-weight:500;
+  font-variant-numeric:tabular-nums;color:var(--ink)}
+.gauge b.warp{color:var(--indigo)} .gauge b.weft{color:var(--ecru)}
+.gauge b.hot{color:var(--madder)}
+
+.deck{
+  border-top:1px solid var(--rule);background:var(--panel-2);
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1px;
+}
+.group{background:var(--panel);padding:15px 17px 17px;display:flex;flex-direction:column;gap:13px}
+.ctl{display:flex;flex-direction:column;gap:4px}
+.ctl .lab{display:flex;justify-content:space-between;align-items:baseline;gap:10px;
+  font-size:13px;color:var(--ink-2);font-family:"IBM Plex Mono",monospace}
+.ctl .val{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--ink);
+  font-variant-numeric:tabular-nums}
+
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:18px;
+  background:transparent;margin:0;cursor:pointer}
+input[type=range]::-webkit-slider-runnable-track{height:2px;background:var(--rule-2)}
+input[type=range]::-moz-range-track{height:2px;background:var(--rule-2)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;
+  margin-top:-6px;border-radius:50%;background:var(--indigo);border:2px solid var(--panel)}
+input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;
+  background:var(--indigo);border:2px solid var(--panel)}
+input[type=range]:focus-visible{outline:2px solid var(--indigo);outline-offset:3px}
+
+button{
+  font:500 11.5px/1 "IBM Plex Mono",ui-monospace,monospace;
+  letter-spacing:.06em;text-transform:uppercase;
+  color:var(--ink);background:var(--panel-2);
+  border:1px solid var(--rule-2);border-radius:0;padding:8px 10px;cursor:pointer;
+  transition:background .12s ease,color .12s ease,border-color .12s ease;
+}
+button:hover{background:var(--ink);color:var(--panel);border-color:var(--ink)}
+button:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+button[aria-pressed=true]{background:var(--indigo);color:var(--panel);border-color:var(--indigo)}
+:root[data-theme="dark"] button[aria-pressed=true]{color:#111319}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]) button[aria-pressed=true]{color:#111319}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+/* ── prose ────────────────────────────────────────────────────────────── */
+section{display:flex;flex-direction:column;gap:20px}
+.sechead{display:flex;flex-direction:column;gap:8px;border-top:1px solid var(--ink);padding-top:14px}
+.sechead p{color:var(--ink-2);max-width:64ch}
+.note{border-left:2px solid var(--indigo);background:var(--indigo-soft);
+  padding:14px 18px;font-size:16.5px;max-width:70ch}
+.note b{font-weight:600}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.card{background:var(--panel);border:1px solid var(--rule);padding:18px 20px 20px;
+  display:flex;flex-direction:column;gap:10px}
+.card p{font-size:15.5px;color:var(--ink-2)}
+.card .tag{color:var(--indigo)}
+
+.tablewrap{overflow-x:auto;border:1px solid var(--rule);background:var(--panel)}
+table{border-collapse:collapse;width:100%;min-width:520px;font-size:15px}
+th,td{text-align:left;padding:10px 16px;border-bottom:1px solid var(--rule)}
+thead th{font-family:"IBM Plex Mono",monospace;font-size:11px;font-weight:500;
+  letter-spacing:.11em;text-transform:uppercase;color:var(--ink-3);
+  border-bottom:1px solid var(--rule-2);white-space:nowrap}
+tbody tr:last-child td{border-bottom:none}
+td.num{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums;white-space:nowrap}
+
+.refs{display:flex;flex-direction:column;gap:9px;font-size:15.5px;color:var(--ink-2);max-width:74ch}
+.refs div{padding-left:1.6em;text-indent:-1.6em}
+.refs cite{font-style:normal;color:var(--ink);font-weight:600}
+footer{border-top:1px solid var(--rule);padding-top:16px;font-size:13px;color:var(--ink-3);
+  display:flex;flex-wrap:wrap;gap:6px 22px;font-family:"IBM Plex Mono",monospace}
+
+@media (max-width:860px){
+  .benches{grid-template-columns:1fr}
+  .cols{grid-template-columns:1fr}
+  body{padding:0 16px 64px;font-size:17px}
+  .mast{padding-top:34px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="mast">
+  <div class="tag"><span>Weaving</span><span>Interactive</span><span>Yarn-level simulation</span></div>
+  <h1>Draft</h1>
+  <p>Fill in squares on the left and cloth appears on the right &mdash; not a picture of cloth, but
+  every warp and weft thread, interlaced exactly as you drew it. Then take hold of it and
+  <em>pull</em>.</p>
+</header>
+
+<div class="loom">
+  <div class="benches">
+
+    <div class="bench">
+      <div class="bench-head">
+        <b>The draft</b>
+        <span id="draft-label">plain weave</span>
+      </div>
+      <div class="paperwrap">
+        <canvas id="cv-draft" width="860" height="860"
+          aria-label="Weaving draft: threading, tie-up, treadling and the resulting drawdown"></canvas>
+      </div>
+      <div class="presets">
+        <button data-preset="plain" aria-pressed="true">Plain</button>
+        <button data-preset="basket" aria-pressed="false">Basket</button>
+        <button data-preset="twill22" aria-pressed="false">2/2 twill</button>
+        <button data-preset="twill31" aria-pressed="false">3/1 twill</button>
+        <button data-preset="satin5" aria-pressed="false">Satin</button>
+      </div>
+    </div>
+
+    <div class="bench">
+      <div class="bench-head">
+        <b>The cloth</b>
+        <span>indigo warp &middot; undyed weft</span>
+      </div>
+      <div class="clothwrap">
+        <canvas id="cv-cloth" aria-label="Yarn-level simulation of the woven cloth"></canvas>
+      </div>
+      <div class="gauges">
+        <div class="gauge"><i>Warp crimp</i><b class="warp" id="g-cw">0.00%</b></div>
+        <div class="gauge"><i>Weft crimp</i><b class="weft" id="g-cf">0.00%</b></div>
+        <div class="gauge"><i>Shear</i><b id="g-sh">0.0&deg;</b></div>
+        <div class="gauge"><i>Extension</i><b id="g-ex">0.00%</b></div>
+        <div class="gauge"><i>Yarn stretched</i><b id="g-ys">0.000%</b></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="deck">
+    <div class="group">
+      <div class="tag">Yarn &amp; sett</div>
+      <label class="ctl">
+        <span class="lab">Thread thickness<span class="val" id="lv-sett">0.85</span></span>
+        <input type="range" id="r-sett" min="0.45" max="0.98" step="0.01" value="0.85">
+      </label>
+      <label class="ctl">
+        <span class="lab">Grip at crossings<span class="val" id="lv-fric">1.0e-2</span></span>
+        <input type="range" id="r-fric" min="-3.6" max="-0.8" step="0.05" value="-2">
+      </label>
+    </div>
+
+    <div class="group">
+      <div class="tag">Pull</div>
+      <label class="ctl">
+        <span class="lab">Angle to the warp<span class="val" id="lv-ang">0&deg;</span></span>
+        <input type="range" id="r-ang" min="0" max="90" step="1" value="0">
+      </label>
+      <label class="ctl">
+        <span class="lab">Tension<span class="val" id="lv-ten">0.0 N/m</span></span>
+        <input type="range" id="r-ten" min="0" max="40" step="0.5" value="0">
+      </label>
+      <div class="presets" style="padding:0">
+        <button id="b-sweep">Sweep the angle</button>
+        <button id="b-release">Release</button>
+      </div>
+    </div>
+
+    <div class="group">
+      <div class="tag">View</div>
+      <div class="presets" style="padding:0">
+        <button id="b-face" aria-pressed="false">Show the back</button>
+        <button id="b-flat" aria-pressed="false">Flat on</button>
+        <button id="b-pause" aria-pressed="false">Pause</button>
+      </div>
+      <div class="ctl"><span class="lab" style="color:var(--ink-3);font-size:11.5px">
+        <span id="lv-stats">&mdash;</span></span></div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<script>
+(function(){
+"use strict";
+/*PHYSICS-START*/
+
+/* ══ weaving drafts ══════════════════════════════════════════════════════
+   The real notation. threading[i] is the shaft warp end i passes through;
+   tieup[t][s] is 1 if treadle t lifts shaft s; treadling[j] is the treadle
+   pressed for pick j. Warp end i is up on pick j exactly when the treadle
+   for that pick lifts the shaft that end is threaded on. That boolean grid
+   is the drawdown, and it is the whole of the fabric's structure.          */
+var SHAFTS=8, TREADLES=8;      /* a common floor loom; presets use what they need */
+var SPECS={
+  plain:{ label:'Plain weave', note:'over one, under one — the most interlaced cloth there is',
+    shafts:2, thread:function(i){return i%2;}, tread:function(j){return j%2;},
+    tie:function(t,s){ return (t<2 && s===t)?1:0; } },
+  basket:{ label:'Basket 2/2', note:'plain weave with the threads taken in pairs',
+    shafts:2, thread:function(i){return ((i/2)|0)%2;}, tread:function(j){return ((j/2)|0)%2;},
+    tie:function(t,s){ return (t<2 && s===t)?1:0; } },
+  twill22:{ label:'2/2 twill', note:'the diagonal — gabardine, most suiting, the back of denim',
+    shafts:4, thread:function(i){return i%4;}, tread:function(j){return j%4;},
+    tie:function(t,s){ return (t<4 && s<4 && ((s-t+4)%4)<2)?1:0; } },
+  twill31:{ label:'3/1 twill', note:'warp on the face, weft on the back — this one is denim',
+    shafts:4, thread:function(i){return i%4;}, tread:function(j){return j%4;},
+    tie:function(t,s){ return (t<4 && s<4 && ((s-t+4)%4)<3)?1:0; } },
+  satin5:{ label:'5-end satin', note:'long floats and no diagonal — the scatter is deliberate',
+    shafts:5, thread:function(i){return i%5;}, tread:function(j){return (j*2)%5;},
+    tie:function(t,s){ return (t<5 && s<5 && s!==t)?1:0; } }
+};
+
+function makeDraft(name,E,P){
+  var sp=SPECS[name];
+  if(!sp) throw new Error('unknown draft: '+name);
+  var d={name:name, label:sp.label, note:sp.note, shafts:SHAFTS, treadles:TREADLES, used:sp.shafts};
+  d.threading=new Uint8Array(E);
+  d.treadling=new Uint8Array(P);
+  d.tieup=new Uint8Array(TREADLES*SHAFTS);
+  for(var i=0;i<E;i++) d.threading[i]=sp.thread(i);
+  for(var j=0;j<P;j++) d.treadling[j]=sp.tread(j);
+  for(var t=0;t<TREADLES;t++) for(var s=0;s<SHAFTS;s++) d.tieup[t*SHAFTS+s]=sp.tie(t,s);
+  d.up=function(i,j){ return d.tieup[d.treadling[j]*SHAFTS + d.threading[i]]; };
+  d.custom=false;
+  return d;
+}
+var DRAFT_NAMES=['plain','basket','twill22','twill31','satin5'];
+
+/* ══ the trellis ═════════════════════════════════════════════════════════
+   Two particles per crossing — one belonging to the warp yarn, one to the
+   weft — sharing a position in plane and separated in z by a yarn diameter.
+   Which one sits on top is the drawdown bit, and nothing else.
+
+   Constraint types
+     0 stretch  along a yarn, rest = its actual woven path length
+     1 bend     two crossings apart, rest = straight, so yarn resists crimp
+     2 pin x    warp and weft held together in plane at the crossing
+     3 pin y
+     4 contact  one-sided in z: the yarns may part but not interpenetrate
+     5 shear    cell diagonals — inter-yarn friction, the one dialled number
+     6 lock     one-sided diagonal: yarns jam, derived from diameter and sett
+*/
+var C_STRETCH=0, C_BEND=1, C_PINX=2, C_PINY=3, C_CONTACT=4, C_SHEAR=5, C_LOCK=6;
+
+function buildWeave(draftOrName, E, P, opt){
+  opt=opt||{};
+  var s   = opt.spacing || 0.003;          /* crossing pitch, metres   */
+  var dr  = opt.dratio  || 0.85;           /* drawn diameter / pitch   */
+  var fl  = opt.flatten !== undefined ? opt.flatten : 0.45;
+  var dDraw = s*dr;                        /* what you see             */
+  /* Yarns flatten where they cross, so centre-to-centre separation there is
+     well under the nominal diameter. Without this the model gives a plain
+     weave 22% crimp; real shirting is nearer 5%. */
+  var d   = dDraw*fl;
+  var draft = typeof draftOrName==='string' ? makeDraft(draftOrName,E,P) : draftOrName;
+  var EP=E*P, n=2*EP, i, j, k;
+
+  var up=new Uint8Array(EP);
+  for(j=0;j<P;j++) for(i=0;i<E;i++) up[j*E+i]=draft.up(i,j);
+
+  var pos0=new Float32Array(n*3);
+  var W=function(i,j){ return j*E+i; };          /* warp particle index */
+  var F=function(i,j){ return EP + j*E+i; };     /* weft particle index */
+  var x0=-(E-1)*s/2, y0=-(P-1)*s/2;
+  for(j=0;j<P;j++) for(i=0;i<E;i++){
+    var x=x0+i*s, y=y0+j*s, u=up[j*E+i], h=d/2;
+    var a=W(i,j)*3, b=F(i,j)*3;
+    pos0[a]=x; pos0[a+1]=y; pos0[a+2]= u? h:-h;
+    pos0[b]=x; pos0[b+1]=y; pos0[b+2]= u?-h: h;
+  }
+
+  var ca=[], cb=[], ct=[], crest=[], csgn=[];
+  function add(p,q,type,rest,sgn){
+    ca.push(p); cb.push(q); ct.push(type); crest.push(rest); csgn.push(sgn||0);
+  }
+  function dist(p,q){
+    var a=p*3,b=q*3, dx=pos0[b]-pos0[a], dy=pos0[b+1]-pos0[a+1], dz=pos0[b+2]-pos0[a+2];
+    return Math.sqrt(dx*dx+dy*dy+dz*dz);
+  }
+
+  /* yarn stretch — rest is the crimped path, so a relaxed cloth is slack   */
+  for(i=0;i<E;i++) for(j=0;j<P-1;j++) add(W(i,j),W(i,j+1),C_STRETCH,dist(W(i,j),W(i,j+1)));
+  for(j=0;j<P;j++) for(i=0;i<E-1;i++) add(F(i,j),F(i+1,j),C_STRETCH,dist(F(i,j),F(i+1,j)));
+
+  /* yarn bend — rest is the woven shape, not straight. A finished cloth is
+     set: its yarns resist being moved off their crimp in either direction.
+     Resting these straight instead makes every float fight its own crossings
+     and the sheet collapses. */
+  for(i=0;i<E;i++) for(j=0;j<P-2;j++) add(W(i,j),W(i,j+2),C_BEND,dist(W(i,j),W(i,j+2)));
+  for(j=0;j<P;j++) for(i=0;i<E-2;i++) add(F(i,j),F(i+2,j),C_BEND,dist(F(i,j),F(i+2,j)));
+
+  /* the crossing itself */
+  for(j=0;j<P;j++) for(i=0;i<E;i++){
+    add(W(i,j),F(i,j),C_PINX,0);
+    add(W(i,j),F(i,j),C_PINY,0);
+    add(W(i,j),F(i,j),C_CONTACT,d, up[j*E+i]?1:-1);
+  }
+
+  /* shear and jamming, on the cell diagonals */
+  var phiLock=Math.asin(Math.min(0.999,dr));          /* yarns touch here  */
+  var lockLen=2*s*Math.sin(phiLock/2);
+  /* Shear rests at the woven diagonal, not the flat one. A twill's two
+     diagonals differ in z, so resting both at s*sqrt(2) pre-stresses the
+     cloth and inflates its crimp before any load is applied. */
+  /* Carried on both yarn systems, not just the warp: hanging the whole shear
+     net off the warp particles alone makes the cloth stiffer along the warp
+     than the weft, and a balanced weave then relaxes to unbalanced crimp. */
+  for(j=0;j<P-1;j++) for(i=0;i<E-1;i++){
+    add(W(i,j),W(i+1,j+1),C_SHEAR,dist(W(i,j),W(i+1,j+1)));
+    add(W(i+1,j),W(i,j+1),C_SHEAR,dist(W(i+1,j),W(i,j+1)));
+    add(F(i,j),F(i+1,j+1),C_SHEAR,dist(F(i,j),F(i+1,j+1)));
+    add(F(i+1,j),F(i,j+1),C_SHEAR,dist(F(i+1,j),F(i,j+1)));
+    add(W(i,j),W(i+1,j+1),C_LOCK,lockLen);
+    add(W(i+1,j),W(i,j+1),C_LOCK,lockLen);
+    add(F(i,j),F(i+1,j+1),C_LOCK,lockLen);
+    add(F(i+1,j),F(i,j+1),C_LOCK,lockLen);
+  }
+
+  var areal = opt.areal || 0.15;                      /* kg per square metre */
+  return {
+    draft:draft, E:E, P:P, s:s, d:d, dDraw:dDraw, dratio:dr, flatten:fl,
+    n:n, EP:EP, up:up, pos0:pos0,
+    ca:new Int32Array(ca), cb:new Int32Array(cb), ct:new Uint8Array(ct),
+    crest:new Float32Array(crest), csgn:new Int8Array(csgn), m:ca.length,
+    W:W, F:F, phiLock:phiLock, lockLen:lockLen,
+    pmass: areal*(E*s)*(P*s)/n
+  };
+}
+
+/* ══ solver ══════════════════════════════════════════════════════════════ */
+function Sim(topo){
+  this.t=topo;
+  var n=topo.n;
+  this.pos=new Float32Array(topo.pos0);
+  this.prev=new Float32Array(topo.pos0);
+  this.vel=new Float32Array(n*3);
+  this.iw=new Float32Array(n);
+  this.lam=new Float32Array(topo.m);
+  this.fext=new Float32Array(n*3);
+  this.iwBase=1/topo.pmass;
+  this.clamped=new Uint8Array(n);
+  this.reset();
+}
+Sim.prototype.reset=function(){
+  this.pos.set(this.t.pos0); this.prev.set(this.t.pos0);
+  this.vel.fill(0); this.lam.fill(0);
+  this.applyClamps();
+};
+Sim.prototype.applyClamps=function(){
+  for(var i=0;i<this.t.n;i++) this.iw[i]=this.clamped[i]?0:this.iwBase;
+};
+Sim.prototype.integrate=function(h,P){
+  var p=this.pos, pr=this.prev, v=this.vel, iw=this.iw, f=this.fext, n=this.t.n;
+  var dmp=Math.exp(-P.damp*h), g=-P.grav;
+  for(var i=0,k=0;i<n;i++,k+=3){
+    var w=iw[i];
+    if(w===0){ pr[k]=p[k];pr[k+1]=p[k+1];pr[k+2]=p[k+2]; continue; }
+    v[k]  =(v[k]  + f[k]  *w*h)*dmp;
+    v[k+1]=(v[k+1]+(g+f[k+1]*w)*h)*dmp;
+    v[k+2]=(v[k+2]+ f[k+2]*w*h)*dmp;
+    pr[k]=p[k];pr[k+1]=p[k+1];pr[k+2]=p[k+2];
+    p[k]+=v[k]*h; p[k+1]+=v[k+1]*h; p[k+2]+=v[k+2]*h;
+  }
+};
+Sim.prototype.solve=function(h,P){
+  var t=this.t, p=this.pos, iw=this.iw, lam=this.lam;
+  var ca=t.ca, cb=t.cb, ct=t.ct, rest=t.crest, sgn=t.csgn, m=t.m;
+  var ih=1/(h*h);
+  var A=[P.cStretch*ih, P.cBend*ih, P.cPin*ih, P.cPin*ih,
+         P.cContact*ih, P.cShear*ih, P.cLock*ih];
+  for(var c=0;c<m;c++){
+    var i=ca[c], j=cb[c], ki=i*3, kj=j*3;
+    var wi=iw[i], wj=iw[j], w=wi+wj;
+    if(w===0) continue;
+    var type=ct[c], a=A[type], C, dl, si, sj;
+
+    if(type===C_PINX || type===C_PINY){
+      var ax = type===C_PINX ? 0 : 1;
+      C = p[ki+ax]-p[kj+ax];
+      dl = (-C - a*lam[c])/(w+a);
+      lam[c]+=dl;
+      p[ki+ax]+=wi*dl; p[kj+ax]-=wj*dl;
+      continue;
+    }
+    if(type===C_CONTACT){
+      var g=sgn[c];
+      C = g*(p[ki+2]-p[kj+2]) - rest[c];
+      if(C>=0) continue;                       /* one-sided: only on contact */
+      dl = (-C - a*lam[c])/(w+a);
+      lam[c]+=dl;
+      p[ki+2]+=wi*g*dl; p[kj+2]-=wj*g*dl;
+      continue;
+    }
+    var dx=p[kj]-p[ki], dy=p[kj+1]-p[ki+1], dz=p[kj+2]-p[ki+2];
+    var L=Math.sqrt(dx*dx+dy*dy+dz*dz);
+    if(L<1e-12) continue;
+    C = L - rest[c];
+    if(type===C_LOCK && C>=0) continue;        /* one-sided: only when jammed */
+    dl = (-C - a*lam[c])/(w+a);
+    lam[c]+=dl;
+    var sc=dl/L; si=sc*wi; sj=sc*wj;
+    p[ki]-=dx*si; p[ki+1]-=dy*si; p[ki+2]-=dz*si;
+    p[kj]+=dx*sj; p[kj+1]+=dy*sj; p[kj+2]+=dz*sj;
+  }
+};
+Sim.prototype.postVel=function(h){
+  var p=this.pos, pr=this.prev, v=this.vel, iw=this.iw, n=this.t.n, ih=1/h;
+  for(var i=0,k=0;i<n;i++,k+=3){
+    if(iw[i]===0){ v[k]=0;v[k+1]=0;v[k+2]=0; continue; }
+    v[k]=(p[k]-pr[k])*ih; v[k+1]=(p[k+1]-pr[k+1])*ih; v[k+2]=(p[k+2]-pr[k+2])*ih;
+  }
+};
+Sim.prototype.step=function(dt,P){
+  var S=P.substeps, h=dt/S;
+  for(var sIdx=0;sIdx<S;sIdx++){
+    this.lam.fill(0);
+    this.integrate(h,P);
+    for(var k=0;k<P.iters;k++) this.solve(h,P);
+    this.postVel(h);
+  }
+};
+
+/* ── measurements ─────────────────────────────────────────────────────── */
+/* Crimp is the excess of yarn path over cloth covered — the reason a woven
+   can extend on grain without any yarn actually stretching.               */
+Sim.prototype.crimp=function(){
+  var t=this.t, p=this.pos, E=t.E, P=t.P, i, j;
+  function pathVs(idx, count, step){
+    var path=0, a, b;
+    for(var q=0;q<count-1;q++){
+      a=idx(q)*3; b=idx(q+1)*3;
+      var dx=p[b]-p[a], dy=p[b+1]-p[a+1], dz=p[b+2]-p[a+2];
+      path+=Math.sqrt(dx*dx+dy*dy+dz*dz);
+    }
+    a=idx(0)*3; b=idx(count-1)*3;
+    var ex=p[b]-p[a], ey=p[b+1]-p[a+1], ez=p[b+2]-p[a+2];
+    var span=Math.sqrt(ex*ex+ey*ey+ez*ez);
+    return span>0 ? path/span-1 : 0;
+  }
+  var cw=0, cf=0;
+  for(i=0;i<E;i++) cw+=pathVs(function(q){ return t.W(i,q); }, P);
+  for(j=0;j<P;j++) cf+=pathVs(function(q){ return t.F(q,j); }, E);
+  return {warp:cw/E, weft:cf/P};
+};
+/* Shear angle: how far each cell has departed from square, in degrees.    */
+Sim.prototype.shear=function(){
+  var t=this.t, p=this.pos, E=t.E, P=t.P, sum=0, mx=0, n=0;
+  for(var j=0;j<P-1;j++) for(var i=0;i<E-1;i++){
+    var o=t.W(i,j)*3, u=t.W(i+1,j)*3, v=t.W(i,j+1)*3;
+    var ax=p[u]-p[o], ay=p[u+1]-p[o+1];
+    var bx=p[v]-p[o], by=p[v+1]-p[o+1];
+    var la=Math.sqrt(ax*ax+ay*ay), lb=Math.sqrt(bx*bx+by*by);
+    if(la<1e-12||lb<1e-12) continue;
+    var cosang=(ax*bx+ay*by)/(la*lb);
+    if(cosang>1)cosang=1; if(cosang<-1)cosang=-1;
+    var g=Math.abs(90-Math.acos(cosang)*180/Math.PI);
+    sum+=g; if(g>mx)mx=g; n++;
+  }
+  return {mean:n?sum/n:0, max:mx};
+};
+/* Yarn strain: how much the yarn itself has been stretched, tension only.  */
+Sim.prototype.yarnStrain=function(){
+  var t=this.t, p=this.pos, ca=t.ca, cb=t.cb, ct=t.ct, rest=t.crest;
+  var sum=0, mx=0, n=0;
+  for(var c=0;c<t.m;c++){
+    if(ct[c]!==C_STRETCH) continue;
+    var a=ca[c]*3, b=cb[c]*3;
+    var dx=p[b]-p[a], dy=p[b+1]-p[a+1], dz=p[b+2]-p[a+2];
+    var e=(Math.sqrt(dx*dx+dy*dy+dz*dz)-rest[c])/rest[c];
+    if(e<0)e=0;
+    sum+=e; if(e>mx)mx=e; n++;
+  }
+  return {mean:n?sum/n:0, max:mx};
+};
+/*PHYSICS-END*/
+
+/* ══ page state ══════════════════════════════════════════════════════════ */
+var E=18, P=18;
+var PAR={ substeps:6, iters:12, grav:0, damp:6,
+  cStretch:1e-7, cBend:2e-2, cPin:1e-7, cContact:1e-8, cShear:1e-2, cLock:1e-8 };
+var UI={ preset:'plain', sett:0.85, angle:0, tension:0,
+         paused:false, flat:false, back:false, grab:-1, sweep:0 };
+var draft=null, topo=null, sim=null, gauge0=1, clampSet=[], pullSet=[];
+var $=function(id){ return document.getElementById(id); };
+
+/* mass is only a conditioner here: gravity is off, so it changes how fast the
+   swatch reaches equilibrium and not where the equilibrium is. Scaling it up
+   keeps a light swatch from being flung by an otherwise reasonable tension. */
+var AREAL=15;
+
+function rebuild(keepDraft){
+  var d = keepDraft && draft ? draft : makeDraft(UI.preset,E,P);
+  topo=buildWeave(d,E,P,{spacing:0.003, dratio:UI.sett, areal:AREAL});
+  draft=topo.draft;
+  sim=new Sim(topo);
+  setGrips();
+  $('lv-stats').textContent=topo.n+' particles · '+topo.m+' constraints';
+  $('draft-label').textContent = draft.custom ? 'your own draft' : draft.label.toLowerCase();
+}
+
+/* One edge is held in a grip, the opposite edge is pulled — the geometry of
+   an actual tensile test, rotated to whatever angle you ask for. */
+function setGrips(){
+  var th=UI.angle*Math.PI/180, dx=Math.cos(th), dy=Math.sin(th);
+  var n=topo.n, p=topo.pos0, i, u, umin=1e9, umax=-1e9;
+  for(i=0;i<n;i++){ u=p[i*3]*dx+p[i*3+1]*dy; if(u<umin)umin=u; if(u>umax)umax=u; }
+  var band=topo.s*1.6;
+  clampSet=[]; pullSet=[];
+  for(i=0;i<n;i++){
+    u=p[i*3]*dx+p[i*3+1]*dy;
+    if(u<umin+band) clampSet.push(i); else if(u>umax-band) pullSet.push(i);
+  }
+  sim.clamped.fill(0);
+  for(i=0;i<clampSet.length;i++) sim.clamped[clampSet[i]]=1;
+  sim.applyClamps();
+  gauge0 = meanU(pullSet,dx,dy,p) - meanU(clampSet,dx,dy,p);
+  UI.dx=dx; UI.dy=dy;
+  var vmin=1e9,vmax=-1e9;
+  for(i=0;i<n;i++){ var v=-p[i*3]*dy+p[i*3+1]*dx; if(v<vmin)vmin=v; if(v>vmax)vmax=v; }
+  UI.width=vmax-vmin;
+}
+function meanU(set,dx,dy,arr){
+  var t=0; for(var k=0;k<set.length;k++) t+=arr[set[k]*3]*dx+arr[set[k]*3+1]*dy;
+  return t/set.length;
+}
+function extension(){
+  if(!gauge0) return 0;
+  return (meanU(pullSet,UI.dx,UI.dy,sim.pos)-meanU(clampSet,UI.dx,UI.dy,sim.pos))/gauge0-1;
+}
+function applyTension(){
+  sim.fext.fill(0);
+  if(UI.tension<=0) return;
+  var per=UI.tension*UI.width/pullSet.length;
+  for(var k=0;k<pullSet.length;k++){
+    var i=pullSet[k]*3;
+    sim.fext[i]=per*UI.dx; sim.fext[i+1]=per*UI.dy;
+  }
+}
+
+/* ══ theme ═══════════════════════════════════════════════════════════════ */
+var T={};
+function tok(cs,k){ return cs.getPropertyValue(k).trim(); }
+function rgb3(s){ var a=s.split(','); return [+a[0],+a[1],+a[2]]; }
+function readTheme(){
+  var cs=getComputedStyle(document.documentElement);
+  T.paper=tok(cs,'--panel'); T.grid=tok(cs,'--grid');
+  T.ink=tok(cs,'--ink'); T.ink3=tok(cs,'--ink-3');
+  T.rule=tok(cs,'--rule'); T.rule2=tok(cs,'--rule-2');
+  T.indigo=tok(cs,'--indigo'); T.stage=tok(cs,'--stage'); T.stage2=tok(cs,'--stage-2');
+  T.warp=rgb3(tok(cs,'--warp-rgb')); T.weft=rgb3(tok(cs,'--weft-rgb'));
+  T.madder=tok(cs,'--madder');
+}
+function shade(rgb,f){
+  var c=function(x){ x=x*f|0; return x<0?0:(x>255?255:x); };
+  return 'rgb('+c(rgb[0])+','+c(rgb[1])+','+c(rgb[2])+')';
+}
+
+/* ══ the draft, drawn the way a weaver draws it ══════════════════════════
+   threading across the top, tie-up in the corner, treadling down the side,
+   and the drawdown — what the cloth will actually look like — filling the
+   square below.                                                            */
+var S8=8, T8=8, GUT=1;
+function draftGeom(cv){
+  var cols=E+GUT+T8, rows=S8+GUT+P, padT=1.4, padB=1.7;   /* room for labels */
+  var cell=Math.floor(Math.min(cv.width/cols, cv.height/(rows+padT+padB)));
+  return {cols:cols, rows:rows, cell:cell,
+          ox:Math.floor((cv.width-cols*cell)/2),
+          oy:Math.floor(padT*cell+(cv.height-(rows+padT+padB)*cell)/2)};
+}
+function drawDraft(){
+  var cv=$('cv-draft'), ctx=cv.getContext('2d'), g=draftGeom(cv), c=g.cell;
+  ctx.clearRect(0,0,cv.width,cv.height);
+  ctx.fillStyle=T.paper; ctx.fillRect(0,0,cv.width,cv.height);
+  var THX=0, THY=0, TUX=E+GUT, DDY=S8+GUT;
+
+  function cellRect(cx,cy){ return [g.ox+cx*c, g.oy+cy*c, c, c]; }
+  function fill(cx,cy,col){ var r=cellRect(cx,cy); ctx.fillStyle=col; ctx.fillRect(r[0],r[1],r[2],r[3]); }
+  function block(x,y,w,h){
+    ctx.strokeStyle=T.grid; ctx.lineWidth=1;
+    ctx.beginPath();
+    for(var i=0;i<=w;i++){ ctx.moveTo(g.ox+(x+i)*c+.5, g.oy+y*c); ctx.lineTo(g.ox+(x+i)*c+.5, g.oy+(y+h)*c); }
+    for(var j=0;j<=h;j++){ ctx.moveTo(g.ox+x*c, g.oy+(y+j)*c+.5); ctx.lineTo(g.ox+(x+w)*c, g.oy+(y+j)*c+.5); }
+    ctx.stroke();
+    ctx.strokeStyle=T.rule2; ctx.lineWidth=1.4;
+    ctx.strokeRect(g.ox+x*c+.5, g.oy+y*c+.5, w*c, h*c);
+  }
+  /* shaft 0 sits on the bottom row of the threading block; pick 0 on the
+     bottom row of the drawdown, so the draft and the cloth read the same way */
+  var shaftRow=function(s){ return S8-1-s; };
+  var pickRow =function(j){ return DDY+P-1-j; };
+
+  for(var i=0;i<E;i++) fill(THX+i, THY+shaftRow(draft.threading[i]), T.indigo);
+  for(var t=0;t<T8;t++) for(var s=0;s<S8;s++)
+    if(draft.tieup[t*S8+s]) fill(TUX+t, THY+shaftRow(s), T.indigo);
+  for(var j=0;j<P;j++) fill(TUX+draft.treadling[j], pickRow(j), T.indigo);
+  for(j=0;j<P;j++) for(i=0;i<E;i++) if(topo.up[j*E+i]) fill(THX+i, pickRow(j), T.indigo);
+
+  block(THX,THY,E,S8); block(TUX,THY,T8,S8);
+  block(THX,DDY,E,P);  block(TUX,DDY,T8,P);
+
+  ctx.fillStyle=T.ink3;
+  ctx.font='500 '+Math.max(9,Math.round(c*0.62))+'px "IBM Plex Mono",monospace';
+  ctx.textBaseline='alphabetic';
+  ctx.fillText('threading', g.ox, g.oy-Math.round(c*0.4));
+  ctx.fillText('tie-up', g.ox+TUX*c, g.oy-Math.round(c*0.4));
+  ctx.fillText('drawdown — the face of the cloth', g.ox, g.oy+(g.rows)*c+Math.round(c*1.0));
+}
+function draftHit(ev){
+  var cv=$('cv-draft'), r=cv.getBoundingClientRect(), g=draftGeom(cv);
+  var x=(ev.clientX-r.left)*(cv.width/r.width), y=(ev.clientY-r.top)*(cv.height/r.height);
+  var cx=Math.floor((x-g.ox)/g.cell), cy=Math.floor((y-g.oy)/g.cell);
+  if(cx<0||cy<0||cx>=g.cols||cy>=g.rows) return null;
+  var TUX=E+GUT, DDY=S8+GUT;
+  if(cy<S8 && cx<E)   return {b:'thread', i:cx, s:S8-1-cy};
+  if(cy<S8 && cx>=TUX)return {b:'tie',    t:cx-TUX, s:S8-1-cy};
+  if(cy>=DDY && cx>=TUX) return {b:'tread', j:DDY+P-1-cy, t:cx-TUX};
+  return null;
+}
+function editDraft(hit){
+  if(!hit) return;
+  if(hit.b==='thread'){ if(hit.i<E) draft.threading[hit.i]=hit.s; }
+  else if(hit.b==='tie'){ var k=hit.t*S8+hit.s; draft.tieup[k]=draft.tieup[k]?0:1; }
+  else if(hit.b==='tread'){ if(hit.j>=0&&hit.j<P) draft.treadling[hit.j]=hit.t; }
+  draft.custom=true;
+  var buttons=document.querySelectorAll('[data-preset]');
+  for(var b=0;b<buttons.length;b++) buttons[b].setAttribute('aria-pressed','false');
+  rebuild(true);
+}
+
+/* ══ the cloth ═══════════════════════════════════════════════════════════ */
+var VIEW={yaw:0.0, pitch:0.52, dist:0.104, fov:0.62};
+var segA=null, segB=null, segW=null, segDep=null, segOrd=null, segN=0;
+function buildSegments(){
+  var a=[], b=[], w=[];
+  for(var i=0;i<E;i++) for(var j=0;j<P-1;j++){ a.push(topo.W(i,j)); b.push(topo.W(i,j+1)); w.push(1); }
+  for(var j2=0;j2<P;j2++) for(var i2=0;i2<E-1;i2++){ a.push(topo.F(i2,j2)); b.push(topo.F(i2+1,j2)); w.push(0); }
+  segA=new Int32Array(a); segB=new Int32Array(b); segW=new Uint8Array(w);
+  segN=a.length; segDep=new Float32Array(segN);
+  segOrd=[]; for(var k=0;k<segN;k++) segOrd.push(k);
+}
+var SORTD=null;
+function segCmp(x,y){ return SORTD[y]-SORTD[x]; }
+
+function drawCloth(){
+  var cv=$('cv-cloth');
+  var r=cv.getBoundingClientRect(), dpr=Math.min(1.75, window.devicePixelRatio||1);
+  var w=Math.max(1,Math.round(r.width*dpr)), h=Math.max(1,Math.round(r.height*dpr));
+  if(cv.width!==w||cv.height!==h){ cv.width=w; cv.height=h; }
+  var ctx=cv.getContext('2d'), W=cv.width, H=cv.height;
+
+  var back=UI.back;
+  var pitch=UI.flat?0:VIEW.pitch, yaw=UI.flat?0:VIEW.yaw;
+  if(back) yaw=Math.PI-yaw;
+  var cy=Math.cos(yaw), sy=Math.sin(yaw), cp=Math.cos(pitch), sp=Math.sin(pitch);
+  var F=0.5*H/Math.tan(VIEW.fov*0.5), n=topo.n, p=sim.pos;
+  if(!sim.scr || sim.scr.length!==n*2){ sim.scr=new Float32Array(n*2); sim.camz=new Float32Array(n); }
+  var scr=sim.scr, camz=sim.camz;
+  for(var i=0,k=0,k2=0;i<n;i++,k+=3,k2+=2){
+    var x=p[k], y=p[k+1], z=p[k+2];
+    var a1=x*cy - z*sy, c1=x*sy + z*cy;
+    var b2=y*cp - c1*sp, c2=y*sp + c1*cp;
+    var zc=c2+VIEW.dist; if(zc<0.01) zc=0.01;
+    var iz=F/zc;
+    scr[k2]=W*0.5+a1*iz; scr[k2+1]=H*0.5-b2*iz; camz[i]=zc;
+  }
+
+  var gr=ctx.createLinearGradient(0,0,0,H);
+  gr.addColorStop(0,T.stage2); gr.addColorStop(1,T.stage);
+  ctx.fillStyle=gr; ctx.fillRect(0,0,W,H);
+
+  for(var s=0;s<segN;s++) segDep[s]=(camz[segA[s]]+camz[segB[s]])*0.5;
+  SORTD=segDep; segOrd.sort(segCmp);
+
+  var px=F/VIEW.dist;                       /* pixels per metre, near enough */
+  var lw=topo.dDraw*px;
+  ctx.lineCap='round'; ctx.lineJoin='round';
+  var d=topo.d;
+  for(var oi=0;oi<segN;oi++){
+    var q=segOrd[oi], ia=segA[q], ib=segB[q];
+    var base = segW[q] ? T.warp : T.weft;
+    var zmid=(p[ia*3+2]+p[ib*3+2])*0.5;
+    var lift=(zmid+d)/(2*d); if(lift<0)lift=0; if(lift>1)lift=1;
+    var x1=scr[ia*2], y1=scr[ia*2+1], x2=scr[ib*2], y2=scr[ib*2+1];
+    ctx.strokeStyle=shade(base, 0.42+0.30*lift);
+    ctx.lineWidth=lw;
+    ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke();
+    ctx.strokeStyle=shade(base, 0.74+0.52*lift);
+    ctx.lineWidth=lw*0.52;
+    var off=lw*0.17;
+    ctx.beginPath(); ctx.moveTo(x1,y1-off); ctx.lineTo(x2,y2-off); ctx.stroke();
+  }
+
+  if(UI.grab>=0){
+    ctx.beginPath(); ctx.arc(scr[UI.grab*2],scr[UI.grab*2+1],lw*0.9,0,6.2832);
+    ctx.strokeStyle=T.ink; ctx.lineWidth=Math.max(1.4,lw*0.14); ctx.stroke();
+  }
+}
+
+/* ══ pointer ═════════════════════════════════════════════════════════════ */
+var orbit=null, grabZ=0;
+function unproject(sx,sy,zc,W,H){
+  var pitch=UI.flat?0:VIEW.pitch, yaw=UI.flat?0:VIEW.yaw;
+  if(UI.back) yaw=Math.PI-yaw;
+  var F=0.5*H/Math.tan(VIEW.fov*0.5);
+  var a1=(sx-W*0.5)*zc/F, b2=-(sy-H*0.5)*zc/F, c2=zc-VIEW.dist;
+  var cy=Math.cos(yaw), sy2=Math.sin(yaw), cp=Math.cos(pitch), sp=Math.sin(pitch);
+  var y=b2*cp + c2*sp, c1=-b2*sp + c2*cp;
+  return [a1*cy + c1*sy2, y, -a1*sy2 + c1*cy];
+}
+function bindCloth(){
+  var cv=$('cv-cloth');
+  cv.addEventListener('pointerdown',function(ev){
+    ev.preventDefault(); cv.setPointerCapture(ev.pointerId);
+    var r=cv.getBoundingClientRect(), sc=cv.width/r.width;
+    var x=(ev.clientX-r.left)*sc, y=(ev.clientY-r.top)*sc;
+    var best=-1, lim=26*sc, bd=lim*lim;
+    for(var i=0;i<topo.n;i++){
+      if(sim.clamped[i]) continue;
+      var dx=sim.scr[i*2]-x, dy=sim.scr[i*2+1]-y, d=dx*dx+dy*dy;
+      if(d<bd){ bd=d; best=i; }
+    }
+    if(best>=0){ UI.grab=best; grabZ=sim.camz[best]; moveGrab(cv,x,y); }
+    else orbit={x:ev.clientX,y:ev.clientY};
+  });
+  cv.addEventListener('pointermove',function(ev){
+    var r=cv.getBoundingClientRect(), sc=cv.width/r.width;
+    if(UI.grab>=0) moveGrab(cv,(ev.clientX-r.left)*sc,(ev.clientY-r.top)*sc);
+    else if(orbit){
+      VIEW.yaw += (ev.clientX-orbit.x)*0.006;
+      VIEW.pitch = Math.max(-0.2, Math.min(1.35, VIEW.pitch+(ev.clientY-orbit.y)*0.005));
+      orbit.x=ev.clientX; orbit.y=ev.clientY;
+      if(UI.flat){ UI.flat=false; $('b-flat').setAttribute('aria-pressed','false'); }
+    }
+  });
+  function end(ev){
+    if(cv.hasPointerCapture&&cv.hasPointerCapture(ev.pointerId)) cv.releasePointerCapture(ev.pointerId);
+    if(UI.grab>=0) sim.iw[UI.grab]=sim.clamped[UI.grab]?0:sim.iwBase;
+    UI.grab=-1; orbit=null;
+  }
+  cv.addEventListener('pointerup',end);
+  cv.addEventListener('pointercancel',end);
+}
+function moveGrab(cv,x,y){
+  var w=unproject(x,y,grabZ,cv.width,cv.height);
+  UI.gx=w[0]; UI.gy=w[1]; UI.gz=w[2];
+}
+function holdGrab(){
+  if(UI.grab<0) return;
+  var k=UI.grab*3;
+  sim.iw[UI.grab]=0;
+  sim.pos[k]=UI.gx; sim.pos[k+1]=UI.gy; sim.pos[k+2]=UI.gz;
+  sim.prev[k]=UI.gx; sim.prev[k+1]=UI.gy; sim.prev[k+2]=UI.gz;
+}
+
+/* ══ controls ════════════════════════════════════════════════════════════ */
+function fmtA(a){ var e=Math.floor(Math.log10(a)); return (a/Math.pow(10,e)).toFixed(1)+'e'+e; }
+function setPreset(name){
+  UI.preset=name;
+  var bs=document.querySelectorAll('[data-preset]');
+  for(var i=0;i<bs.length;i++)
+    bs[i].setAttribute('aria-pressed', bs[i].getAttribute('data-preset')===name?'true':'false');
+  draft=null; rebuild(false); drawDraft();
+}
+function wire(){
+  var bs=document.querySelectorAll('[data-preset]');
+  for(var i=0;i<bs.length;i++) bs[i].addEventListener('click',function(){
+    setPreset(this.getAttribute('data-preset'));
+  });
+  $('cv-draft').addEventListener('click',function(ev){ editDraft(draftHit(ev)); drawDraft(); });
+
+  $('r-sett').addEventListener('input',function(){
+    UI.sett=+this.value; $('lv-sett').textContent=UI.sett.toFixed(2);
+    rebuild(true); buildSegments(); drawDraft();
+  });
+  $('r-fric').addEventListener('input',function(){
+    PAR.cShear=Math.pow(10,+this.value); $('lv-fric').textContent=fmtA(PAR.cShear);
+  });
+  $('r-ang').addEventListener('input',function(){
+    UI.angle=+this.value; $('lv-ang').textContent=UI.angle+'°'; setGrips();
+  });
+  $('r-ten').addEventListener('input',function(){
+    UI.tension=+this.value; $('lv-ten').textContent=UI.tension.toFixed(1)+' N/m';
+  });
+  $('b-release').addEventListener('click',function(){
+    UI.tension=0; $('r-ten').value=0; $('lv-ten').textContent='0.0 N/m';
+    UI.sweep=0; sim.reset(); setGrips();
+  });
+  $('b-sweep').addEventListener('click',function(){
+    if(UI.tension<=0){ UI.tension=10; $('r-ten').value=10; $('lv-ten').textContent='10.0 N/m'; }
+    UI.sweep=UI.sweep>0?0:1;
+    this.setAttribute('aria-pressed',UI.sweep?'true':'false');
+  });
+  $('b-face').addEventListener('click',function(){
+    UI.back=!UI.back; this.setAttribute('aria-pressed',UI.back?'true':'false');
+    this.textContent=UI.back?'Show the face':'Show the back';
+  });
+  $('b-flat').addEventListener('click',function(){
+    UI.flat=!UI.flat; this.setAttribute('aria-pressed',UI.flat?'true':'false');
+  });
+  $('b-pause').addEventListener('click',function(){
+    UI.paused=!UI.paused; this.setAttribute('aria-pressed',UI.paused?'true':'false');
+    this.textContent=UI.paused?'Run':'Pause';
+  });
+  bindCloth();
+}
+
+/* ══ loop ════════════════════════════════════════════════════════════════ */
+var frames=0, fpsT=0, fps=0;
+function tick(ts){
+  requestAnimationFrame(tick);
+  if(!T.paper) return;
+  if(!UI.paused){
+    if(UI.sweep){
+      UI.angle=(UI.angle+0.35)%91;
+      $('r-ang').value=Math.round(UI.angle);
+      $('lv-ang').textContent=Math.round(UI.angle)+'°';
+      setGrips();
+    }
+    applyTension();
+    holdGrab();
+    sim.step(1/60,PAR);
+  }
+  drawCloth();
+  frames++;
+  if(ts-fpsT>300){
+    fps=Math.round(frames*1000/(ts-fpsT)); frames=0; fpsT=ts;
+    var c=sim.crimp(), sh=sim.shear(), ys=sim.yarnStrain(), ex=extension();
+    $('g-cw').textContent=(c.warp*100).toFixed(2)+'%';
+    $('g-cf').textContent=(c.weft*100).toFixed(2)+'%';
+    $('g-sh').textContent=sh.mean.toFixed(1)+'°';
+    $('g-ex').textContent=(ex*100).toFixed(2)+'%';
+    $('g-ys').textContent=(ys.mean*100).toFixed(3)+'%';
+    $('g-ex').className=ex>0.02?'hot':'';
+    $('lv-stats').textContent=topo.n+' particles · '+topo.m+' constraints · '+fps+' fps';
+  }
+}
+
+/* ══ boot ════════════════════════════════════════════════════════════════ */
+readTheme();
+try{ matchMedia('(prefers-color-scheme: dark)').addEventListener('change',function(){ readTheme(); drawDraft(); }); }catch(e){}
+try{ new MutationObserver(function(){ readTheme(); drawDraft(); })
+  .observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']}); }catch(e){}
+rebuild(false);
+buildSegments();
+drawDraft();
+wire();
+requestAnimationFrame(tick);
+
+})();
+</script>
+</body>
+</html>

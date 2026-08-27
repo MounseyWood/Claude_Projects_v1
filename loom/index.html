@@ -260,20 +260,20 @@ footer{border-top:1px solid var(--rule);padding-top:16px;font-size:13px;color:va
         <input type="range" id="r-sett" min="0.45" max="0.98" step="0.01" value="0.85">
       </label>
       <label class="ctl">
-        <span class="lab">Grip at crossings<span class="val" id="lv-fric">1.0e-2</span></span>
-        <input type="range" id="r-fric" min="-3.6" max="-0.8" step="0.05" value="-2">
+        <span class="lab">Grip at crossings<span class="val" id="lv-fric">1.0e-1</span></span>
+        <input type="range" id="r-fric" min="-2.5" max="2" step="0.05" value="-1">
       </label>
     </div>
 
     <div class="group">
       <div class="tag">Pull</div>
       <label class="ctl">
-        <span class="lab">Angle to the warp<span class="val" id="lv-ang">0&deg;</span></span>
+        <span class="lab">Angle off the warp<span class="val" id="lv-ang">0&deg;</span></span>
         <input type="range" id="r-ang" min="0" max="90" step="1" value="0">
       </label>
       <label class="ctl">
         <span class="lab">Tension<span class="val" id="lv-ten">0.0 N/m</span></span>
-        <input type="range" id="r-ten" min="0" max="40" step="0.5" value="0">
+        <input type="range" id="r-ten" min="0" max="6" step="0.1" value="0">
       </label>
       <div class="presets" style="padding:0">
         <button id="b-sweep">Sweep the angle</button>
@@ -294,6 +294,175 @@ footer{border-top:1px solid var(--rule);padding-top:16px;font-size:13px;color:va
     </div>
   </div>
 </div>
+
+<section>
+  <div class="sechead">
+    <div class="tag">The notation</div>
+    <h2>Four blocks and one grid</h2>
+    <p>The layout on the left is not a diagram of a loom. It is how weavers have written cloth down for
+    centuries, and every part of it is doing a job.</p>
+  </div>
+  <div class="cols">
+    <div class="card">
+      <div class="tag">Top left &middot; threading</div>
+      <h3>Which shaft each warp thread passes through</h3>
+      <p>One filled square per column. The loom lifts shafts, not individual threads, so this is what
+      decides which threads rise together. Click a column to move that thread to another shaft.</p>
+    </div>
+    <div class="card">
+      <div class="tag">Top right &middot; tie-up</div>
+      <h3>Which shafts each treadle lifts</h3>
+      <p>Eight treadles, eight shafts, sixty-four squares. This is the part that is literally a stored
+      program, and the part Jacquard would later punch onto a card. Click to toggle.</p>
+    </div>
+    <div class="card">
+      <div class="tag">Bottom right &middot; treadling</div>
+      <h3>The order you press them</h3>
+      <p>One square per pick, read downwards as the cloth grows. Change it and the same threading and
+      tie-up will give you a different cloth &mdash; a twill becomes a herringbone this way.</p>
+    </div>
+    <div class="card">
+      <div class="tag">Bottom left &middot; drawdown</div>
+      <h3>What you will get</h3>
+      <p>Not editable, because it is not an input. A square is filled when the treadle for that pick
+      lifts the shaft that thread is on. That single boolean is the entire structure of the cloth.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sechead">
+    <div class="tag">The bias</div>
+    <h2>Pull it diagonally and it is a different fabric</h2>
+    <p>Set the tension to something you can see, then drag the angle from 0&deg; to 90&deg; &mdash; or press
+    <span class="mono">sweep the angle</span> and watch the plot fill in. The curve peaks at 45&deg;, and it
+    is not a small peak.</p>
+  </div>
+  <div class="note"><b>Watch the yarn-stretched gauge while you do it.</b> It stays near zero. Nothing is
+  being stretched. On the bias the threads rotate at the crossings and the square grid leans over into a
+  diamond, which is longer corner to corner than it was &mdash; a trellis gate, not a spring. That is why a
+  bias-cut skirt falls the way it does, and why the same cloth cut on the grain will not do it.</div>
+  <div class="cols">
+    <div class="card">
+      <div class="tag">On the grain</div>
+      <h3>You are pulling on the threads</h3>
+      <p>What give there is comes from crimp: the warp lies in a wave over and under the weft, and a pull
+      straightens that wave before it ever loads the fibre. Watch warp crimp fall and weft crimp rise as you
+      pull &mdash; the two systems trade it. Once the wave is out, the cloth is as long as it is going to get.</p>
+    </div>
+    <div class="card">
+      <div class="tag">On the bias</div>
+      <h3>You are closing a hinge</h3>
+      <p>Every crossing is a pivot. The cloth gives until the threads swing far enough to touch their
+      neighbours and jam, and then it stops dead. That angle is not a setting on this page &mdash; it falls
+      out of the thread thickness and the spacing. Thicken the thread and the give disappears.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sechead">
+    <div class="tag">One weave in particular</div>
+    <h2>Why your jeans are blue outside and pale inside</h2>
+    <p>Load <span class="mono">3/1 twill</span>, look at the face, then press <span class="mono">show the
+    back</span>.</p>
+  </div>
+  <p class="prose">The face is nearly all indigo. The back is nearly all undyed. Nothing about the threads
+  changed between those two pictures &mdash; the warp is indigo in both. What changed is which system is on
+  top. In a 3/1 twill each warp thread floats over three picks and dips under one, so it covers three
+  quarters of one face and a quarter of the other.</p>
+  <p class="prose">That is denim, and it is the whole recipe: indigo warp, undyed weft, 3/1 twill. The pale
+  inside of a pair of jeans is not a lining. It is the same cloth seen from the other side.</p>
+  <div class="note"><b>And it is why denim fades where it does.</b> Indigo is a poor penetrator &mdash; it
+  rings the outside of the yarn and leaves the core white. The warp floats are the part standing proud of
+  the surface, so they take the abrasion, lose their indigo first, and expose the pale core. The wear
+  follows the twill line because the floats do.</div>
+</section>
+
+<section>
+  <div class="sechead">
+    <div class="tag">Small print</div>
+    <h2>What is derived, and what is dialled</h2>
+    <p>Worth separating, because a simulation that quietly dials in its own conclusions is not showing you
+    anything.</p>
+  </div>
+  <div class="cols">
+    <div class="card">
+      <div class="tag">Derived from your draft</div>
+      <h3>Nobody chose these</h3>
+      <p><b>Which thread is on top</b> at each of the crossings &mdash; that is the drawdown itself.
+      <b>Crimp</b>, and with it how much the cloth can give on the grain. <b>Float length</b>, and so how
+      much of each face is warp and how much is weft. <b>The locking angle</b>, from thread thickness
+      against spacing.</p>
+    </div>
+    <div class="card">
+      <div class="tag">Dialled in</div>
+      <h3>Chosen, and worth doubting</h3>
+      <p><b>Grip at the crossings</b> is the one number with no derivation here &mdash; it stands in for
+      inter-thread friction, and it sets how freely the bias gives. It is on a slider so you can see what it
+      is doing. Yarn stretch and bending stiffness are also chosen, though the cloth is barely sensitive to
+      the first.</p>
+    </div>
+  </div>
+  <p class="prose">The dialled number turns out to matter less than it looks. Loosening the grip makes the
+  bias give more freely &mdash; up to a point, and then it stops mattering entirely, because the threads have
+  swung far enough to touch each other and jam. Past that the cloth is held by its own geometry, and
+  geometry is not on a slider.</p>
+
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>Grip at crossings</th><th>On the grain</th><th>On the bias</th><th>Ratio</th><th>Shear at 45&deg;</th></tr></thead>
+      <tbody>
+        <tr><td class="num">0.1 &mdash; the default</td><td class="num">0.410%</td><td class="num">4.918%</td><td class="num">12.0&times;</td><td class="num">4.4&deg;</td></tr>
+        <tr><td class="num">1</td><td class="num">0.435%</td><td class="num">20.588%</td><td class="num">47.3&times;</td><td class="num">24.9&deg;</td></tr>
+        <tr><td class="num">5</td><td class="num">0.440%</td><td class="num">21.038%</td><td class="num">47.8&times;</td><td class="num">26.7&deg;</td></tr>
+        <tr><td class="num">100</td><td class="num">0.442%</td><td class="num">21.096%</td><td class="num">47.7&times;</td><td class="num">27.1&deg;</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="prose" style="font-size:15px;color:var(--ink-2)">Plain weave at 2&nbsp;N/m. A thousandfold change
+  in the one number this model takes on faith moves the answer by a tenth of a percent, once jamming has
+  taken over. The locking angle at this sett is 31.8&deg; of shear, computed from thread thickness against
+  pitch before the simulation starts &mdash; and the measured mean tops out just under it. Note also that
+  the grain column barely moves at all: extension along the grain is crimp coming out, and crimp has nothing
+  to do with how freely the crossings turn.</p>
+
+  <div class="refs">
+    <div><cite>Threads do not pass through each other.</cite> There is no general collision detection here
+    and none is needed: the draft already says which threads cross and in what order, so every contact pair
+    is known before the simulation starts. That is what makes this cheap enough to run in a browser.</div>
+    <div><cite>The crossings do not slip.</cite> Warp and weft are held together in the plane at every
+    crossing. Real threads can slide, which is how a loose weave distorts and how seams grin. Modelling that
+    would need the grip to be a limit rather than a spring.</div>
+    <div><cite>The swatch is drawn coarse.</cite> Eighteen threads each way at a three-millimetre pitch is
+    about a sixth of the sett of real shirting. It is drawn that way so you can see the interlacement; a real
+    cloth of this construction would have far finer threads far closer together.</div>
+    <div><cite>Mass is scaled.</cite> A swatch this size weighs almost nothing, so any realistic tension
+    would be a violent acceleration rather than a load. Gravity is off here, so the mass only changes how
+    quickly the cloth reaches equilibrium, not where the equilibrium is.</div>
+  </div>
+</section>
+
+<section>
+  <div class="sechead">
+    <div class="tag">Postscript</div>
+    <h2>The grid</h2>
+  </div>
+  <p class="prose">Everything you changed on the left of this page was a grid of filled and empty squares.
+  Nothing else went into the cloth.</p>
+  <p class="prose">In 1804 Joseph-Marie Jacquard put that grid onto punched cards and hung them off a loom,
+  so a pattern could be stored, copied, and sent somewhere else. The cards outlived the looms. Herman
+  Hollerith used them to tabulate the 1890 United States census, and the punched card stayed the ordinary
+  way of feeding a machine for most of the century that followed.</p>
+  <p class="prose">Ada Lovelace saw it in 1843, writing that the Analytical Engine &ldquo;weaves algebraical
+  patterns just as the Jacquard-loom weaves flowers and leaves.&rdquo;</p>
+  <p class="prose">You have spent the last few minutes programming a loom.</p>
+</section>
+
+<footer>
+  <span>Every thread on this page is simulated, not drawn.</span>
+  <span id="foot-stats">&mdash;</span>
+</footer>
 
 </div>
 
@@ -593,8 +762,8 @@ Sim.prototype.yarnStrain=function(){
 
 /* ══ page state ══════════════════════════════════════════════════════════ */
 var E=18, P=18;
-var PAR={ substeps:6, iters:12, grav:0, damp:6,
-  cStretch:1e-7, cBend:2e-2, cPin:1e-7, cContact:1e-8, cShear:1e-2, cLock:1e-8 };
+var PAR={ substeps:5, iters:18, grav:0, damp:6,
+  cStretch:1e-7, cBend:2e-2, cPin:1e-7, cContact:1e-8, cShear:1e-1, cLock:1e-8 };
 var UI={ preset:'plain', sett:0.85, angle:0, tension:0,
          paused:false, flat:false, back:false, grab:-1, sweep:0 };
 var draft=null, topo=null, sim=null, gauge0=1, clampSet=[], pullSet=[];
@@ -604,7 +773,7 @@ var $=function(id){ return document.getElementById(id); };
 /* mass is only a conditioner here: gravity is off, so it changes how fast the
    swatch reaches equilibrium and not where the equilibrium is. Scaling it up
    keeps a light swatch from being flung by an otherwise reasonable tension. */
-var AREAL=15;
+var AREAL=500;
 
 function rebuild(keepDraft){
   var d = keepDraft && draft ? draft : makeDraft(UI.preset,E,P);
@@ -619,7 +788,7 @@ function rebuild(keepDraft){
 /* One edge is held in a grip, the opposite edge is pulled — the geometry of
    an actual tensile test, rotated to whatever angle you ask for. */
 function setGrips(){
-  var th=UI.angle*Math.PI/180, dx=Math.cos(th), dy=Math.sin(th);
+  var th=UI.angle*Math.PI/180, dx=Math.sin(th), dy=Math.cos(th);
   var n=topo.n, p=topo.pos0, i, u, umin=1e9, umax=-1e9;
   for(i=0;i<n;i++){ u=p[i*3]*dx+p[i*3+1]*dy; if(u<umin)umin=u; if(u>umax)umax=u; }
   var band=topo.s*1.6;
@@ -631,7 +800,8 @@ function setGrips(){
   sim.clamped.fill(0);
   for(i=0;i<clampSet.length;i++) sim.clamped[clampSet[i]]=1;
   sim.applyClamps();
-  gauge0 = meanU(pullSet,dx,dy,p) - meanU(clampSet,dx,dy,p);
+  gauge0 = meanU(pullSet,dx,dy,sim.pos) - meanU(clampSet,dx,dy,sim.pos);
+  if(!(gauge0>1e-9)) gauge0 = meanU(pullSet,dx,dy,p) - meanU(clampSet,dx,dy,p);
   UI.dx=dx; UI.dy=dy;
   var vmin=1e9,vmax=-1e9;
   for(i=0;i<n;i++){ var v=-p[i*3]*dy+p[i*3+1]*dx; if(v<vmin)vmin=v; if(v>vmax)vmax=v; }
@@ -648,6 +818,7 @@ function extension(){
 function applyTension(){
   sim.fext.fill(0);
   if(UI.tension<=0) return;
+  if(UI.sweep && UI.sweepPhase===0) return;    /* let it relax before loading */
   var per=UI.tension*UI.width/pullSet.length;
   for(var k=0;k<pullSet.length;k++){
     var i=pullSet[k]*3;
@@ -746,7 +917,7 @@ function editDraft(hit){
 }
 
 /* ══ the cloth ═══════════════════════════════════════════════════════════ */
-var VIEW={yaw:0.0, pitch:0.52, dist:0.104, fov:0.62};
+var VIEW={yaw:Math.PI, pitch:0.52, dist:0.104, fov:0.62};
 /* A yarn is drawn in runs, not segments: every stretch where it stays on the
    same side of the cloth becomes one continuous stroke. Floats then read as
    floats, which is the whole difference between a satin and a plain weave. */
@@ -794,8 +965,8 @@ function drawCloth(){
   var ctx=cv.getContext('2d'), W=cv.width, H=cv.height;
 
   var back=UI.back;
-  var pitch=UI.flat?0:VIEW.pitch, yaw=UI.flat?0:VIEW.yaw;
-  if(back) yaw=Math.PI-yaw;
+  var pitch=UI.flat?0:VIEW.pitch, yaw=VIEW.yaw;
+  if(back) yaw+=Math.PI;                     /* flat means level, not face-on */
   var cy=Math.cos(yaw), sy=Math.sin(yaw), cp=Math.cos(pitch), sp=Math.sin(pitch);
   var F=0.5*H/Math.tan(VIEW.fov*0.5), n=topo.n, p=sim.pos;
   if(!sim.scr || sim.scr.length!==n*2){ sim.scr=new Float32Array(n*2); sim.camz=new Float32Array(n); }
@@ -903,8 +1074,8 @@ function drawPlot(){
 /* ══ pointer ═════════════════════════════════════════════════════════════ */
 var orbit=null, grabZ=0;
 function unproject(sx,sy,zc,W,H){
-  var pitch=UI.flat?0:VIEW.pitch, yaw=UI.flat?0:VIEW.yaw;
-  if(UI.back) yaw=Math.PI-yaw;
+  var pitch=UI.flat?0:VIEW.pitch, yaw=VIEW.yaw;
+  if(UI.back) yaw+=Math.PI;
   var F=0.5*H/Math.tan(VIEW.fov*0.5);
   var a1=(sx-W*0.5)*zc/F, b2=-(sy-H*0.5)*zc/F, c2=zc-VIEW.dist;
   var cy=Math.cos(yaw), sy2=Math.sin(yaw), cp=Math.cos(pitch), sp=Math.sin(pitch);
@@ -990,11 +1161,12 @@ function wire(){
     UI.sweep=0; sim.reset(); setGrips();
   });
   $('b-sweep').addEventListener('click',function(){
-    if(UI.tension<=0){ UI.tension=8; $('r-ten').value=8; $('lv-ten').textContent='8.0 N/m'; }
+    if(UI.tension<=0){ UI.tension=3; $('r-ten').value=3; $('lv-ten').textContent='3.0 N/m'; }
     if(UI.sweep){ UI.sweep=0; this.setAttribute('aria-pressed','false'); return; }
     for(var k=0;k<=90;k++) SWEEP[k]=-1;
-    UI.sweep=1; UI.sweepAt=0; UI.sweepHold=30; UI.sweepStarted=0;
-    UI.angle=0; $('r-ang').value=0; $('lv-ang').textContent='0°'; setGrips();
+    UI.sweep=1; UI.sweepAt=0; UI.sweepPhase=0; UI.sweepHold=10;
+    UI.angle=0; $('r-ang').value=0; $('lv-ang').textContent='0°';
+    sim.reset(); setGrips();
     this.setAttribute('aria-pressed','true');
   });
   $('b-face').addEventListener('click',function(){
@@ -1020,17 +1192,24 @@ function tick(ts){
     if(UI.sweep){
       UI.sweepHold--;
       if(UI.sweepHold<=0){
-        if(UI.sweepAt>0 || UI.sweepStarted) SWEEP[UI.sweepAt]=extension();
-        UI.sweepStarted=1;
-        UI.sweepAt+=5;
-        if(UI.sweepAt>90){ UI.sweep=0; $('b-sweep').setAttribute('aria-pressed','false'); }
-        else {
-          UI.angle=UI.sweepAt;
-          $('r-ang').value=UI.angle; $('lv-ang').textContent=UI.angle+'°';
-          setGrips(); UI.sweepHold=26;
+        if(UI.sweepPhase===0){                 /* relaxed: zero the gauge, then load */
+          setGrips(); UI.sweepPhase=1; UI.sweepHold=64;
+        } else {
+          SWEEP[UI.sweepAt]=extension();
+          UI.sweepAt+=5;
+          if(UI.sweepAt>90){
+            UI.sweep=0; $('b-sweep').setAttribute('aria-pressed','false');
+          } else {
+            UI.angle=UI.sweepAt;
+            $('r-ang').value=UI.angle; $('lv-ang').textContent=UI.angle+'°';
+            sim.reset(); setGrips();
+            UI.sweepPhase=0; UI.sweepHold=10;
+          }
         }
       }
     }
+    if(UI.tension<=0 && UI.grab<0) gauge0 =
+      meanU(pullSet,UI.dx,UI.dy,sim.pos)-meanU(clampSet,UI.dx,UI.dy,sim.pos);
     applyTension();
     holdGrab();
     sim.step(1/60,PAR);

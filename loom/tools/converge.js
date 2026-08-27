@@ -12,7 +12,7 @@ const PAR=o=>Object.assign({substeps:8,iters:5,grav:0,damp:14,
 
 function tensile(topo,P,thetaDeg,stress,secs){
   const sim=new Sim(topo), n=topo.n;
-  const th=thetaDeg*Math.PI/180, dx=Math.cos(th), dy=Math.sin(th);
+  const th=thetaDeg*Math.PI/180, dx=Math.sin(th), dy=Math.cos(th);
   const run=s=>{ const k=Math.round(s*60); for(let i=0;i<k;i++) sim.step(1/60,P); };
   run(secs);
   const u=i=>sim.pos[i*3]*dx+sim.pos[i*3+1]*dy;

@@ -1,6 +1,8 @@
 # The Loom — design brief
 
-**Status:** not started. Agreed 2026-08-27, to build next session.
+**Status:** first version built — see README.md and index.html.
+Reveals 1, 2 and 4 are in. Reveal 3 (hand the measured compliance to the
+shirt demo) is not yet wired up.
 **Prereq:** the XPBD solver in `../xpbd-shirt/index.html` (physics core sits between
 the `/*PHYSICS-START*/` and `/*PHYSICS-END*/` markers, and the `tools/` probes eval
 it directly — reuse both patterns here).

@@ -109,6 +109,7 @@ h3{font-size:1.1rem}
 
 .paperwrap{padding:14px;display:flex;justify-content:center;background:var(--panel)}
 #cv-draft{width:100%;max-width:430px;height:auto;display:block;cursor:crosshair}
+.plot{width:100%;height:96px;display:block;border:1px solid var(--rule);background:var(--panel-2)}
 .clothwrap{position:relative;width:100%;aspect-ratio:1/0.92;background:var(--stage-2)}
 #cv-cloth{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none;cursor:grab}
 #cv-cloth:active{cursor:grabbing}
@@ -278,6 +279,7 @@ footer{border-top:1px solid var(--rule);padding-top:16px;font-size:13px;color:va
         <button id="b-sweep">Sweep the angle</button>
         <button id="b-release">Release</button>
       </div>
+      <canvas id="cv-plot" class="plot" aria-label="Extension against pull angle"></canvas>
     </div>
 
     <div class="group">
@@ -596,6 +598,7 @@ var PAR={ substeps:6, iters:12, grav:0, damp:6,
 var UI={ preset:'plain', sett:0.85, angle:0, tension:0,
          paused:false, flat:false, back:false, grab:-1, sweep:0 };
 var draft=null, topo=null, sim=null, gauge0=1, clampSet=[], pullSet=[];
+var SWEEP=new Float32Array(91); SWEEP.fill(-1);
 var $=function(id){ return document.getElementById(id); };
 
 /* mass is only a conditioner here: gravity is off, so it changes how fast the
@@ -744,17 +747,44 @@ function editDraft(hit){
 
 /* ══ the cloth ═══════════════════════════════════════════════════════════ */
 var VIEW={yaw:0.0, pitch:0.52, dist:0.104, fov:0.62};
-var segA=null, segB=null, segW=null, segDep=null, segOrd=null, segN=0;
-function buildSegments(){
-  var a=[], b=[], w=[];
-  for(var i=0;i<E;i++) for(var j=0;j<P-1;j++){ a.push(topo.W(i,j)); b.push(topo.W(i,j+1)); w.push(1); }
-  for(var j2=0;j2<P;j2++) for(var i2=0;i2<E-1;i2++){ a.push(topo.F(i2,j2)); b.push(topo.F(i2+1,j2)); w.push(0); }
-  segA=new Int32Array(a); segB=new Int32Array(b); segW=new Uint8Array(w);
-  segN=a.length; segDep=new Float32Array(segN);
-  segOrd=[]; for(var k=0;k<segN;k++) segOrd.push(k);
+/* A yarn is drawn in runs, not segments: every stretch where it stays on the
+   same side of the cloth becomes one continuous stroke. Floats then read as
+   floats, which is the whole difference between a satin and a plain weave. */
+var RUNS=null, runDep=null, runOrd=null, runOver=null;
+function buildRuns(){
+  RUNS=[];
+  var i,j,q;
+  function push(list,pre,post,warp,over){
+    RUNS.push({ids:new Int32Array(list),pre:pre,post:post,warp:warp,over:over});
+  }
+  for(i=0;i<E;i++){
+    j=0;
+    while(j<P){
+      var st=topo.up[j*E+i], j1=j, list=[];
+      while(j1+1<P && topo.up[(j1+1)*E+i]===st) j1++;
+      for(q=j;q<=j1;q++) list.push(topo.W(i,q));
+      push(list, j>0?topo.W(i,j-1):-1, j1<P-1?topo.W(i,j1+1):-1, 1, st);
+      j=j1+1;
+    }
+  }
+  for(j=0;j<P;j++){
+    i=0;
+    while(i<E){
+      var st2=topo.up[j*E+i]?0:1, i1=i, list2=[];
+      while(i1+1<E && (topo.up[j*E+i1+1]?0:1)===st2) i1++;
+      for(q=i;q<=i1;q++) list2.push(topo.F(q,j));
+      push(list2, i>0?topo.F(i-1,j):-1, i1<E-1?topo.F(i1+1,j):-1, 0, st2);
+      i=i1+1;
+    }
+  }
+  runDep=new Float32Array(RUNS.length);
+  runOrd=[]; for(var k=0;k<RUNS.length;k++) runOrd.push(k);
 }
-var SORTD=null;
-function segCmp(x,y){ return SORTD[y]-SORTD[x]; }
+var SORTD=null, SORTO=null;
+function depCmp(x,y){
+  if(SORTO[x]!==SORTO[y]) return SORTO[x]-SORTO[y];   /* under first, over last */
+  return SORTD[y]-SORTD[x];                            /* then far before near  */
+}
 
 function drawCloth(){
   var cv=$('cv-cloth');
@@ -783,31 +813,90 @@ function drawCloth(){
   gr.addColorStop(0,T.stage2); gr.addColorStop(1,T.stage);
   ctx.fillStyle=gr; ctx.fillRect(0,0,W,H);
 
-  for(var s=0;s<segN;s++) segDep[s]=(camz[segA[s]]+camz[segB[s]])*0.5;
-  SORTD=segDep; segOrd.sort(segCmp);
+  var nr=RUNS.length, s, q, ids;
+  if(!runOver || runOver.length!==nr) runOver=new Uint8Array(nr);
+  for(s=0;s<nr;s++){
+    ids=RUNS[s].ids; var t=0;
+    for(q=0;q<ids.length;q++) t+=camz[ids[q]];
+    runDep[s]=t/ids.length;
+    runOver[s]=(UI.back ? !RUNS[s].over : RUNS[s].over) ? 1 : 0;
+  }
+  SORTD=runDep; SORTO=runOver; runOrd.sort(depCmp);
 
   var px=F/VIEW.dist;                       /* pixels per metre, near enough */
-  var lw=topo.dDraw*px;
+  /* drawn a little wider than the mechanical diameter: real yarn is hairy and
+     spreads in the plane, and at this sett the gaps otherwise read as holes */
+  var lw=topo.dDraw*px*1.18;
+  var off=lw*0.16;
   ctx.lineCap='round'; ctx.lineJoin='round';
-  var d=topo.d;
-  for(var oi=0;oi<segN;oi++){
-    var q=segOrd[oi], ia=segA[q], ib=segB[q];
-    var base = segW[q] ? T.warp : T.weft;
-    var zmid=(p[ia*3+2]+p[ib*3+2])*0.5;
-    var lift=(zmid+d)/(2*d); if(lift<0)lift=0; if(lift>1)lift=1;
-    var x1=scr[ia*2], y1=scr[ia*2+1], x2=scr[ib*2], y2=scr[ib*2+1];
-    ctx.strokeStyle=shade(base, 0.42+0.30*lift);
-    ctx.lineWidth=lw;
-    ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke();
-    ctx.strokeStyle=shade(base, 0.74+0.52*lift);
-    ctx.lineWidth=lw*0.52;
-    var off=lw*0.17;
-    ctx.beginPath(); ctx.moveTo(x1,y1-off); ctx.lineTo(x2,y2-off); ctx.stroke();
+  for(var oi=0;oi<nr;oi++){
+    var r=RUNS[runOrd[oi]];
+    ids=r.ids;
+    var base = r.warp ? T.warp : T.weft;
+    var over = UI.back ? !r.over : r.over;
+    var first=ids[0], last=ids[ids.length-1];
+    ctx.beginPath();
+    if(r.pre>=0) ctx.moveTo((scr[first*2]+scr[r.pre*2])*0.5,(scr[first*2+1]+scr[r.pre*2+1])*0.5);
+    else ctx.moveTo(scr[first*2],scr[first*2+1]);
+    for(q=0;q<ids.length;q++) ctx.lineTo(scr[ids[q]*2],scr[ids[q]*2+1]);
+    if(r.post>=0) ctx.lineTo((scr[last*2]+scr[r.post*2])*0.5,(scr[last*2+1]+scr[r.post*2+1])*0.5);
+    ctx.strokeStyle=shade(base, over?0.50:0.30);
+    ctx.lineWidth=lw; ctx.stroke();
+    var ax=scr[last*2]-scr[first*2], ay=scr[last*2+1]-scr[first*2+1];
+    var al=Math.sqrt(ax*ax+ay*ay)||1;
+    var nx=-ay/al, ny=ax/al;                     /* across the yarn, toward the light */
+    if(ny>0){ nx=-nx; ny=-ny; }
+    ctx.strokeStyle=shade(base, over?1.08:0.58);
+    ctx.lineWidth=lw*0.54;
+    ctx.save(); ctx.translate(nx*off,ny*off); ctx.stroke(); ctx.restore();
   }
 
   if(UI.grab>=0){
     ctx.beginPath(); ctx.arc(scr[UI.grab*2],scr[UI.grab*2+1],lw*0.9,0,6.2832);
     ctx.strokeStyle=T.ink; ctx.lineWidth=Math.max(1.4,lw*0.14); ctx.stroke();
+  }
+}
+
+function drawPlot(){
+  var cv=$('cv-plot'); if(!cv) return;
+  var r=cv.getBoundingClientRect(), dpr=Math.min(1.75,window.devicePixelRatio||1);
+  var w=Math.max(1,Math.round(r.width*dpr)), h=Math.max(1,Math.round(r.height*dpr));
+  if(cv.width!==w||cv.height!==h){ cv.width=w; cv.height=h; }
+  var ctx=cv.getContext('2d'), W=cv.width, H=cv.height, sc=W/420;
+  ctx.clearRect(0,0,W,H);
+  var padL=Math.round(30*sc), padB=Math.round(15*sc), padT=Math.round(9*sc);
+  var mx=0.004, k;
+  for(k=0;k<=90;k++) if(SWEEP[k]>mx) mx=SWEEP[k];
+  mx*=1.18;
+  var X=function(a){ return padL+(a/90)*(W-padL-6*sc); };
+  var Y=function(v){ return H-padB-(v/mx)*(H-padB-padT); };
+  ctx.strokeStyle=T.rule2; ctx.lineWidth=1;
+  ctx.beginPath(); ctx.moveTo(padL,H-padB+.5); ctx.lineTo(W,H-padB+.5); ctx.stroke();
+  ctx.setLineDash([2*sc,3*sc]); ctx.strokeStyle=T.rule2;
+  ctx.beginPath(); ctx.moveTo(X(45),padT); ctx.lineTo(X(45),H-padB); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.font='500 '+Math.round(9.5*sc)+'px "IBM Plex Mono",monospace';
+  ctx.fillStyle=T.ink3; ctx.textBaseline='top';
+  ctx.fillText('0°',X(0),H-padB+2*sc);
+  ctx.fillText('45°',X(45)-8*sc,H-padB+2*sc);
+  ctx.fillText('90°',X(90)-16*sc,H-padB+2*sc);
+  ctx.fillText((mx*100).toFixed(1)+'%',2*sc,padT-1);
+  var started=false;
+  ctx.beginPath();
+  for(k=0;k<=90;k++){
+    if(SWEEP[k]<0) continue;
+    if(!started){ ctx.moveTo(X(k),Y(SWEEP[k])); started=true; }
+    else ctx.lineTo(X(k),Y(SWEEP[k]));
+  }
+  if(started){ ctx.strokeStyle=T.indigo; ctx.lineWidth=Math.max(1.4,1.7*sc); ctx.stroke(); }
+  for(k=0;k<=90;k++){
+    if(SWEEP[k]<0) continue;
+    ctx.beginPath(); ctx.arc(X(k),Y(SWEEP[k]),Math.max(1.5,1.9*sc),0,6.2832);
+    ctx.fillStyle= k===45 ? T.madder : T.indigo; ctx.fill();
+  }
+  if(!started){
+    ctx.fillStyle=T.ink3; ctx.textBaseline='middle';
+    ctx.fillText('extension against pull angle', padL+6*sc, H/2);
   }
 }
 
@@ -885,7 +974,7 @@ function wire(){
 
   $('r-sett').addEventListener('input',function(){
     UI.sett=+this.value; $('lv-sett').textContent=UI.sett.toFixed(2);
-    rebuild(true); buildSegments(); drawDraft();
+    rebuild(true); buildRuns(); drawDraft();
   });
   $('r-fric').addEventListener('input',function(){
     PAR.cShear=Math.pow(10,+this.value); $('lv-fric').textContent=fmtA(PAR.cShear);
@@ -901,9 +990,12 @@ function wire(){
     UI.sweep=0; sim.reset(); setGrips();
   });
   $('b-sweep').addEventListener('click',function(){
-    if(UI.tension<=0){ UI.tension=10; $('r-ten').value=10; $('lv-ten').textContent='10.0 N/m'; }
-    UI.sweep=UI.sweep>0?0:1;
-    this.setAttribute('aria-pressed',UI.sweep?'true':'false');
+    if(UI.tension<=0){ UI.tension=8; $('r-ten').value=8; $('lv-ten').textContent='8.0 N/m'; }
+    if(UI.sweep){ UI.sweep=0; this.setAttribute('aria-pressed','false'); return; }
+    for(var k=0;k<=90;k++) SWEEP[k]=-1;
+    UI.sweep=1; UI.sweepAt=0; UI.sweepHold=30; UI.sweepStarted=0;
+    UI.angle=0; $('r-ang').value=0; $('lv-ang').textContent='0°'; setGrips();
+    this.setAttribute('aria-pressed','true');
   });
   $('b-face').addEventListener('click',function(){
     UI.back=!UI.back; this.setAttribute('aria-pressed',UI.back?'true':'false');
@@ -926,16 +1018,25 @@ function tick(ts){
   if(!T.paper) return;
   if(!UI.paused){
     if(UI.sweep){
-      UI.angle=(UI.angle+0.35)%91;
-      $('r-ang').value=Math.round(UI.angle);
-      $('lv-ang').textContent=Math.round(UI.angle)+'°';
-      setGrips();
+      UI.sweepHold--;
+      if(UI.sweepHold<=0){
+        if(UI.sweepAt>0 || UI.sweepStarted) SWEEP[UI.sweepAt]=extension();
+        UI.sweepStarted=1;
+        UI.sweepAt+=5;
+        if(UI.sweepAt>90){ UI.sweep=0; $('b-sweep').setAttribute('aria-pressed','false'); }
+        else {
+          UI.angle=UI.sweepAt;
+          $('r-ang').value=UI.angle; $('lv-ang').textContent=UI.angle+'°';
+          setGrips(); UI.sweepHold=26;
+        }
+      }
     }
     applyTension();
     holdGrab();
     sim.step(1/60,PAR);
   }
   drawCloth();
+  drawPlot();
   frames++;
   if(ts-fpsT>300){
     fps=Math.round(frames*1000/(ts-fpsT)); frames=0; fpsT=ts;
@@ -956,7 +1057,7 @@ try{ matchMedia('(prefers-color-scheme: dark)').addEventListener('change',functi
 try{ new MutationObserver(function(){ readTheme(); drawDraft(); })
   .observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']}); }catch(e){}
 rebuild(false);
-buildSegments();
+buildRuns();
 drawDraft();
 wire();
 requestAnimationFrame(tick);

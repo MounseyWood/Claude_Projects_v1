@@ -1,0 +1,1232 @@
+<title>Annealed Alphabet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=IBM+Plex+Mono:wght@400;500;600&family=Newsreader:opsz,wght@6..72,400..600&display=swap">
+<style>
+:root{
+  --paper:#E7E8E4;
+  --panel:#F1F2EE;
+  --sunk:#DCDED8;
+  --ink:#15181A;
+  --ink-2:#565C5E;
+  --ink-3:#8A9092;
+  --rule:#C5C8C1;
+  --rule-soft:#D6D9D2;
+  --accent-h:18; --accent-s:76%; --accent-l:41%;
+  --accent:hsl(var(--accent-h), var(--accent-s), var(--accent-l));
+  --accent-wash:hsla(var(--accent-h), var(--accent-s), var(--accent-l), 0.10);
+  --shadow:0 1px 0 rgba(21,24,26,.06);
+  --glyph-bg:#F6F7F4;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#0F1213;
+    --panel:#161A1B;
+    --sunk:#1E2325;
+    --ink:#E9EAE5;
+    --ink-2:#9AA1A1;
+    --ink-3:#666D6E;
+    --rule:#282E30;
+    --rule-soft:#202627;
+    --accent-l:60%;
+    --shadow:0 1px 0 rgba(0,0,0,.4);
+    --glyph-bg:#12171800;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0F1213;
+  --panel:#161A1B;
+  --sunk:#1E2325;
+  --ink:#E9EAE5;
+  --ink-2:#9AA1A1;
+  --ink-3:#666D6E;
+  --rule:#282E30;
+  --rule-soft:#202627;
+  --accent-l:60%;
+  --shadow:0 1px 0 rgba(0,0,0,.4);
+  --glyph-bg:#12171800;
+}
+
+*{box-sizing:border-box}
+body{
+  background:var(--paper);
+  color:var(--ink);
+  font-family:"IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  font-size:13px;
+  line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1120px;margin:0 auto;padding:0 24px 96px}
+
+/* ---------- masthead ---------- */
+.masthead{padding:44px 0 0}
+.eyebrow{
+  font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-3);display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;
+}
+.eyebrow .dot{color:var(--accent)}
+h1{
+  font-family:"Archivo","Helvetica Neue",Arial,sans-serif;
+  font-variation-settings:"wdth" 125,"wght" 800;
+  font-weight:800;
+  font-size:clamp(38px,8.2vw,86px);
+  line-height:.92;
+  letter-spacing:-.022em;
+  margin:14px 0 0;
+  text-wrap:balance;
+}
+h1 .sub{display:block;font-size:.42em;font-variation-settings:"wdth" 118,"wght" 400;color:var(--ink-3);letter-spacing:-.005em;margin-top:.34em;line-height:1.1}
+.deck{
+  font-family:"Newsreader",Georgia,"Times New Roman",serif;
+  font-size:17.5px;line-height:1.55;color:var(--ink-2);
+  max-width:56ch;margin:20px 0 0;
+}
+.deck em{color:var(--ink);font-style:italic}
+.hero{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:24px 44px;align-items:end;margin-top:20px}
+.deck{margin-top:0}
+.signature{margin:0;display:flex;flex-direction:column;gap:11px;align-items:flex-start;padding-bottom:3px}
+.signature canvas{display:block;max-width:100%}
+.signature figcaption{
+  font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--ink-3);
+  border-top:1px solid var(--rule);padding-top:9px;width:100%;
+}
+
+/* ---------- telemetry ---------- */
+.telemetry{
+  margin-top:32px;border-top:1px solid var(--ink);border-bottom:1px solid var(--rule);
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(112px,1fr));
+  align-items:stretch;
+}
+.tm{padding:12px 16px 13px;border-left:1px solid var(--rule-soft)}
+.tm:first-child{border-left:0;padding-left:0}
+.tm .k{font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-3)}
+.tm .v{font-size:19px;font-weight:500;font-variant-numeric:tabular-nums;margin-top:3px;letter-spacing:-.01em}
+.tm .v.hot{color:var(--accent)}
+.tm.spark{padding-bottom:8px;display:flex;flex-direction:column;justify-content:space-between}
+#spark{display:block;width:100%;height:34px;margin-top:4px}
+
+/* ---------- sections ---------- */
+section{margin-top:64px}
+.shead{display:flex;align-items:baseline;gap:14px;border-bottom:1px solid var(--rule);padding-bottom:9px;margin-bottom:22px;flex-wrap:wrap}
+.shead h2{
+  font-family:"Archivo","Helvetica Neue",Arial,sans-serif;
+  font-variation-settings:"wdth" 112,"wght" 700;
+  font-size:15px;letter-spacing:.02em;margin:0;text-transform:uppercase;
+}
+.shead .note{font-size:11px;color:var(--ink-3);letter-spacing:.02em;margin-left:auto}
+
+/* ---------- glyph grid ---------- */
+.forge{
+  background:var(--panel);border:1px solid var(--rule);
+  padding:26px 22px 20px;
+}
+#grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(78px,1fr));
+  gap:2px;
+}
+.cell{
+  position:relative;background:var(--glyph-bg);border:0;margin:0;font:inherit;color:inherit;
+  display:flex;flex-direction:column;align-items:center;
+  padding:10px 0 6px;cursor:pointer;-webkit-appearance:none;appearance:none;
+}
+.cell:hover{background:var(--sunk)}
+.cell:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+.cell.locked{background:var(--accent-wash)}
+.cell.locked .lab{color:var(--accent)}
+.cell.locked::before{
+  content:"";position:absolute;top:5px;right:5px;width:5px;height:5px;background:var(--accent);
+}
+.cell canvas{display:block;width:60px;height:80px}
+.cell .lab{
+  font-size:9.5px;color:var(--ink-3);letter-spacing:.1em;margin-top:4px;
+  font-variant-numeric:tabular-nums;
+}
+.cell.worst .lab{color:var(--accent)}
+.cell.worst::after{
+  content:"";position:absolute;inset:2px;border:1px solid var(--accent);
+  pointer-events:none;opacity:.55;
+}
+
+/* ---------- console ---------- */
+.console{
+  border:1px solid var(--rule);border-top:0;border-bottom:0;background:var(--panel);
+  padding:20px 22px 22px;
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:20px 26px;
+}
+.consolefoot{
+  border:1px solid var(--rule);border-top:1px solid var(--rule-soft);background:var(--panel);
+  padding:15px 22px 17px;display:flex;flex-wrap:wrap;align-items:center;gap:13px 22px;
+}
+.foothint{margin:0;font-size:10.5px;line-height:1.45;color:var(--ink-3);flex:1 1 240px;min-width:0}
+.ctl{display:flex;flex-direction:column;gap:6px}
+.ctl .row{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.ctl .name{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-2)}
+.ctl .val{font-size:11.5px;color:var(--ink);font-variant-numeric:tabular-nums}
+.ctl .hint{font-size:10.5px;color:var(--ink-3);line-height:1.35}
+input[type=range]{
+  -webkit-appearance:none;appearance:none;width:100%;height:18px;background:transparent;margin:0;cursor:ew-resize;
+}
+input[type=range]::-webkit-slider-runnable-track{height:2px;background:var(--rule);}
+input[type=range]::-moz-range-track{height:2px;background:var(--rule);}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;width:11px;height:11px;background:var(--ink);
+  margin-top:-4.5px;border:0;border-radius:0;
+}
+input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ink);border:0;border-radius:0}
+input[type=range]:focus-visible::-webkit-slider-thumb{outline:2px solid var(--accent);outline-offset:2px}
+input[type=range]:focus-visible::-moz-range-thumb{outline:2px solid var(--accent);outline-offset:2px}
+
+.buttons{display:flex;flex-wrap:wrap;gap:8px;align-items:flex-start}
+button{
+  font-family:inherit;font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;
+  background:transparent;color:var(--ink);border:1px solid var(--rule);
+  padding:8px 13px;cursor:pointer;transition:background .15s,border-color .15s,color .15s;
+}
+button:hover{border-color:var(--ink);background:var(--sunk)}
+button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+button.primary{border-color:var(--accent);color:var(--accent)}
+button.primary:hover{background:var(--accent-wash);border-color:var(--accent)}
+.switch{display:flex;align-items:center;gap:9px;cursor:pointer;user-select:none}
+.switch input{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0}
+.switch .box{width:13px;height:13px;border:1px solid var(--rule);display:grid;place-items:center;flex:none}
+.switch input:checked + .box{background:var(--accent);border-color:var(--accent)}
+.switch input:focus-visible + .box{outline:2px solid var(--accent);outline-offset:2px}
+.switch .txt{font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-2)}
+
+/* ---------- diagnostics ---------- */
+.diag{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:2px;align-items:stretch}
+.diagcol{display:grid;gap:2px;align-content:start}
+#vocabWrap{overflow-x:auto}
+#vocab{display:block}
+.panel{background:var(--panel);border:1px solid var(--rule);padding:20px 22px 22px}
+.panel h3{
+  font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-3);
+  margin:0 0 14px;font-weight:500;
+}
+#matrixWrap{overflow-x:auto}
+#matrix{display:block;image-rendering:pixelated;max-width:100%}
+.mlegend{display:flex;align-items:center;gap:9px;margin-top:12px;font-size:10px;color:var(--ink-3);letter-spacing:.08em;font-variant-numeric:tabular-nums}
+.mramp{height:7px;flex:1;min-width:60px}
+.pairview{display:flex;gap:18px;align-items:flex-start;flex-wrap:wrap}
+.pairview .col{display:flex;flex-direction:column;gap:5px;align-items:center}
+.pairview canvas{display:block;background:var(--glyph-bg)}
+.pairview .cap{font-size:9.5px;letter-spacing:.1em;color:var(--ink-3);font-variant-numeric:tabular-nums}
+.pairnote{margin-top:16px;font-size:11px;color:var(--ink-2);line-height:1.5;max-width:44ch}
+.pairnote b{color:var(--accent);font-weight:500}
+.forgehint{margin-top:16px;padding-top:13px;border-top:1px solid var(--rule-soft);font-size:11px;color:var(--ink-3);letter-spacing:.01em}
+.forgehint b{color:var(--ink-2);font-weight:500}
+
+/* ---------- specimen ---------- */
+.spec{background:var(--panel);border:1px solid var(--rule);padding:24px 22px 26px}
+#specInput{
+  width:100%;font-family:inherit;font-size:14px;color:var(--ink);
+  background:transparent;border:0;border-bottom:1px solid var(--rule);
+  padding:6px 0 9px;letter-spacing:.02em;
+}
+#specInput:focus{outline:0;border-bottom-color:var(--accent)}
+#specInput::placeholder{color:var(--ink-3)}
+.speclabel{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-3);margin-bottom:2px}
+#specCanvasWrap{overflow-x:auto;margin-top:26px}
+#specCanvas{display:block}
+.chartrow{display:flex;gap:14px;margin-top:6px;font-size:9.5px;color:var(--ink-3);letter-spacing:.1em}
+
+/* ---------- key ---------- */
+#key{display:grid;grid-template-columns:repeat(auto-fill,minmax(56px,1fr));gap:0;background:var(--panel);border:1px solid var(--rule)}
+.kcell{display:flex;align-items:center;justify-content:center;gap:7px;padding:9px 4px;border-right:1px solid var(--rule-soft);border-bottom:1px solid var(--rule-soft)}
+.kcell .lat{font-size:12px;color:var(--ink-3);width:9px;text-align:right}
+.kcell canvas{display:block;width:24px;height:32px}
+
+/* ---------- colophon ---------- */
+.colophon{
+  margin-top:64px;border-top:1px solid var(--ink);padding-top:26px;
+  display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:34px;
+}
+.colophon p{
+  font-family:"Newsreader",Georgia,"Times New Roman",serif;
+  font-size:16px;line-height:1.62;color:var(--ink-2);margin:0 0 14px;max-width:62ch;
+}
+.colophon p:last-child{margin-bottom:0}
+.colophon strong{color:var(--ink);font-weight:600}
+.colophon .side{font-family:"IBM Plex Mono",monospace;font-size:11px;line-height:1.7;color:var(--ink-3)}
+.colophon .side dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:2px 14px}
+.colophon .side dt{color:var(--ink-3);letter-spacing:.1em;text-transform:uppercase;font-size:9.5px;padding-top:2px}
+.colophon .side dd{margin:0;color:var(--ink-2);font-variant-numeric:tabular-nums}
+#svgOut{
+  display:none;flex-basis:100%;width:100%;height:120px;margin-top:12px;background:var(--sunk);color:var(--ink-2);
+  border:1px solid var(--rule);font-family:inherit;font-size:10px;padding:8px;resize:vertical;
+}
+#svgOut.on{display:block}
+
+@media (max-width:860px){
+  .hero{grid-template-columns:1fr;align-items:start}
+  .diag{grid-template-columns:1fr}
+  .colophon{grid-template-columns:1fr;gap:22px}
+}
+@media (max-width:560px){
+  .wrap{padding:0 16px 72px}
+  .tm:first-child{padding-left:0}
+  .forge,.console,.panel,.spec{padding-left:14px;padding-right:14px}
+}
+@media (prefers-reduced-motion: reduce){
+  button{transition:none}
+}
+</style>
+
+<div class="wrap">
+
+  <header class="masthead">
+    <div class="eyebrow">
+      <span>Simulated annealing</span><span class="dot">/</span><span>stroke lattice</span><span class="dot">/</span><span id="specno">Specimen &#8470;0000</span>
+    </div>
+    <h1>Annealed Alphabet<span class="sub">a script that argues with itself</span></h1>
+    <div class="hero">
+      <p class="deck">
+        <span id="deckN">Twenty-six</span> glyphs are heated until meaningless, then cooled. Two forces work on them the whole way down:
+        each glyph <em>pushes away</em> from every other so it survives being read badly, and all of them <em>pull toward</em>
+        a shared vocabulary of strokes so they still look like one hand. Everything below is live &mdash; the alphabet has not
+        finished deciding.
+      </p>
+      <figure class="signature">
+        <canvas id="sigCanvas"></canvas>
+        <figcaption>the title of this page, set in the alphabet this page is making</figcaption>
+      </figure>
+    </div>
+
+    <div class="telemetry">
+      <div class="tm"><div class="k">Temperature</div><div class="v hot" id="tTemp">&mdash;</div></div>
+      <div class="tm"><div class="k">Energy</div><div class="v" id="tEnergy">&mdash;</div></div>
+      <div class="tm"><div class="k">Proposals</div><div class="v" id="tEpoch">&mdash;</div></div>
+      <div class="tm"><div class="k">Accepted</div><div class="v" id="tAccept">&mdash;</div></div>
+      <div class="tm"><div class="k">Min. distinctness</div><div class="v" id="tMin">&mdash;</div></div>
+      <div class="tm spark"><div class="k">Energy trace</div><canvas id="spark"></canvas></div>
+    </div>
+  </header>
+
+  <section>
+    <div class="shead">
+      <h2>The forge</h2>
+      <span class="note" id="forgeNote">cooling</span>
+    </div>
+    <div class="forge"><div id="grid"></div>
+      <p class="forgehint"><b>Pin a glyph by clicking it.</b> Pinned shapes are held out of the anneal &mdash; the rest of the alphabet redesigns itself around whatever you keep.</p>
+    </div>
+    <div class="console">
+      <div class="ctl">
+        <div class="row"><span class="name">Read at distance</span><span class="val" id="vBlur"></span></div>
+        <input type="range" id="sBlur" min="0" max="30" step="1" value="14" aria-label="Read at distance">
+        <div class="hint">How blurred the judge's eye is. More blur, blunter glyphs.</div>
+      </div>
+      <div class="ctl">
+        <div class="row"><span class="name">Family resemblance</span><span class="val" id="vCoh"></span></div>
+        <input type="range" id="sCoh" min="0" max="100" step="1" value="34" aria-label="Family resemblance">
+        <div class="hint">Reward for reusing strokes the rest of the alphabet already uses.</div>
+      </div>
+      <div class="ctl">
+        <div class="row"><span class="name">Stroke economy</span><span class="val" id="vInk"></span></div>
+        <input type="range" id="sInk" min="0" max="100" step="1" value="30" aria-label="Ink economy">
+        <div class="hint">Cost per stroke, curves and straights alike. High economy makes a terse, fast hand.</div>
+      </div>
+      <div class="ctl">
+        <div class="row"><span class="name">Letters</span><span class="val" id="vN"></span></div>
+        <input type="range" id="sN" min="8" max="34" step="1" value="26" aria-label="Number of letters">
+        <div class="hint">Crowd the space and every glyph gets harder to tell apart.</div>
+      </div>
+    </div>
+    <div class="consolefoot">
+      <div class="buttons">
+        <button id="bReheat" class="primary">Reheat</button>
+        <button id="bRun">Freeze</button>
+        <button id="bSeed">New seed</button>
+        <button id="bSvg">Copy SVG</button>
+      </div>
+      <label class="switch">
+        <input type="checkbox" id="cMirror"><span class="box"></span>
+        <span class="txt">Mirror-proof</span>
+      </label>
+      <p class="foothint">Mirror-proof also holds each glyph away from every other glyph's reflection and half-turn, so the alphabet has no b/d/p/q problem.</p>
+      <textarea id="svgOut" readonly aria-label="SVG source"></textarea>
+    </div>
+  </section>
+
+  <section>
+    <div class="shead">
+      <h2>Diagnostics</h2>
+      <span class="note">distance between every pair, under the current eye</span>
+    </div>
+    <div class="diag">
+      <div class="panel">
+        <h3>Confusability matrix</h3>
+        <div id="matrixWrap"><canvas id="matrix"></canvas></div>
+        <div class="mlegend"><span id="rlo">closest</span><canvas class="mramp" id="ramp" height="7"></canvas><span id="rhi">furthest</span></div>
+      </div>
+      <div class="diagcol">
+        <div class="panel">
+          <h3>Closest pair</h3>
+          <div class="pairview" id="pairview"></div>
+          <p class="pairnote" id="pairnote"></p>
+        </div>
+        <div class="panel">
+          <h3>Stroke vocabulary</h3>
+          <div id="vocabWrap"><canvas id="vocab"></canvas></div>
+          <p class="pairnote" id="vocabnote"></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="shead">
+      <h2>Specimen</h2>
+      <span class="note">latin in, script out</span>
+    </div>
+    <div class="spec">
+      <div class="speclabel">Set a line</div>
+      <input id="specInput" maxlength="30" spellcheck="false" value="legibility is packing" aria-label="Text to set in the script">
+      <div id="specCanvasWrap"><canvas id="specCanvas"></canvas></div>
+      <div class="chartrow" id="chartrow"></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="shead">
+      <h2>Key</h2>
+      <span class="note">arbitrary mapping &mdash; the shapes carry no sound</span>
+    </div>
+    <div id="key"></div>
+  </section>
+
+  <div class="colophon">
+    <div>
+      <p>
+        A typeface is usually described as a set of shapes. It is more useful to think of it as a <strong>packing problem</strong>:
+        every letter has to claim its own territory in the space of things an eye can resolve, and there are only so many
+        territories. Crowd the alphabet, or blur the reader, and the territories start to overlap &mdash; that overlap is the
+        matrix above, and it is the only thing this program is trying to minimise.
+      </p>
+      <p>
+        Left alone, that objective produces a bag of unrelated marks. So a second term pulls the opposite way, rewarding
+        each glyph for building itself out of strokes its neighbours already use. <strong>Distinctness and family
+        resemblance are genuinely opposed</strong>, and where they settle is the design. Drag the two sliders against each
+        other and you can watch a script slide from an alphabet into a monogram.
+      </p>
+    </div>
+    <div class="side">
+      <dl>
+        <dt>Lattice</dt><dd id="cLat"></dd>
+        <dt>Alphabet</dt><dd id="cAlpha"></dd>
+        <dt>Judge</dt><dd id="cJudge"></dd>
+        <dt>Search</dt><dd id="cSearch"></dd>
+        <dt>Metric</dt><dd id="cMetric"></dd>
+        <dt>State</dt><dd id="cState"></dd>
+      </dl>
+    </div>
+  </div>
+
+</div>
+
+<script>
+(function(){
+"use strict";
+
+/* ===================== random ===================== */
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;var t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+var seed=(Math.random()*1e9)|0, rnd=mulberry32(seed);
+function ri(n){return (rnd()*n)|0;}
+
+/* ===================== lattice ===================== */
+var COLS=3, ROWS=4, NN=COLS*ROWS;
+function nid(x,y){return y*COLS+x;}
+var SEG=[];
+for(var y=0;y<ROWS;y++)for(var x=0;x<COLS-1;x++) SEG.push({k:"l",a:nid(x,y),b:nid(x+1,y),x1:x,y1:y,x2:x+1,y2:y,len:1});
+for(var y=0;y<ROWS-1;y++)for(var x=0;x<COLS;x++) SEG.push({k:"l",a:nid(x,y),b:nid(x,y+1),x1:x,y1:y,x2:x,y2:y+1,len:1});
+for(var y=0;y<ROWS-1;y++)for(var x=0;x<COLS-1;x++){
+  SEG.push({k:"l",a:nid(x,y),b:nid(x+1,y+1),x1:x,y1:y,x2:x+1,y2:y+1,len:Math.SQRT2});
+  SEG.push({k:"l",a:nid(x+1,y),b:nid(x,y+1),x1:x+1,y1:y,x2:x,y2:y+1,len:Math.SQRT2});
+}
+for(var y=0;y<ROWS-1;y++)for(var x=0;x<COLS-1;x++){
+  SEG.push({k:"a",cx:x,  cy:y,  a0:0,  a1:90, a:nid(x+1,y),  b:nid(x,y+1),  len:Math.PI/2});
+  SEG.push({k:"a",cx:x+1,cy:y,  a0:90, a1:180,a:nid(x+1,y+1),b:nid(x,y),    len:Math.PI/2});
+  SEG.push({k:"a",cx:x+1,cy:y+1,a0:180,a1:270,a:nid(x,y+1),  b:nid(x+1,y),  len:Math.PI/2});
+  SEG.push({k:"a",cx:x,  cy:y+1,a0:270,a1:360,a:nid(x,y),    b:nid(x+1,y+1),len:Math.PI/2});
+}
+var NS=SEG.length;
+for(var i=0;i<NS;i++) SEG[i].cost=1+0.45*SEG[i].len;
+var NODESEG=[]; for(var i=0;i<NN;i++) NODESEG.push([]);
+for(var s=0;s<NS;s++){ NODESEG[SEG[s].a].push(s); NODESEG[SEG[s].b].push(s); }
+
+/* ===================== raster ===================== */
+var RW=18, RH=24, U=6, MG=3, P=RW*RH, HW=1.35;
+for(var s=0;s<NS;s++){ var g=SEG[s];
+  if(g.k==="l"){ g.px1=MG+g.x1*U; g.py1=MG+g.y1*U; g.px2=MG+g.x2*U; g.py2=MG+g.y2*U;
+    g.bx0=Math.min(g.px1,g.px2); g.bx1=Math.max(g.px1,g.px2);
+    g.by0=Math.min(g.py1,g.py2); g.by1=Math.max(g.py1,g.py2);
+    g.lx0=Math.min(g.x1,g.x2); g.lx1=Math.max(g.x1,g.x2);
+    g.ly0=Math.min(g.y1,g.y2); g.ly1=Math.max(g.y1,g.y2);
+  } else {
+    g.pcx=MG+g.cx*U; g.pcy=MG+g.cy*U; g.ra0=g.a0*Math.PI/180; g.ra1=g.a1*Math.PI/180;
+    g.e1x=g.pcx+U*Math.cos(g.ra0); g.e1y=g.pcy+U*Math.sin(g.ra0);
+    g.e2x=g.pcx+U*Math.cos(g.ra1); g.e2y=g.pcy+U*Math.sin(g.ra1);
+    g.bx0=Math.min(g.pcx,g.e1x,g.e2x); g.bx1=Math.max(g.pcx,g.e1x,g.e2x);
+    g.by0=Math.min(g.pcy,g.e1y,g.e2y); g.by1=Math.max(g.pcy,g.e1y,g.e2y);
+    g.lx0=(g.bx0-MG)/U; g.lx1=(g.bx1-MG)/U; g.ly0=(g.by0-MG)/U; g.ly1=(g.by1-MG)/U;
+  }
+}
+var TAU2=Math.PI*2;
+function stamp(buf,s){
+  var g=SEG[s];
+  var x0=Math.max(0,Math.floor(g.bx0-HW-1)), x1=Math.min(RW-1,Math.ceil(g.bx1+HW+1));
+  var y0=Math.max(0,Math.floor(g.by0-HW-1)), y1=Math.min(RH-1,Math.ceil(g.by1+HW+1));
+  var py,px,fx,fy,d,c,idx;
+  if(g.k==="l"){
+    var dx=g.px2-g.px1, dy=g.py2-g.py1, L2=dx*dx+dy*dy;
+    for(py=y0;py<=y1;py++){ fy=py+0.5;
+      for(px=x0;px<=x1;px++){ fx=px+0.5;
+        var t=((fx-g.px1)*dx+(fy-g.py1)*dy)/L2; t=t<0?0:(t>1?1:t);
+        var ex=fx-(g.px1+t*dx), ey=fy-(g.py1+t*dy);
+        d=Math.sqrt(ex*ex+ey*ey); c=HW+0.5-d; if(c<=0) continue;
+        if(c>1)c=1; idx=py*RW+px; if(c>buf[idx]) buf[idx]=c;
+      }
+    }
+  } else {
+    for(py=y0;py<=y1;py++){ fy=py+0.5;
+      for(px=x0;px<=x1;px++){ fx=px+0.5;
+        var vx=fx-g.pcx, vy=fy-g.pcy;
+        var ang=Math.atan2(vy,vx); if(ang<0) ang+=TAU2;
+        if(ang>=g.ra0 && ang<=g.ra1){ d=Math.abs(Math.sqrt(vx*vx+vy*vy)-U); }
+        else {
+          var a1x=fx-g.e1x, a1y=fy-g.e1y, a2x=fx-g.e2x, a2y=fy-g.e2y;
+          var d1=Math.sqrt(a1x*a1x+a1y*a1y), d2=Math.sqrt(a2x*a2x+a2y*a2y);
+          d=d1<d2?d1:d2;
+        }
+        c=HW+0.5-d; if(c<=0) continue;
+        if(c>1)c=1; idx=py*RW+px; if(c>buf[idx]) buf[idx]=c;
+      }
+    }
+  }
+}
+function rasterize(mask,out){ out.fill(0); for(var s=0;s<NS;s++) if(mask[s]) stamp(out,s); }
+
+/* blur */
+var KER=null, KR=0, tmpB=new Float32Array(P);
+function buildKernel(sigma){
+  if(sigma<0.05){ KER=null; KR=0; return; }
+  KR=Math.max(1,Math.ceil(sigma*2.6));
+  var k=new Float32Array(KR*2+1), sum=0;
+  for(var i=-KR;i<=KR;i++){ var v=Math.exp(-(i*i)/(2*sigma*sigma)); k[i+KR]=v; sum+=v; }
+  for(var i=0;i<k.length;i++) k[i]/=sum;
+  KER=k;
+}
+function blurInto(src,so,dst,dof){
+  if(!KER){ for(var i=0;i<P;i++) dst[dof+i]=src[so+i]; return; }
+  var R=KR,K=KER,x,y,kk,s,xx,yy,row;
+  for(y=0;y<RH;y++){ row=y*RW;
+    for(x=0;x<RW;x++){ s=0;
+      for(kk=-R;kk<=R;kk++){ xx=x+kk; if(xx<0||xx>=RW) continue; s+=src[so+row+xx]*K[kk+R]; }
+      tmpB[row+x]=s;
+    }
+  }
+  for(x=0;x<RW;x++){
+    for(y=0;y<RH;y++){ s=0;
+      for(kk=-R;kk<=R;kk++){ yy=y+kk; if(yy<0||yy>=RH) continue; s+=tmpB[yy*RW+x]*K[kk+R]; }
+      dst[dof+y*RW+x]=s;
+    }
+  }
+}
+
+/* symmetry maps */
+var MIRX=new Int32Array(P), ROT=new Int32Array(P);
+for(var y=0;y<RH;y++)for(var x=0;x<RW;x++){
+  MIRX[y*RW+x]=y*RW+(RW-1-x);
+  ROT[y*RW+x]=(RH-1-y)*RW+(RW-1-x);
+}
+
+/* ===================== state ===================== */
+var MAXN=34;
+var n=26;
+var MASKS=new Uint8Array(MAXN*NS);
+var RAW=new Float32Array(MAXN*P), RAS=new Float32Array(MAXN*P);
+var TMASK=new Uint8Array(NS), TRAW=new Float32Array(P), TRIAL=new Float32Array(P);
+var D=new Float32Array(MAXN*MAXN), F=new Float32Array(MAXN*MAXN);
+var rowSep=new Float32Array(MAXN), inkLen=new Float32Array(MAXN);
+var trialF=new Float32Array(MAXN), trialD=new Float32Array(MAXN);
+var segCount=new Int32Array(NS);
+var touch=new Float64Array(MAXN), dirty=new Uint8Array(MAXN);
+var locked=new Uint8Array(MAXN), freeList=[];
+function rebuildFree(){ freeList.length=0; for(var i=0;i<n;i++) if(!locked[i]) freeList.push(i); }
+var sepTotal=0, inkTotal=0, cohSum=0;
+var epoch=0, accepted=0, running=true;
+var MINSEG=3, MAXSEG=6;
+var SIM_TAU=0.14, W_SEP=1, W_INK=0.141, W_COH=8.16, mirrorOn=false;
+var COH_MAX=24, INK_MAX=0.47, NREF=26, TSCALE=1;
+var T0=0.55, TMIN=0.0045, FULL=260000, T=T0;
+var lastD=0;
+
+var nodeUsed=new Uint8Array(NN), visited=new Uint8Array(NN), stack=new Int32Array(NN);
+function connected(mask){
+  var used=0,start=-1,i,s;
+  nodeUsed.fill(0);
+  for(s=0;s<NS;s++) if(mask[s]){ nodeUsed[SEG[s].a]=1; nodeUsed[SEG[s].b]=1; start=SEG[s].a; used++; }
+  if(used===0) return false;
+  visited.fill(0); visited[start]=1; stack[0]=start; var sp=1, seen=1;
+  while(sp>0){ var v=stack[--sp], lst=NODESEG[v];
+    for(i=0;i<lst.length;i++){ s=lst[i]; if(!mask[s]) continue;
+      var o=SEG[s].a===v?SEG[s].b:SEG[s].a;
+      if(!visited[o]){ visited[o]=1; stack[sp++]=o; seen++; }
+    }
+  }
+  var tot=0; for(i=0;i<NN;i++) if(nodeUsed[i]) tot++;
+  return seen===tot;
+}
+function randomGlyph(mask,k){
+  mask.fill(0);
+  var s0=ri(NS); mask[s0]=1;
+  var nodes=[SEG[s0].a,SEG[s0].b];
+  for(var c=1;c<k;c++){
+    var tries=0, placed=false;
+    while(tries++<70){
+      var nd=nodes[ri(nodes.length)], lst=NODESEG[nd], cand=lst[ri(lst.length)];
+      if(mask[cand]) continue;
+      mask[cand]=1;
+      if(nodes.indexOf(SEG[cand].a)<0) nodes.push(SEG[cand].a);
+      if(nodes.indexOf(SEG[cand].b)<0) nodes.push(SEG[cand].b);
+      placed=true; break;
+    }
+    if(!placed) break;
+  }
+}
+
+function dist(A,oa,B,ob){var s=0,i,d;for(i=0;i<P;i++){d=A[oa+i]-B[ob+i];s+=d*d;}return Math.sqrt(s/P);}
+function distMap(A,oa,B,ob,m){var s=0,i,d;for(i=0;i<P;i++){d=A[oa+i]-B[ob+m[i]];s+=d*d;}return Math.sqrt(s/P);}
+function pairF(A,oa,B,ob){
+  var d=dist(A,oa,B,ob); lastD=d;
+  var f=Math.exp(-d/SIM_TAU);
+  if(mirrorOn){
+    f+=0.55*Math.exp(-distMap(A,oa,B,ob,MIRX)/SIM_TAU);
+    f+=0.55*Math.exp(-distMap(A,oa,B,ob,ROT)/SIM_TAU);
+  }
+  return f;
+}
+
+function refreshGlyph(i){
+  rasterize(MASKS.subarray(i*NS,(i+1)*NS), TRAW);
+  RAW.set(TRAW,i*P);
+  blurInto(RAW,i*P,RAS,i*P);
+  var L=0; for(var s=0;s<NS;s++) if(MASKS[i*NS+s]) L+=SEG[s].cost;
+  inkLen[i]=L;
+}
+function reblurAll(){ for(var i=0;i<n;i++) blurInto(RAW,i*P,RAS,i*P); }
+function recomputeAll(){
+  var i,j;
+  segCount.fill(0); inkTotal=0;
+  for(i=0;i<n;i++){ for(var s=0;s<NS;s++) if(MASKS[i*NS+s]) segCount[s]++; inkTotal+=inkLen[i]; }
+  cohSum=0; for(var s2=0;s2<NS;s2++) cohSum+=segCount[s2]*segCount[s2];
+  sepTotal=0;
+  for(i=0;i<n;i++) for(j=i+1;j<n;j++){
+    var f=pairF(RAS,i*P,RAS,j*P);
+    F[i*MAXN+j]=F[j*MAXN+i]=f; D[i*MAXN+j]=D[j*MAXN+i]=lastD;
+  }
+  for(i=0;i<n;i++){ var rr=0; for(j=0;j<n;j++) if(j!==i) rr+=F[i*MAXN+j]; rowSep[i]=rr; sepTotal+=rr; }
+  sepTotal*=0.5;
+  for(i=0;i<n;i++) dirty[i]=1;
+}
+function energy(){ return W_SEP*sepTotal + W_INK*inkTotal - W_COH*cohSum/(n*n); }
+
+function initAlphabet(){
+  for(var i=0;i<n;i++){
+    for(var tries=0;tries<200;tries++){
+      randomGlyph(TMASK, 3+ri(3));
+      if(!connected(TMASK)) continue;
+      var qx0=9,qx1=-9,qy0=9,qy1=-9,ok=0;
+      for(var s=0;s<NS;s++) if(TMASK[s]){ var gg=SEG[s]; ok=1;
+        if(gg.lx0<qx0)qx0=gg.lx0; if(gg.lx1>qx1)qx1=gg.lx1;
+        if(gg.ly0<qy0)qy0=gg.ly0; if(gg.ly1>qy1)qy1=gg.ly1; }
+      if(ok&&qy1-qy0>=2&&qx1-qx0>=1) break;
+    }
+    MASKS.set(TMASK,i*NS); refreshGlyph(i);
+  }
+  recomputeAll(); epoch=0; accepted=0;
+}
+
+/* ===================== annealer ===================== */
+function step(now){
+  if(!freeList.length) return;
+  epoch++;
+  T=TSCALE*T0*Math.pow(TMIN/T0, Math.min(1,epoch/FULL));
+  var i=freeList[ri(freeList.length)], base=i*NS, s, j;
+  for(s=0;s<NS;s++) TMASK[s]=MASKS[base+s];
+  var r=rnd();
+  if(r<0.40){ TMASK[ri(NS)]^=1; }
+  else if(r<0.90){
+    var used=[],unusedAdj=[];
+    for(s=0;s<NS;s++) if(TMASK[s]) used.push(s);
+    if(!used.length) return;
+    TMASK[used[ri(used.length)]]=0;
+    nodeUsed.fill(0);
+    for(s=0;s<NS;s++) if(TMASK[s]){ nodeUsed[SEG[s].a]=1; nodeUsed[SEG[s].b]=1; }
+    for(s=0;s<NS;s++) if(!TMASK[s] && (nodeUsed[SEG[s].a]||nodeUsed[SEG[s].b])) unusedAdj.push(s);
+    if(unusedAdj.length) TMASK[unusedAdj[ri(unusedAdj.length)]]=1;
+  } else { randomGlyph(TMASK, MINSEG+ri(MAXSEG-MINSEG+1)); }
+
+  var cnt=0, lx0=9, lx1=-9, ly0=9, ly1=-9;
+  var len=0;
+  for(s=0;s<NS;s++) if(TMASK[s]){ var gg=SEG[s]; cnt++; len+=gg.cost;
+    if(gg.lx0<lx0)lx0=gg.lx0; if(gg.lx1>lx1)lx1=gg.lx1;
+    if(gg.ly0<ly0)ly0=gg.ly0; if(gg.ly1>ly1)ly1=gg.ly1;
+  }
+  if(cnt<MINSEG||cnt>MAXSEG) return;
+  if(ly1-ly0<2||lx1-lx0<1) return;
+  if(!connected(TMASK)) return;
+
+  rasterize(TMASK,TRAW); blurInto(TRAW,0,TRIAL,0);
+  var newRow=0;
+  for(j=0;j<n;j++){ if(j===i) continue;
+    var f=pairF(TRIAL,0,RAS,j*P); trialF[j]=f; trialD[j]=lastD; newRow+=f;
+  }
+  var dSep=newRow-rowSep[i], dInk=len-inkLen[i], dCoh=0;
+  for(s=0;s<NS;s++){ var o=MASKS[base+s], t=TMASK[s];
+    if(o===t) continue;
+    if(t) dCoh+=2*segCount[s]+1; else dCoh+=1-2*segCount[s];
+  }
+  var dE=W_SEP*dSep + W_INK*dInk - W_COH*dCoh/(n*n);
+  if(dE>0 && rnd()>=Math.exp(-dE/T)) return;
+
+  for(s=0;s<NS;s++){ var o2=MASKS[base+s], t2=TMASK[s];
+    if(o2===t2) continue;
+    if(t2) segCount[s]++; else segCount[s]--;
+    MASKS[base+s]=t2;
+  }
+  RAW.set(TRAW,i*P); RAS.set(TRIAL,i*P);
+  for(j=0;j<n;j++){ if(j===i) continue;
+    rowSep[j]+=trialF[j]-F[i*MAXN+j];
+    F[i*MAXN+j]=F[j*MAXN+i]=trialF[j];
+    D[i*MAXN+j]=D[j*MAXN+i]=trialD[j];
+  }
+  rowSep[i]=newRow;
+  sepTotal+=dSep; inkTotal+=dInk; cohSum+=dCoh; inkLen[i]=len;
+  accepted++; dirty[i]=1; touch[i]=now;
+}
+
+/* ===================== colors ===================== */
+var COL={};
+function hexToRgb(h){
+  h=h.trim().replace("#","");
+  if(h.length>6) h=h.slice(0,6);
+  if(h.length===3) h=h[0]+h[0]+h[1]+h[1]+h[2]+h[2];
+  var v=parseInt(h,16);
+  return [(v>>16)&255,(v>>8)&255,v&255];
+}
+function hslToRgb(h,s,l){
+  h=((h%360)+360)%360; s/=100; l/=100;
+  var c=(1-Math.abs(2*l-1))*s, x=c*(1-Math.abs((h/60)%2-1)), m=l-c/2, r=0,g=0,b=0;
+  if(h<60){r=c;g=x;} else if(h<120){r=x;g=c;} else if(h<180){g=c;b=x;}
+  else if(h<240){g=x;b=c;} else if(h<300){r=x;b=c;} else {r=c;b=x;}
+  return [Math.round((r+m)*255),Math.round((g+m)*255),Math.round((b+m)*255)];
+}
+var accH=18, accS=76, accL=41;
+function rgbStr(a,alpha){ return "rgba("+a[0]+","+a[1]+","+a[2]+","+(alpha===undefined?1:alpha)+")"; }
+function readColors(){
+  var cs=getComputedStyle(document.documentElement);
+  COL.ink=hexToRgb(cs.getPropertyValue("--ink"));
+  COL.ink3=hexToRgb(cs.getPropertyValue("--ink-3"));
+  COL.rule=hexToRgb(cs.getPropertyValue("--rule"));
+  COL.panel=hexToRgb(cs.getPropertyValue("--panel"));
+  var lv=parseFloat(cs.getPropertyValue("--accent-l"))||41;
+  accL=lv;
+  COL.accent=hslToRgb(accH,accS,accL);
+}
+function setTemperatureColor(){
+  var p=Math.log(Math.max(T,TMIN)/TMIN)/Math.log(T0/TMIN);
+  p=p<0?0:(p>1?1:p);
+  accH=Math.round(196-178*p); accS=Math.round(38+38*p);
+  var root=document.documentElement.style;
+  root.setProperty("--accent-h",String(accH));
+  root.setProperty("--accent-s",accS+"%");
+  COL.accent=hslToRgb(accH,accS,accL);
+}
+
+/* ===================== drawing ===================== */
+var RM=matchMedia("(prefers-reduced-motion: reduce)").matches;
+function fit(cv,w,h){
+  var dpr=Math.min(window.devicePixelRatio||1,2);
+  if(cv.width!==Math.round(w*dpr)||cv.height!==Math.round(h*dpr)){
+    cv.width=Math.round(w*dpr); cv.height=Math.round(h*dpr);
+  }
+  var ctx=cv.getContext("2d");
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  ctx.clearRect(0,0,w,h);
+  return ctx;
+}
+function drawGlyph(ctx,idx,cx,cy,unit,color,dots){
+  var ox=cx-unit*(COLS-1)/2, oy=cy-unit*(ROWS-1)/2;
+  if(dots){
+    ctx.fillStyle=rgbStr(COL.ink3,0.22);
+    for(var yy=0;yy<ROWS;yy++)for(var xx=0;xx<COLS;xx++){
+      ctx.beginPath(); ctx.arc(ox+xx*unit,oy+yy*unit,Math.max(0.8,unit*0.045),0,TAU2); ctx.fill();
+    }
+  }
+  ctx.strokeStyle=color; ctx.lineWidth=Math.max(1.1,unit*0.185);
+  ctx.lineCap="round"; ctx.lineJoin="round";
+  ctx.beginPath();
+  for(var s=0;s<NS;s++){ if(!MASKS[idx*NS+s]) continue; var g=SEG[s];
+    if(g.k==="l"){ ctx.moveTo(ox+g.x1*unit,oy+g.y1*unit); ctx.lineTo(ox+g.x2*unit,oy+g.y2*unit); }
+    else { ctx.moveTo(ox+g.cx*unit+unit*Math.cos(g.ra0), oy+g.cy*unit+unit*Math.sin(g.ra0));
+           ctx.arc(ox+g.cx*unit,oy+g.cy*unit,unit,g.ra0,g.ra1,false); }
+  }
+  ctx.stroke();
+}
+
+/* grid */
+var gridEl=document.getElementById("grid"), cells=[];
+function fitCols(container,count,minW){
+  var w=container.clientWidth||900;
+  var hi=Math.max(2,Math.min(count,Math.floor(w/minW)));
+  var lo=Math.max(2,Math.ceil(hi*0.62)), best=hi, bw=1e9;
+  for(var c=hi;c>=lo;c--){ var waste=Math.ceil(count/c)*c-count;
+    if(waste<bw){bw=waste;best=c;} if(waste===0) break; }
+  container.style.gridTemplateColumns="repeat("+best+",minmax(0,1fr))";
+}
+function toggleLock(i){
+  locked[i]=locked[i]?0:1; rebuildFree();
+  cells[i].el.classList.toggle("locked",!!locked[i]);
+  cells[i].el.setAttribute("aria-pressed",locked[i]?"true":"false");
+  el("bRun").disabled=false; saveSoon();
+}
+function buildGrid(){
+  gridEl.innerHTML=""; cells=[];
+  for(var i=0;i<n;i++){
+    var d=document.createElement("button"); d.className="cell"; d.type="button";
+    var name=i<26?String.fromCharCode(65+i):String(i+1);
+    d.setAttribute("aria-label","Pin glyph "+name);
+    d.setAttribute("aria-pressed","false");
+    var cv=document.createElement("canvas");
+    var lb=document.createElement("div"); lb.className="lab";
+    lb.textContent=name;
+    d.appendChild(cv); d.appendChild(lb); gridEl.appendChild(d);
+    cells.push({el:d,cv:cv,lab:lb});
+    d.addEventListener("click",(function(k){return function(){toggleLock(k);};})(i));
+    dirty[i]=1;
+  }
+  fitCols(gridEl,n,74);
+  rebuildFree();
+}
+function drawCell(i,now){
+  var c=cells[i]; if(!c) return;
+  var ctx=fit(c.cv,60,80);
+  var col=rgbStr(COL.ink);
+  if(!RM){ var age=now-touch[i];
+    if(age<340){ var k=0.6*(1-age/340); var a=COL.accent, b=COL.ink;
+      col="rgb("+Math.round(a[0]*k+b[0]*(1-k))+","+Math.round(a[1]*k+b[1]*(1-k))+","+Math.round(a[2]*k+b[2]*(1-k))+")";
+    }
+  }
+  drawGlyph(ctx,i,30,40,20,col,true);
+}
+
+/* matrix */
+var mcv=document.getElementById("matrix"), rampcv=document.getElementById("ramp");
+var DMAX=0.38;
+function drawMatrix(){
+  var avail=(document.getElementById("matrixWrap").clientWidth||330)-2;
+  var cs=Math.max(6,Math.min(18,Math.floor(avail/n))), w=cs*n, h=cs*n;
+  var ctx=fit(mcv,w,h); mcv.style.width=w+"px"; mcv.style.height=h+"px";
+  var a=COL.accent,b=COL.panel;
+  var lo=Infinity,hi=-Infinity;
+  for(var i=0;i<n;i++)for(var j=i+1;j<n;j++){ var dv=D[i*MAXN+j]; if(dv<lo)lo=dv; if(dv>hi)hi=dv; }
+  if(!isFinite(lo)||hi-lo<1e-6){ lo=0; hi=DMAX; }
+  var span=hi-lo;
+  for(var i=0;i<n;i++)for(var j=0;j<n;j++){
+    if(i===j){ ctx.fillStyle=rgbStr(COL.ink3,0.32); }
+    else{
+      var t=(D[i*MAXN+j]-lo)/span; t=t<0?0:(t>1?1:t); t=Math.pow(t,0.82);
+      ctx.fillStyle="rgb("+Math.round(a[0]*(1-t)+b[0]*t)+","+Math.round(a[1]*(1-t)+b[1]*t)+","+Math.round(a[2]*(1-t)+b[2]*t)+")";
+    }
+    ctx.fillRect(j*cs,i*cs,cs-0.6,cs-0.6);
+  }
+  document.getElementById("rlo").textContent=lo.toFixed(2);
+  document.getElementById("rhi").textContent=hi.toFixed(2);
+  var rw=rampcv.clientWidth||120, rctx=fit(rampcv,rw,7);
+  rampcv.style.height="7px";
+  for(var x=0;x<rw;x++){ var t2=Math.pow(x/(rw-1),0.82);
+    rctx.fillStyle="rgb("+Math.round(a[0]*(1-t2)+b[0]*t2)+","+Math.round(a[1]*(1-t2)+b[1]*t2)+","+Math.round(a[2]*(1-t2)+b[2]*t2)+")";
+    rctx.fillRect(x,0,1,7);
+  }
+}
+function worstPair(){
+  var best=1e9,bi=0,bj=1;
+  for(var i=0;i<n;i++)for(var j=i+1;j<n;j++){ var d=D[i*MAXN+j]; if(d<best){best=d;bi=i;bj=j;} }
+  return [bi,bj,best];
+}
+
+/* blurred preview */
+var smallCv=document.createElement("canvas"); smallCv.width=RW; smallCv.height=RH;
+var smallCtx=smallCv.getContext("2d");
+function blurredPreview(idx,target,w,h){
+  var img=smallCtx.createImageData(RW,RH), dd=img.data, c=COL.ink;
+  for(var i=0;i<P;i++){ var v=RAS[idx*P+i]; v=v<0?0:(v>1?1:v);
+    dd[i*4]=c[0]; dd[i*4+1]=c[1]; dd[i*4+2]=c[2]; dd[i*4+3]=Math.round(v*255);
+  }
+  smallCtx.putImageData(img,0,0);
+  var ctx=fit(target,w,h);
+  ctx.imageSmoothingEnabled=true; ctx.imageSmoothingQuality="high";
+  ctx.drawImage(smallCv,0,0,w,h);
+}
+var pairview=document.getElementById("pairview"), pairnote=document.getElementById("pairnote"), pairCvs=null;
+function buildPair(){
+  pairview.innerHTML="";
+  pairCvs=[];
+  var caps=["sharp","sharp","as read","as read"];
+  for(var k=0;k<4;k++){
+    var col=document.createElement("div"); col.className="col";
+    var cv=document.createElement("canvas"); cv.style.width="66px"; cv.style.height="88px";
+    var cap=document.createElement("div"); cap.className="cap"; cap.textContent=caps[k];
+    col.appendChild(cv); col.appendChild(cap); pairview.appendChild(col);
+    pairCvs.push({cv:cv,cap:cap});
+  }
+}
+function drawPair(){
+  if(!pairCvs) buildPair();
+  var wp=worstPair(), i=wp[0], j=wp[1];
+  var li=i<26?String.fromCharCode(65+i):String(i+1), lj=j<26?String.fromCharCode(65+j):String(j+1);
+  var ctx0=fit(pairCvs[0].cv,66,88); drawGlyph(ctx0,i,33,44,21,rgbStr(COL.ink),false);
+  var ctx1=fit(pairCvs[1].cv,66,88); drawGlyph(ctx1,j,33,44,21,rgbStr(COL.ink),false);
+  blurredPreview(i,pairCvs[2].cv,66,88);
+  blurredPreview(j,pairCvs[3].cv,66,88);
+  pairCvs[0].cap.textContent=li+" sharp"; pairCvs[1].cap.textContent=lj+" sharp";
+  pairCvs[2].cap.textContent=li+" as read"; pairCvs[3].cap.textContent=lj+" as read";
+  var sum=0,cnt=0;
+  for(var a=0;a<n;a++)for(var b=a+1;b<n;b++){ sum+=D[a*MAXN+b]; cnt++; }
+  var avg=cnt?sum/cnt:0;
+  var ratio=avg>0?Math.round(wp[2]/avg*100):0;
+  pairnote.innerHTML="<b>"+li+" and "+lj+"</b> sit closest together: "+wp[2].toFixed(3)+
+    " apart once blurred, against an alphabet average of "+avg.toFixed(3)+" \u2014 "+ratio+
+    "% of the typical gap. Every other pair has more room, so this one pair is the weakest link in the design, and it is where most of the annealing effort goes.";
+  for(var k=0;k<n;k++) if(cells[k]) cells[k].el.classList.toggle("worst", k===i||k===j);
+}
+
+/* the page, set in its own alphabet */
+var sigCv=document.getElementById("sigCanvas");
+function textToGlyphs(txt){
+  var out=[];
+  txt=(txt||"").toLowerCase();
+  for(var i=0;i<txt.length;i++){
+    var c=txt.charCodeAt(i);
+    if(c>=97&&c<=122) out.push((c-97)%n); else if(txt[i]===" ") out.push(-1);
+  }
+  return out.length?out:[-1];
+}
+function drawSignature(){
+  var chars=textToGlyphs("annealed alphabet");
+  var host=sigCv.parentNode, avail=Math.max(180,(host.clientWidth||320));
+  var adv=0; for(var i=0;i<chars.length;i++) adv+=chars[i]<0?1.5:2.7;
+  var unit=Math.max(7,Math.min(19,(avail-6)/adv));
+  var W=Math.ceil(adv*unit+unit*1.6), H=Math.ceil(unit*(ROWS-1)+unit*1.3);
+  sigCv.style.width=W+"px"; sigCv.style.height=H+"px";
+  var ctx=fit(sigCv,W,H), pen=unit*0.8;
+  for(var i=0;i<chars.length;i++){
+    if(chars[i]<0){ pen+=1.5*unit; continue; }
+    drawGlyph(ctx,chars[i],pen+unit,H/2,unit,rgbStr(COL.ink),false);
+    pen+=2.7*unit;
+  }
+}
+
+/* stroke vocabulary */
+var vocabCv=document.getElementById("vocab"), vocabNote=document.getElementById("vocabnote"), vocabOrder=new Array(NS);
+function drawSeg(ctx,s,cx,cy,unit,color,lw){
+  var g=SEG[s], ox=cx-unit*(COLS-1)/2, oy=cy-unit*(ROWS-1)/2;
+  ctx.strokeStyle=color; ctx.lineWidth=lw; ctx.lineCap="round";
+  ctx.beginPath();
+  if(g.k==="l"){ ctx.moveTo(ox+g.x1*unit,oy+g.y1*unit); ctx.lineTo(ox+g.x2*unit,oy+g.y2*unit); }
+  else{ ctx.moveTo(ox+g.cx*unit+unit*Math.cos(g.ra0),oy+g.cy*unit+unit*Math.sin(g.ra0));
+        ctx.arc(ox+g.cx*unit,oy+g.cy*unit,unit,g.ra0,g.ra1,false); }
+  ctx.stroke();
+}
+function drawVocab(){
+  var avail=(document.getElementById("vocabWrap").clientWidth||300)-2;
+  var cols=Math.max(6,Math.min(12,Math.floor(avail/31)));
+  var cw=Math.floor(avail/cols), rows=Math.ceil(NS/cols);
+  var u=Math.max(5,Math.floor((cw-5)/2)), ch=Math.round(u*(ROWS-1)+9);
+  var W=cw*cols, H=ch*rows;
+  vocabCv.style.width=W+"px"; vocabCv.style.height=H+"px";
+  var ctx=fit(vocabCv,W,H);
+  var mx=1; for(var s=0;s<NS;s++) if(segCount[s]>mx) mx=segCount[s];
+  var a=COL.accent,b=COL.rule,used=0;
+  var order=vocabOrder; for(var s=0;s<NS;s++) order[s]=s;
+  order.sort(function(p,q){ return segCount[q]-segCount[p] || p-q; });
+  for(var k=0;k<NS;k++){
+    var s=order[k], c=segCount[s]; if(c) used++;
+    var t=c/mx;
+    var col=c?("rgb("+Math.round(a[0]*t+b[0]*(1-t))+","+Math.round(a[1]*t+b[1]*(1-t))+","+Math.round(a[2]*t+b[2]*(1-t))+")"):rgbStr(COL.ink3,0.34);
+    var cx=(k%cols)*cw+cw/2, cy=Math.floor(k/cols)*ch+ch/2;
+    drawSeg(ctx,s,cx,cy,u,col,c?1.1+2.2*t:0.9);
+  }
+  vocabNote.innerHTML="<b>"+used+" of "+NS+" strokes</b> are in play. The busiest appears in "+mx+
+    " of the "+n+" glyphs. Ranked left to right by how much of the alphabet leans on each mark; the pale ones at the end are strokes this hand never makes. Raise family resemblance and the ranking steepens.";
+}
+
+/* specimen */
+var specInput=document.getElementById("specInput"), specCv=document.getElementById("specCanvas");
+var offA=document.createElement("canvas"), offB=document.createElement("canvas");
+var LEVELS=[1,2,3.6,6.4];
+function drawSpecimen(){
+  var chars=textToGlyphs(specInput.value);
+  var wrap=document.getElementById("specCanvasWrap");
+  var availW=Math.max(240,wrap.clientWidth||600);
+  var adv=0; for(var i=0;i<chars.length;i++) adv+=chars[i]<0?1.5:3.0;
+  var labelW=44;
+  var unit=Math.min(24,Math.max(11,(availW-labelW-8)/Math.max(adv,1)));
+  var gw=Math.ceil(adv*unit)+unit*2, gh=Math.ceil(unit*(ROWS-1))+unit*1.4;
+  var rowGap=Math.max(14,unit*0.7);
+  var totalH=Math.round(LEVELS.length*(gh+rowGap));
+  var W=Math.round(labelW+gw), H=totalH;
+  specCv.style.width=W+"px"; specCv.style.height=H+"px";
+  var ctx=fit(specCv,W,H);
+
+  offA.width=Math.max(1,Math.round(gw)); offA.height=Math.max(1,Math.round(gh));
+  var a=offA.getContext("2d"); a.clearRect(0,0,offA.width,offA.height);
+  var pen=unit*0.9, cy=gh/2;
+  for(var i=0;i<chars.length;i++){
+    if(chars[i]<0){ pen+=1.5*unit; continue; }
+    drawGlyph(a,chars[i],pen+unit,cy,unit,rgbStr(COL.ink),false);
+    pen+=3.0*unit;
+  }
+  var labels=["1\u00d7","2\u00d7","3.6\u00d7","6.4\u00d7"];
+  for(var L=0;L<LEVELS.length;L++){
+    var yTop=L*(gh+rowGap)+rowGap*0.4;
+    ctx.fillStyle=rgbStr(COL.ink3);
+    ctx.font='10px "IBM Plex Mono", ui-monospace, monospace';
+    ctx.textBaseline="middle";
+    ctx.fillText(labels[L], 0, yTop+gh/2);
+    var k=LEVELS[L];
+    if(k===1){ ctx.drawImage(offA,labelW,yTop,offA.width,offA.height); }
+    else{
+      offB.width=Math.max(1,Math.round(offA.width/k)); offB.height=Math.max(1,Math.round(offA.height/k));
+      var b=offB.getContext("2d"); b.clearRect(0,0,offB.width,offB.height);
+      b.imageSmoothingEnabled=true; b.imageSmoothingQuality="high";
+      b.drawImage(offA,0,0,offB.width,offB.height);
+      ctx.imageSmoothingEnabled=true; ctx.imageSmoothingQuality="high";
+      ctx.drawImage(offB,labelW,yTop,offA.width,offA.height);
+    }
+    if(L<LEVELS.length-1){
+      ctx.strokeStyle=rgbStr(COL.rule,0.8); ctx.lineWidth=1;
+      ctx.beginPath(); ctx.moveTo(0,Math.round(yTop+gh+rowGap*0.42)+0.5); ctx.lineTo(W,Math.round(yTop+gh+rowGap*0.42)+0.5); ctx.stroke();
+    }
+  }
+}
+
+/* key */
+var keyEl=document.getElementById("key"), keyCvs=[];
+function buildKey(){
+  keyEl.innerHTML=""; keyCvs=[];
+  fitCols(keyEl,n,58);
+  for(var i=0;i<n;i++){
+    var d=document.createElement("div"); d.className="kcell";
+    var l=document.createElement("span"); l.className="lat";
+    l.textContent=i<26?String.fromCharCode(97+i):String(i+1);
+    var cv=document.createElement("canvas");
+    d.appendChild(l); d.appendChild(cv); keyEl.appendChild(d); keyCvs.push(cv);
+  }
+}
+function drawKey(){
+  for(var i=0;i<n;i++){ var ctx=fit(keyCvs[i],24,32); drawGlyph(ctx,i,12,16,8,rgbStr(COL.ink),false); }
+}
+
+/* sparkline */
+var sparkCv=document.getElementById("spark"), hist=[], HMAX=240;
+function drawSpark(){
+  var w=sparkCv.clientWidth||160, h=34;
+  var ctx=fit(sparkCv,w,h);
+  if(hist.length<2) return;
+  var lo=Infinity,hi=-Infinity;
+  for(var i=0;i<hist.length;i++){ if(hist[i]<lo)lo=hist[i]; if(hist[i]>hi)hi=hist[i]; }
+  if(hi-lo<1e-6) hi=lo+1;
+  ctx.strokeStyle=rgbStr(COL.rule); ctx.lineWidth=1;
+  ctx.beginPath(); ctx.moveTo(0,h-0.5); ctx.lineTo(w,h-0.5); ctx.stroke();
+  ctx.strokeStyle=rgbStr(COL.accent); ctx.lineWidth=1.25;
+  ctx.beginPath();
+  for(var i=0;i<hist.length;i++){
+    var x=i/(HMAX-1)*w, yv=h-2-(hist[i]-lo)/(hi-lo)*(h-5);
+    if(i===0) ctx.moveTo(x,yv); else ctx.lineTo(x,yv);
+  }
+  ctx.stroke();
+}
+
+/* ===================== ui ===================== */
+var el=function(id){return document.getElementById(id);};
+var sBlur=el("sBlur"), sCoh=el("sCoh"), sInk=el("sInk"), sN=el("sN"), cMirror=el("cMirror");
+var ONES=["zero","one","two","three","four","five","six","seven","eight","nine","ten","eleven","twelve",
+"thirteen","fourteen","fifteen","sixteen","seventeen","eighteen","nineteen"], TENS=["","","twenty","thirty"];
+function numWord(v){
+  var w=v<20?ONES[v]:(v%10?TENS[Math.floor(v/10)]+"-"+ONES[v%10]:TENS[Math.floor(v/10)]);
+  return w.charAt(0).toUpperCase()+w.slice(1);
+}
+function applyParams(){
+  el("deckN").textContent=numWord(n);
+  var sigma=(+sBlur.value)/30*2.2;
+  buildKernel(sigma);
+  var k=n/NREF;
+  W_COH=(+sCoh.value)/100*COH_MAX*k*k;
+  W_INK=(+sInk.value)/100*INK_MAX*k;
+  TSCALE=k;
+  mirrorOn=cMirror.checked;
+  el("vBlur").textContent=sigma.toFixed(2)+" \u03c3";
+  el("vCoh").textContent=(+sCoh.value)+"%";
+  el("vInk").textContent=(+sInk.value)+"%";
+  el("vN").textContent=String(n);
+  el("cJudge").textContent="gaussian \u03c3 "+sigma.toFixed(2)+" on "+RW+"\u00d7"+RH;
+}
+function fullRebuildEnergy(){ reblurAll(); recomputeAll(); }
+
+function paramChanged(soft){
+  applyParams();
+  fullRebuildEnergy();
+  epoch=Math.min(epoch, Math.round(FULL*(soft?0.55:0.35)));
+  hist.length=0;
+  drawMatrix(); drawPair(); drawVocab(); drawSpecimen();
+  saveSoon();
+}
+[sBlur,sCoh,sInk].forEach(function(s){ s.addEventListener("input",function(){paramChanged(true);}); });
+sN.addEventListener("input",function(){
+  n=+sN.value; el("vN").textContent=String(n);
+  buildGrid(); buildKey(); initAlphabet(); applyParams(); fullRebuildEnergy();
+  hist.length=0; drawMatrix(); drawPair(); drawVocab(); drawSpecimen(); drawKey(); saveSoon();
+});
+cMirror.addEventListener("change",function(){paramChanged(false);});
+el("bReheat").addEventListener("click",function(){ epoch=0; hist.length=0; bestE=Infinity; bestEpoch=0; });
+el("bRun").addEventListener("click",function(){
+  running=!running; this.textContent=running?"Freeze":"Run";
+  el("forgeNote").textContent=running?(T<=TMIN*1.02?"holding":"cooling"):"frozen";
+});
+el("bSeed").addEventListener("click",function(){
+  seed=(Math.random()*1e9)|0; rnd=mulberry32(seed);
+  el("specno").textContent="Specimen \u2116"+String(((seed%10000)+10000)%10000).padStart(4,"0");
+  initAlphabet(); fullRebuildEnergy(); hist.length=0; bestE=Infinity; bestEpoch=0;
+  drawMatrix(); drawPair(); drawVocab(); drawSpecimen(); drawKey(); saveSoon();
+});
+specInput.addEventListener("input",drawSpecimen);
+el("bSvg").addEventListener("click",function(){
+  var out=buildSVG(), ta=el("svgOut"), btn=this;
+  function fallback(){ ta.value=out; ta.classList.add("on"); ta.select(); btn.textContent="Select + copy"; }
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(out).then(function(){
+      btn.textContent="Copied"; setTimeout(function(){btn.textContent="Copy SVG";},1600);
+    },fallback);
+  } else fallback();
+});
+function buildSVG(){
+  var u=20, adv=3.0*u, W=Math.round(adv*n+u*2), H=Math.round(u*(ROWS-1)+u*2), p=[];
+  p.push('<svg xmlns="http://www.w3.org/2000/svg" width="'+W+'" height="'+H+'" viewBox="0 0 '+W+' '+H+'" fill="none" stroke="currentColor" stroke-width="'+(u*0.185).toFixed(2)+'" stroke-linecap="round" stroke-linejoin="round">');
+  p.push("<!-- Annealed Alphabet - specimen "+(seed%10000)+", "+n+" glyphs -->");
+  for(var i=0;i<n;i++){
+    var ox=u+i*adv, oy=u, d=[];
+    for(var s=0;s<NS;s++){ if(!MASKS[i*NS+s]) continue; var g=SEG[s];
+      if(g.k==="l"){ d.push("M"+(ox+g.x1*u).toFixed(1)+" "+(oy+g.y1*u).toFixed(1)+"L"+(ox+g.x2*u).toFixed(1)+" "+(oy+g.y2*u).toFixed(1)); }
+      else{
+        var x1=ox+g.cx*u+u*Math.cos(g.ra0), y1=oy+g.cy*u+u*Math.sin(g.ra0);
+        var x2=ox+g.cx*u+u*Math.cos(g.ra1), y2=oy+g.cy*u+u*Math.sin(g.ra1);
+        d.push("M"+x1.toFixed(1)+" "+y1.toFixed(1)+"A"+u+" "+u+" 0 0 1 "+x2.toFixed(1)+" "+y2.toFixed(1));
+      }
+    }
+    p.push('<path d="'+d.join("")+'"/>');
+  }
+  p.push("</svg>");
+  return p.join("\n");
+}
+
+/* persistence */
+var saveTimer=null;
+function saveSoon(){ if(saveTimer) clearTimeout(saveTimer); saveTimer=setTimeout(save,1200); }
+function save(){
+  try{
+    var gl=[];
+    for(var i=0;i<n;i++){ var a=[]; for(var s=0;s<NS;s++) if(MASKS[i*NS+s]) a.push(s); gl.push(a); }
+    localStorage.setItem("annealed-alphabet-v1", JSON.stringify({
+      seed:seed,n:n,blur:+sBlur.value,coh:+sCoh.value,ink:+sInk.value,
+      mirror:cMirror.checked,epoch:Math.round(epoch),text:specInput.value,g:gl,
+      lock:Array.prototype.slice.call(locked.subarray(0,n))
+    }));
+  }catch(e){}
+}
+function load(){
+  try{
+    var raw=localStorage.getItem("annealed-alphabet-v1"); if(!raw) return false;
+    var o=JSON.parse(raw);
+    if(!o||!Array.isArray(o.g)||!o.g.length) return false;
+    n=Math.max(8,Math.min(MAXN,o.n|0)); if(o.g.length!==n) return false;
+    sN.value=String(n); sBlur.value=String(o.blur); sCoh.value=String(o.coh); sInk.value=String(o.ink);
+    cMirror.checked=!!o.mirror;
+    seed=o.seed|0; rnd=mulberry32(seed);
+    if(typeof o.text==="string") specInput.value=o.text;
+    MASKS.fill(0);
+    for(var i=0;i<n;i++){ var a=o.g[i]; if(!Array.isArray(a)||!a.length) return false;
+      for(var k=0;k<a.length;k++){ var s=a[k]|0; if(s>=0&&s<NS) MASKS[i*NS+s]=1; }
+    }
+    for(var i=0;i<n;i++) refreshGlyph(i);
+    locked.fill(0);
+    if(Array.isArray(o.lock)) for(var i=0;i<n&&i<o.lock.length;i++) locked[i]=o.lock[i]?1:0;
+    epoch=Math.min(FULL,Math.max(0,o.epoch|0));
+    return true;
+  }catch(e){ return false; }
+}
+window.addEventListener("beforeunload",save);
+
+/* ===================== boot ===================== */
+readColors();
+buildKernel(1.03);
+var restored=load();
+buildGrid(); buildKey(); applyParams();
+if(!restored){ initAlphabet(); } else { recomputeAll(); }
+el("specno").textContent="Specimen \u2116"+String(((seed%10000)+10000)%10000).padStart(4,"0");
+el("cLat").textContent=COLS+"\u00d7"+ROWS+" nodes, "+NS+" strokes";
+el("cSearch").textContent="metropolis, geometric cooling";
+el("cMetric").textContent="rms over "+P+" blurred samples";
+for(var i=0;i<n;i++) if(locked[i]){ cells[i].el.classList.add("locked"); cells[i].el.setAttribute("aria-pressed","true"); }
+rebuildFree();
+buildPair(); drawMatrix(); drawPair(); drawVocab(); drawSignature(); drawSpecimen(); drawKey(); applyParams();
+
+var batch=120, lastMat=0, lastSpec=0, lastCol=0, lastKey=0;
+var bestE=Infinity, bestEpoch=0, STALL=110000;
+function loop(now){
+  var t0=performance.now();
+  if(running){ for(var k=0;k<batch;k++) step(now); }
+  var dt=performance.now()-t0;
+  if(dt>7.5) batch=Math.max(15,Math.floor(batch*0.82));
+  else if(dt<4.5) batch=Math.min(6000,Math.floor(batch*1.10)+2);
+
+  if(now-lastCol>400){ lastCol=now; readColors(); }
+  setTemperatureColor();
+
+  for(var i=0;i<n;i++){
+    if(dirty[i]||(!RM&&now-touch[i]<360)){ drawCell(i,now); dirty[i]=0; }
+  }
+
+  var E=energy();
+  hist.push(E); if(hist.length>HMAX) hist.shift();
+  el("tTemp").textContent=(T/TSCALE).toFixed(4);
+  el("tEnergy").textContent=E.toFixed(2);
+  el("tEpoch").textContent=epoch>=1000?(epoch/1000).toFixed(epoch>=100000?0:1)+"k":String(epoch);
+  el("tAccept").textContent=(epoch?Math.round(accepted/epoch*100):0)+"%";
+  var wp=worstPair();
+  el("tMin").textContent=wp[2].toFixed(3);
+  el("cAlpha").textContent=n+" glyphs, "+(n*(n-1)/2)+" pairs";
+  if(E<bestE-1e-4){ bestE=E; bestEpoch=epoch; }
+  var settled=(epoch-bestEpoch)>STALL;
+  var atFloor=T<=TSCALE*TMIN*1.02;
+  var strokes=0; for(var q=0;q<n;q++) for(var s2=0;s2<NS;s2++) if(MASKS[q*NS+s2]) strokes++;
+  var nlock=0; for(var q=0;q<n;q++) if(locked[q]) nlock++;
+  var phase=!running?"frozen":(!freeList.length?"every glyph pinned":(!atFloor?"cooling":(settled?"settled":"holding at the floor")));
+  el("cState").textContent=phase+", "+(strokes/n).toFixed(1)+" strokes per glyph"+(nlock?", "+nlock+" pinned":"");
+  if(running) el("forgeNote").textContent=!freeList.length?"every glyph pinned":(!atFloor?"cooling":(settled?"settled \u2014 reheat to look for a better arrangement":"holding at the floor, still finding improvements"));
+  drawSpark();
+
+  if(now-lastMat>320){ lastMat=now; drawMatrix(); drawPair(); drawVocab(); drawSignature(); }
+  if(now-lastSpec>620){ lastSpec=now; drawSpecimen(); }
+  if(now-lastKey>900){ lastKey=now; drawKey(); }
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+setInterval(save,8000);
+var ro=window.ResizeObserver?new ResizeObserver(function(){
+  fitCols(gridEl,n,74); fitCols(keyEl,n,58); drawSpecimen(); drawMatrix(); drawVocab(); drawSignature();
+}):null;
+if(ro) ro.observe(document.querySelector(".wrap"));
+})();
+</script>

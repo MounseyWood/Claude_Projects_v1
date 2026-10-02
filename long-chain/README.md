@@ -1,8 +1,11 @@
 # The Thread and the Loop
 
-Storyboard, script and live animatic for a short vertical (9:16) film for FN4005 undergraduates: what polyester is, its pros and cons in apparel, why blends (especially elastane) block recycling, and the frontier of mono-material stretch (bicomponent polyester, PLA, all-polyester elastomers). v2 uses the KU palette, a story structure inspired by The Dot and the Line (1965), and a Verlet-simulated thread that runs through every shot.
+An interactive, phone-first vertical piece for FN4005 undergraduates about polyester and recycling. Sixteen full-screen frames snap like a social feed. One Verlet-simulated thread runs through all of them and bends into each idea. Text blocks are solid: the thread routes round them and can't be dragged across them.
 
-- `index.html` — a 9:16 animatic player (captions, safe zones, optional browser voice; opened locally it can also record a 1080×1920 WebM) and the storyboard: 17 live shots with visual, motion, on-screen text, voice-over and sources; a generated voice-over read-through with SRT captions; a fact check with confidence levels; corrections to the earlier research draft; seminar questions; production notes; sources.
+Frames: what PET is (tap to add links) · 1941 · melt spinning (stretch slider aligns the chains) · guess the share of fibre (59%) · the case for and against · microfibres (wash or rub the thread) · bottle → shirt → stops · add elastane, then recycle (it jams) · spot the PET (PET vs PLA) · stretch without elastane (pull the spring) · heat test (PLA melts ~170 °C) · lab-made all-polyester rubber (pull to 11×) · EU rules and designer pledges (swing tags) · the open loop · notes and sources.
+
+- `index.html`: the interactive piece (KU palette, Arial, no italics; retro flat-colour style after *The Dot and the Line*, 1965).
+- `storyboard-v2.html`: the earlier 9:16 storyboard and animatic, kept for reference.
 - Published view: https://claude.ai/artifact/MG2tU9T3DhzUS1XftDt6xQ
 
 The file is written as an artifact page (no `<html>`/`<head>` wrapper); it still opens directly in a browser.

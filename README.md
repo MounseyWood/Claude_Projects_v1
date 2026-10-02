@@ -2,4 +2,4 @@
 
 | Project | Branch | Status |
 | --- | --- | --- |
-| [The Thread and the Loop](long-chain/) — FN4005 vertical animatic and storyboard on polyester, recycling and stretch | `claude/trending-motion-graphics-4e49gm` | v2: 9:16, KU palette, Verlet thread |
+| [The Thread and the Loop](long-chain/) — FN4005 interactive vertical scroll piece on polyester, recycling and stretch | `claude/trending-motion-graphics-4e49gm` | v3: interactive Verlet thread, KU palette |

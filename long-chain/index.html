@@ -1,832 +1,338 @@
-<title>The Long Chain</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Big+Shoulders+Display:wght@700;800&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<title>The Thread and the Loop</title>
 <style>
-/* Layout: a production storyboard. Each shot is a 16:9 cut-paper frame beside its script notes; acts break the sequence. */
+/* Layout: a phone-first production page. A live 9:16 animatic leads; below it the brief, cast, palette, then one card per shot (live canvas beside its script). */
 :root {
-  --bg: #ECECE8;
-  --surface: #F6F6F3;
-  --fg: #161615;
-  --muted: #5A5954;
-  --rule: #CFCDC6;
-  --accent: #B3281C;
-  --strong: #2E6B3A;
-  --moderate: #8A6410;
-  --weak: #A1301F;
-
-  --display: "Big Shoulders Display", "Arial Narrow", "Helvetica Neue", sans-serif;
-  --body: "Atkinson Hyperlegible", "Verdana", "Segoe UI", sans-serif;
-  --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --bg: #ffffff;
+  --surface: #f3f3f1;
+  --fg: #1d1d1b;
+  --muted: #666666;
+  --rule: #d6d6d2;
+  --ku-blue: #009cde;   /* lines and fills only, never small text */
+  --ku-yellow: #ffb500; /* highlight behind black text only */
+  --ku-black: #1d1d1b;
+  --strong: #2d6a36;
+  --moderate: #7a5600;
+  --weak: #a22a1c;
+  --font: Arial, "Liberation Sans", "Helvetica Neue", Helvetica, sans-serif;
+  --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg: #121211; --surface: #1B1B19; --fg: #ECEAE4; --muted: #A3A19A; --rule: #2F2E2B;
-    --accent: #E4503F; --strong: #7CC48A; --moderate: #E2B65A; --weak: #F07A66;
+    --bg: #1d1d1b; --surface: #262624; --fg: #ffffff; --muted: #b9b9b4; --rule: #3a3a37;
+    --strong: #86c98f; --moderate: #f0c25c; --weak: #f18673;
     color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
-  --bg: #121211; --surface: #1B1B19; --fg: #ECEAE4; --muted: #A3A19A; --rule: #2F2E2B;
-  --accent: #E4503F; --strong: #7CC48A; --moderate: #E2B65A; --weak: #F07A66;
+  --bg: #1d1d1b; --surface: #262624; --fg: #ffffff; --muted: #b9b9b4; --rule: #3a3a37;
+  --strong: #86c98f; --moderate: #f0c25c; --weak: #f18673;
   color-scheme: dark;
 }
-
-/* Frame palette is fixed in both themes: these are the film's own colours. */
-.frame, .key {
-  --p: #E8E4D8;  /* paper ground */
-  --k: #151515;  /* ink · oil · fossil */
-  --r: #C42F1F;  /* PET polyester */
-  --rl: #EE8B73; /* a second polyester (PTT) */
-  --dr: #7A1C12; /* shadow red */
-  --y: #E3A31B;  /* elastane (polyurethane) */
-  --t: #1D7F7A;  /* PLA, plant-based */
-  --g: #9C998F;  /* other fibres, waste */
-}
-
-* { box-sizing: border-box; }
-body {
-  background: var(--bg);
-  color: var(--fg);
-  font-family: var(--body);
-  font-size: 17px;
-  line-height: 1.6;
-  padding-inline: 16px;
-  padding-block: 0;
-}
-.wrap { max-width: 1180px; margin-inline: auto; padding-block: 40px 72px; display: grid; gap: 64px; }
-a { color: inherit; text-decoration-color: var(--accent); text-underline-offset: 3px; }
-a:focus-visible, button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
-h1, h2, h3 { font-family: var(--display); font-weight: 800; text-transform: uppercase; line-height: 0.95; margin: 0; text-wrap: balance; letter-spacing: 0.01em; }
+* { box-sizing: border-box; font-style: normal; }
+body { background: var(--bg); color: var(--fg); font-family: var(--font); font-size: 17px; line-height: 1.6; padding-inline: 16px; padding-block: 0; }
+.wrap { max-width: 1120px; margin-inline: auto; padding-block: 32px 72px; display: grid; gap: 64px; }
+a { color: inherit; text-decoration-color: var(--ku-blue); text-decoration-thickness: 2px; text-underline-offset: 3px; }
+a:focus-visible, button:focus-visible, input:focus-visible + span { outline: 3px solid var(--ku-blue); outline-offset: 2px; }
+h1, h2, h3 { font-weight: 700; margin: 0; line-height: 1.05; text-wrap: balance; }
 p { margin: 0; max-width: 68ch; }
-.eyebrow, .label { font-family: var(--mono); font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.mark { background: var(--ku-yellow); color: var(--ku-black); padding: 0 0.2em; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
+.eyebrow { font-size: 0.8rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+.pill { justify-self: start; display: inline-block; background: var(--ku-black); color: #fff; font-weight: 700; font-size: 0.85rem; padding: 4px 12px; border-radius: 999px; }
+:root[data-theme="dark"] .pill { background: #fff; color: var(--ku-black); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .pill { background: #fff; color: var(--ku-black); } }
 
-/* Header */
-.mast { display: grid; gap: 20px; }
-.mast h1 { font-size: clamp(3.4rem, 11vw, 7.5rem); }
-.mast h1 span { color: var(--accent); }
-.dek { font-size: 1.2rem; max-width: 60ch; }
-.meta { display: flex; flex-wrap: wrap; gap: 8px 28px; font-family: var(--mono); font-size: 0.85rem; font-variant-numeric: tabular-nums; border-top: 1px solid var(--rule); padding-top: 14px; }
-.meta b { font-weight: 500; color: var(--accent); }
-.sig { font-family: var(--mono); font-size: 0.85rem; color: var(--muted); }
+/* Masthead + animatic */
+.hero { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 40px; align-items: start; }
+.hero-text { display: grid; gap: 18px; align-content: start; min-width: 0; }
+.hero h1 { font-size: clamp(2.6rem, 7vw, 4.6rem); letter-spacing: -0.01em; }
+.hero .sub { font-size: 1.25rem; color: var(--muted); }
+.meta { display: flex; flex-wrap: wrap; gap: 6px 22px; font-size: 0.9rem; border-top: 1px solid var(--rule); padding-top: 12px; font-variant-numeric: tabular-nums; }
+.meta b { font-weight: 700; }
+.sig { font-size: 0.9rem; color: var(--muted); }
+.changes { margin: 0; padding-left: 1.2em; display: grid; gap: 6px; }
 
-/* Section heads */
+.player { display: grid; gap: 12px; justify-items: center; }
+.phone { background: var(--ku-black); padding: 10px; border-radius: 28px; box-shadow: 0 1px 0 var(--rule); }
+.phone canvas { display: block; height: clamp(420px, 70vh, 680px); width: auto; aspect-ratio: 9 / 16; border-radius: 18px; background: #fff; max-width: calc(100vw - 52px); }
+.controls { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; align-items: center; }
+button { font: inherit; font-size: 0.9rem; font-weight: 700; background: var(--fg); color: var(--bg); border: 0; padding: 8px 14px; border-radius: 999px; cursor: pointer; }
+button.ghost { background: transparent; color: var(--fg); box-shadow: inset 0 0 0 2px var(--fg); }
+button:hover { background: var(--ku-blue); color: #fff; box-shadow: none; }
+.toggles { display: flex; flex-wrap: wrap; gap: 6px 16px; justify-content: center; font-size: 0.85rem; }
+.toggles label { display: inline-flex; gap: 6px; align-items: center; cursor: pointer; }
+.toggles input { accent-color: var(--ku-blue); width: 16px; height: 16px; }
+.track { display: flex; gap: 2px; width: min(100%, 420px); }
+.track button { flex: var(--d) 1 0; height: 10px; padding: 0; border-radius: 2px; background: var(--rule); min-width: 0; }
+.track button.done { background: var(--ku-blue); }
+.track button.now { background: var(--fg); }
+.nowline { width: min(100%, 420px); display: grid; gap: 6px; }
+.nowline .row { display: flex; justify-content: space-between; gap: 12px; font-size: 0.85rem; font-variant-numeric: tabular-nums; color: var(--muted); }
+.caption { min-height: 4.8em; font-size: 1.02rem; background: var(--surface); padding: 10px 14px; border-radius: 6px; }
+
+/* Sections */
 section { display: grid; gap: 24px; }
 .sec-head { display: grid; gap: 6px; border-bottom: 3px solid var(--fg); padding-bottom: 10px; }
-.sec-head h2 { font-size: clamp(2rem, 5vw, 3rem); }
+.sec-head h2 { font-size: clamp(1.8rem, 4.4vw, 2.6rem); }
+.cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 28px 44px; }
+.cols > div { display: grid; gap: 10px; align-content: start; min-width: 0; }
+.cols h3 { font-size: 1.25rem; }
+.cols ul, .cols ol { margin: 0; padding-left: 1.2em; display: grid; gap: 8px; }
 
-/* Brief */
-.brief { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 28px 40px; }
-.brief > div { display: grid; gap: 8px; align-content: start; min-width: 0; }
-.brief h3 { font-size: 1.35rem; }
-.brief ul, .brief ol { margin: 0; padding-left: 1.2em; display: grid; gap: 6px; }
-.takeaway { font-family: var(--display); font-weight: 700; font-size: 1.9rem; line-height: 1.05; text-transform: uppercase; color: var(--accent); }
+/* Cast */
+.cast { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
+.member { display: grid; gap: 8px; align-content: start; }
+.member svg { display: block; width: 100%; height: 96px; background: #fff; border: 1px solid var(--rule); border-radius: 6px; }
+.member h3 { font-size: 1.15rem; }
+.member p { font-size: 0.95rem; }
 
-/* Visual language */
-.lang { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 40px; }
-.lang ol { margin: 0; padding-left: 1.3em; display: grid; gap: 10px; }
-.lang li b { font-weight: 700; }
-.key { display: grid; gap: 10px; background: var(--k); color: var(--p); padding: 20px; border-radius: 2px; align-content: start; }
-.key .label { color: var(--g); }
-.key-row { display: grid; grid-template-columns: 44px 1fr; gap: 14px; align-items: center; font-size: 0.95rem; }
-.key-row svg { width: 44px; height: 28px; display: block; }
-.key-row b { font-family: var(--display); font-size: 1.15rem; letter-spacing: 0.02em; text-transform: uppercase; }
+/* Palette */
+.swatches { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 14px; }
+.sw { display: grid; grid-template-rows: 64px auto; border: 1px solid var(--rule); border-radius: 6px; overflow: hidden; }
+.sw div { background: var(--c); }
+.sw p { padding: 10px 12px; font-size: 0.9rem; }
+.sw code { font-family: var(--mono); font-size: 0.85rem; }
 
-/* Acts and shots */
-.act { display: grid; grid-template-columns: auto 1fr auto; align-items: baseline; gap: 16px; border-top: 3px solid var(--fg); padding-top: 12px; margin-top: 16px; }
-.act .act-n { font-family: var(--mono); font-size: 0.85rem; color: var(--accent); text-transform: uppercase; letter-spacing: 0.08em; }
-.act h2 { font-size: clamp(1.8rem, 4.4vw, 2.6rem); }
-.act .tc { font-family: var(--mono); font-size: 0.85rem; color: var(--muted); font-variant-numeric: tabular-nums; }
-.shots { display: grid; gap: 40px; }
-.shot { display: grid; grid-template-columns: minmax(0, 46%) minmax(0, 1fr); gap: 28px; align-items: start; }
-.frame { margin: 0; position: relative; }
-.frame svg { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; border-radius: 2px; }
-.frame::after { content: ""; position: absolute; inset: 0; pointer-events: none; opacity: 0.22; mix-blend-mode: multiply; border-radius: 2px;
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.5  0 0 0 0 0.45  0 0 0 0 0.4  0 0 0 0.55 0'/></filter><rect width='160' height='160' filter='url(%23n)'/></svg>"); }
-.notes { display: grid; gap: 12px; min-width: 0; }
-.notes header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 14px; }
-.notes .num { font-family: var(--display); font-weight: 800; font-size: 2.2rem; line-height: 0.9; color: var(--accent); font-variant-numeric: tabular-nums; }
-.notes h3 { font-size: 1.6rem; }
-.notes .tc { font-family: var(--mono); font-size: 0.82rem; color: var(--muted); font-variant-numeric: tabular-nums; margin-left: auto; }
-.notes dl { margin: 0; display: grid; grid-template-columns: 6.5rem minmax(0, 1fr); gap: 6px 14px; }
-.notes dt { font-family: var(--mono); font-size: 0.74rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); padding-top: 0.25em; }
+/* Safe zones mini diagram */
+.safe-demo { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 20px; align-items: center; }
+.safe-demo .ph { width: 90px; aspect-ratio: 9/16; border: 2px solid var(--fg); border-radius: 10px; position: relative; overflow: hidden; background: #fff; }
+.safe-demo .ph i { position: absolute; left: 0; right: 0; background: rgba(255, 181, 0, 0.55); }
+
+/* Storyboard */
+.act { display: grid; grid-template-columns: auto 1fr auto; align-items: baseline; gap: 14px; border-top: 3px solid var(--fg); padding-top: 10px; margin-top: 12px; }
+.act .n { font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+.act h2 { font-size: clamp(1.6rem, 4vw, 2.2rem); }
+.act .tc { font-size: 0.9rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.shots { display: grid; gap: 36px; }
+.shot { display: grid; grid-template-columns: 210px minmax(0, 1fr); gap: 26px; align-items: start; }
+.shot canvas { display: block; width: 210px; height: auto; aspect-ratio: 9 / 16; border-radius: 12px; border: 1px solid var(--rule); background: #fff; }
+.notes { display: grid; gap: 10px; min-width: 0; }
+.notes header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 14px; }
+.notes .num { font-size: 2rem; font-weight: 700; line-height: 1; font-variant-numeric: tabular-nums; }
+.notes h3 { font-size: 1.4rem; }
+.notes .tc { font-size: 0.85rem; color: var(--muted); font-variant-numeric: tabular-nums; margin-left: auto; }
+.notes dl { margin: 0; display: grid; grid-template-columns: 6.6rem minmax(0, 1fr); gap: 6px 14px; }
+.notes dt { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); padding-top: 0.3em; }
 .notes dd { margin: 0; }
-.notes dd.vo { font-size: 1.08rem; border-left: 3px solid var(--accent); padding-left: 12px; }
-.notes dd.vo.silent { border-left-color: var(--rule); color: var(--muted); font-style: italic; }
-.notes dd.os { font-family: var(--display); font-weight: 700; font-size: 1.15rem; letter-spacing: 0.02em; text-transform: uppercase; line-height: 1.25; }
-.cut { font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.06em; text-transform: uppercase; border: 1px solid var(--rule); padding: 1px 6px; border-radius: 2px; color: var(--muted); }
+.notes dd.vo { font-size: 1.08rem; border-left: 4px solid var(--ku-blue); padding-left: 12px; }
+.notes dd.os { font-weight: 700; }
+.notes .play { justify-self: start; }
 
-/* SVG frame classes */
-.frame .fp { fill: var(--p); } .frame .fk { fill: var(--k); } .frame .fr { fill: var(--r); } .frame .frl { fill: var(--rl); }
-.frame .fdr { fill: var(--dr); } .frame .fy { fill: var(--y); } .frame .ft { fill: var(--t); } .frame .fg { fill: var(--g); }
-.frame .sk { stroke: var(--k); fill: none; } .frame .sr { stroke: var(--r); fill: none; } .frame .srl { stroke: var(--rl); fill: none; }
-.frame .st { stroke: var(--t); fill: none; } .frame .sp { stroke: var(--p); fill: none; } .frame .sy { stroke: var(--y); fill: none; }
-.frame .d { font-family: var(--display); font-weight: 800; }
-.frame .u { font-family: var(--mono); font-weight: 500; letter-spacing: 0.04em; }
-.key .fp { fill: var(--p); } .key .fr { fill: var(--r); } .key .frl { fill: var(--rl); } .key .fy { fill: var(--y); } .key .ft { fill: var(--t); } .key .fg { fill: var(--g); }
-.key .sp { stroke: var(--p); fill: none; }
-
-/* VO read-through */
-.vo-tools { display: flex; flex-wrap: wrap; gap: 12px 24px; align-items: center; font-family: var(--mono); font-size: 0.85rem; font-variant-numeric: tabular-nums; }
-button { font: inherit; font-family: var(--mono); font-size: 0.85rem; background: var(--fg); color: var(--bg); border: 0; padding: 8px 14px; border-radius: 2px; cursor: pointer; }
-button:hover { background: var(--accent); }
-.vo-script { margin: 0; display: grid; gap: 14px; background: var(--surface); padding: 22px; border-radius: 2px; }
+/* VO + captions */
+.vo-tools { display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center; font-size: 0.9rem; font-variant-numeric: tabular-nums; }
+.vo-script { display: grid; gap: 14px; background: var(--surface); padding: 22px; border-radius: 6px; }
 .vo-line { display: grid; grid-template-columns: 6.5rem minmax(0, 1fr); gap: 14px; }
-.vo-line .t { font-family: var(--mono); font-size: 0.8rem; color: var(--muted); font-variant-numeric: tabular-nums; padding-top: 0.2em; }
-.vo-line p { font-size: 1.08rem; }
+.vo-line .t { font-size: 0.85rem; color: var(--muted); font-variant-numeric: tabular-nums; padding-top: 0.15em; }
+.vo-line p { font-size: 1.05rem; }
 
 /* Fact table */
 .tablewrap { overflow-x: auto; }
 table { border-collapse: collapse; width: 100%; min-width: 720px; font-size: 0.95rem; }
 th, td { text-align: left; vertical-align: top; padding: 10px 12px; border-bottom: 1px solid var(--rule); }
-th { font-family: var(--mono); font-weight: 500; font-size: 0.74rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); border-bottom: 2px solid var(--fg); }
-td.n { font-family: var(--mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
-.chip { display: inline-block; font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.06em; text-transform: uppercase; padding: 2px 8px; border-radius: 2px; border: 1.5px solid currentColor; white-space: nowrap; }
+th { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); border-bottom: 2px solid var(--fg); }
+td.n { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.chip { display: inline-block; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; padding: 2px 8px; border-radius: 999px; border: 2px solid currentColor; white-space: nowrap; }
 .chip.strong { color: var(--strong); } .chip.moderate { color: var(--moderate); } .chip.weak { color: var(--weak); }
 
-/* Two-column lists */
-.cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 32px 48px; }
-.cols > div { display: grid; gap: 10px; align-content: start; min-width: 0; }
-.cols h3 { font-size: 1.35rem; }
-.cols ul, .cols ol { margin: 0; padding-left: 1.2em; display: grid; gap: 8px; }
-.corrections li b { color: var(--accent); font-weight: 700; }
 .sources { margin: 0; padding-left: 2.2em; display: grid; gap: 6px; font-size: 0.92rem; columns: 2 380px; }
 .sources li { break-inside: avoid; overflow-wrap: anywhere; }
-footer { border-top: 3px solid var(--fg); padding-top: 14px; display: grid; gap: 4px; font-family: var(--mono); font-size: 0.85rem; }
-footer b { font-weight: 500; }
+footer { border-top: 3px solid var(--fg); padding-top: 14px; display: grid; gap: 4px; font-size: 0.9rem; }
 
-@media (max-width: 760px) {
-  .shot { grid-template-columns: minmax(0, 1fr); gap: 16px; }
-  .lang { grid-template-columns: minmax(0, 1fr); }
-  .act { grid-template-columns: 1fr; gap: 4px; }
+@media (max-width: 820px) {
+  .hero { grid-template-columns: minmax(0, 1fr); }
+  .player { order: -1; }
+}
+@media (max-width: 640px) {
+  .shot { grid-template-columns: minmax(0, 1fr); }
+  .shot canvas { width: min(240px, 100%); }
   .notes dl, .vo-line { grid-template-columns: minmax(0, 1fr); gap: 2px; }
   .notes dd { margin-bottom: 8px; }
   .notes .tc { margin-left: 0; width: 100%; }
+  .act { grid-template-columns: 1fr; gap: 2px; }
+  .safe-demo { grid-template-columns: minmax(0, 1fr); }
 }
-@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 </style>
-
-<!-- Shared cut-paper edge: a small displacement so shapes read as hand-cut. -->
-<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
-  <filter id="cut" x="-5%" y="-5%" width="110%" height="110%">
-    <feTurbulence type="fractalNoise" baseFrequency="0.045" numOctaves="2" seed="7"/>
-    <feDisplacementMap in="SourceGraphic" scale="2.6"/>
-  </filter>
-</svg>
 
 <div class="wrap">
 
-<header class="mast">
-  <span class="eyebrow">FN4005 · Animated explainer · Storyboard and script</span>
-  <h1>The Long <span>Chain</span></h1>
-  <p class="dek">A short animation for first-year fashion students. What polyester is, what it does well and badly, why stretchy clothes rarely get recycled, and what researchers are trying instead. Styled after Saul Bass title sequences: flat colour, cut paper, and one red thread that keeps changing shape.</p>
-  <div class="meta" id="meta">
-    <span>Runtime <b id="m-run">4:32</b></span>
-    <span>Shots <b>17</b></span>
-    <span>Parts <b>5</b></span>
-    <span>Voice-over <b id="m-words">≈ 560 words</b></span>
-    <span>Draft <b>v1 · October 2026</b></span>
+<header class="hero">
+  <div class="hero-text">
+    <span class="pill">Digital Practice / FN4005</span>
+    <h1>The Thread and the <span class="mark">Loop</span></h1>
+    <p class="sub">A romance in lower chemistry</p>
+    <p>A short vertical film for first-year fashion students about polyester: what it is, what it does well and badly, why stretchy clothes rarely come back, and what researchers are trying instead. One blue thread runs down the screen from first frame to last and carries the story.</p>
+    <div class="meta">
+      <span>Format <b>9:16 · 1080 × 1920</b></span>
+      <span>Runtime <b id="m-run">–</b></span>
+      <span>Shots <b>17</b></span>
+      <span>Voice-over <b id="m-words">–</b></span>
+      <span>Draft <b>v2</b></span>
+    </div>
+    <div>
+      <h3 style="font-size:1.1rem;margin-bottom:6px">New in v2</h3>
+      <ul class="changes">
+        <li>Vertical 9:16 for phones, with text kept clear of the platform's top and bottom bars.</li>
+        <li>Kingston palette and type: KU black, KU blue for lines and fills, KU yellow behind black text, Arial, no italics.</li>
+        <li>Story structure borrowed from <a href="#h-insp">The Dot and the Line (1965)</a>: shapes as characters, a narrator, and a line that learns to bend.</li>
+        <li>The thread is a live Verlet simulation. Every shot on this page is running it.</li>
+      </ul>
+    </div>
+    <span class="sig">Matthew Mounsey-Wood FHEA MA (RCA) LCF Alumni · Kingston School of Art, Kingston University London</span>
   </div>
-  <span class="sig">Matthew Mounsey-Wood FHEA MA (RCA) LCF Alumni</span>
+
+  <div class="player" aria-label="Animatic player">
+    <div class="phone"><canvas id="animatic" width="360" height="640" aria-label="Animatic of The Thread and the Loop"></canvas></div>
+    <div class="nowline">
+      <div class="row"><span id="a-shot">01 · Title</span><span id="a-time">0:00 / 0:00</span></div>
+      <div class="track" id="a-track" role="group" aria-label="Jump to shot"></div>
+      <div class="caption" id="a-cap" aria-live="polite">Press Play to run the animatic. Captions show the voice-over.</div>
+    </div>
+    <div class="controls">
+      <button type="button" id="a-prev" class="ghost" aria-label="Previous shot">Prev</button>
+      <button type="button" id="a-play">Play</button>
+      <button type="button" id="a-next" class="ghost" aria-label="Next shot">Next</button>
+      <button type="button" id="a-rec" class="ghost" hidden>Record 1080×1920</button>
+    </div>
+    <div class="toggles">
+      <label><input type="checkbox" id="t-safe"><span>Show safe zones</span></label>
+      <label><input type="checkbox" id="t-voice"><span>Read aloud (browser voice)</span></label>
+    </div>
+  </div>
 </header>
 
 <section aria-labelledby="h-brief">
   <div class="sec-head"><span class="eyebrow">Before the storyboard</span><h2 id="h-brief">Brief</h2></div>
-  <div class="brief">
+  <div class="cols">
     <div>
       <h3>One thing to remember</h3>
-      <p class="takeaway">A garment can only come back if we know what it's made of, and how it gets back.</p>
+      <p style="font-size:1.35rem;font-weight:700;line-height:1.3">A garment can only come back if we know <span class="mark">what it's made of</span>, and how it gets back.</p>
     </div>
     <div>
       <h3>Audience</h3>
-      <p>FN4005 undergraduates, Level 4. No chemistry assumed. Most will own polyester and elastane without knowing it, so the care label is the way in.</p>
+      <p>FN4005 undergraduates, Level 4, watching on their phones. No chemistry assumed. Most own polyester and elastane without knowing it, so the care label is the way in.</p>
     </div>
     <div>
       <h3>By the end, students can</h3>
       <ol>
-        <li>Say what polyester is: PET, made mostly from oil, melt-spun into fibre.</li>
+        <li>Say what polyester is: PET, mostly from oil, melt-spun into fibre.</li>
         <li>Weigh its pros and cons in apparel.</li>
-        <li>Explain why blends, and elastane in particular, block recycling, and what "mono-material" means.</li>
-        <li>Describe two frontier routes to stretch, and ask what evidence backs each claim.</li>
+        <li>Explain why blends, especially with elastane, block recycling, and what "mono-material" means.</li>
+        <li>Describe two routes to stretch without elastane, and ask what evidence backs each claim.</li>
       </ol>
     </div>
     <div>
-      <h3>Tone</h3>
-      <p>Curious and even-handed. Polyester is neither villain nor saviour. The film models critical reading: it says who made each claim, and stops where the evidence stops.</p>
+      <h3>Tone of voice</h3>
+      <p>Plain, warm and direct. Short sentences. A little wit from the narrator, never at the student's expense. Every claim says who made it, and the film stops where the evidence stops.</p>
+      <p style="font-size:0.9rem;color:var(--muted)">No ku-brand skill was found in this account. The palette and type rules come from the KU print rules in the CLO3D worksheet skill. The tone above is inferred, so swap in the official KU tone-of-voice guide if you have it.</p>
     </div>
   </div>
 </section>
 
-<section aria-labelledby="h-lang">
-  <div class="sec-head"><span class="eyebrow">Style guide</span><h2 id="h-lang">Visual language</h2></div>
-  <div class="lang">
-    <ol>
-      <li><b>One thread is the main character.</b> A single red line appears in every shot: it becomes a molecule, a filament, a recycling loop and, at the end, a loop that doesn't quite close.</li>
-      <li><b>Flat colour, no gradients, no 3D.</b> Five film colours plus paper. Each colour always means the same material (see key).</li>
-      <li><b>Cut-paper edges.</b> Shapes slightly irregular, type set letter by letter with small rotations, as if cut with scissors.</li>
-      <li><b>Type is part of the picture.</b> Words enter on the beat and sit inside the composition, not as subtitles.</li>
-      <li><b>Asymmetry and empty space.</b> One idea per frame. Big shapes, lots of ground.</li>
-      <li><b>Cut on the beat.</b> Jazz percussion and double bass drive the edit. Homage to the method, not a copy of any Bass sequence.</li>
-    </ol>
-    <div class="key" aria-label="Colour and shape key">
-      <span class="label">Colour and shape key · constant in every shot</span>
-      <div class="key-row"><svg viewBox="0 0 44 28" aria-hidden="true"><rect class="fr" x="4" y="6" width="16" height="16"/><rect class="fr" x="24" y="6" width="16" height="16"/></svg><span><b>Red squares</b> · PET polyester</span></div>
-      <div class="key-row"><svg viewBox="0 0 44 28" aria-hidden="true"><rect class="frl" x="4" y="6" width="16" height="16"/><rect class="fr" x="24" y="6" width="16" height="16"/></svg><span><b>Light red</b> · a second polyester (PTT), only in shot 13</span></div>
-      <div class="key-row"><svg viewBox="0 0 44 28" aria-hidden="true"><rect class="fy" x="2" y="9" width="40" height="10"/></svg><span><b>Mustard bars</b> · elastane (polyurethane)</span></div>
-      <div class="key-row"><svg viewBox="0 0 44 28" aria-hidden="true"><circle class="ft" cx="12" cy="14" r="8"/><circle class="ft" cx="32" cy="14" r="8"/></svg><span><b>Teal circles</b> · PLA and other plant-based polyesters</span></div>
-      <div class="key-row"><svg viewBox="0 0 44 28" aria-hidden="true"><rect x="1" y="3" width="42" height="22" class="sp" stroke-width="2"/></svg><span><b>Black</b> · oil, fossil feedstock, the machine</span></div>
-      <div class="key-row"><svg viewBox="0 0 44 28" aria-hidden="true"><rect class="fg" x="4" y="6" width="36" height="16"/></svg><span><b>Grey</b> · other fibres, waste</span></div>
-      <p style="font-size:0.85rem;color:var(--g)">Shape carries the meaning as well as colour, so red and teal never rely on hue alone. That keeps the film readable for colour-blind viewers.</p>
+<section aria-labelledby="h-insp">
+  <div class="sec-head"><span class="eyebrow">Reference</span><h2 id="h-insp">What we take from The Dot and the Line</h2></div>
+  <div class="cols">
+    <div>
+      <h3>The film</h3>
+      <p>Chuck Jones and Maurice Noble's 1965 MGM short, from Norton Juster's book and narrated by Robert Morley. A straight line loves a dot, who prefers a wild squiggle. The line teaches itself to bend into angles, shapes and solids, and wins her. It won the 1965 Oscar for animated short <a href="#src-21">[21]</a> <a href="#src-22">[22]</a>.</p>
+    </div>
+    <div>
+      <h3>What we borrow</h3>
+      <ul>
+        <li><b>Shapes are the characters.</b> A thread, a loop, a squiggle, a lookalike. No people.</li>
+        <li><b>One narrator tells it like a story.</b> All meaning comes through voice-over and movement.</li>
+        <li><b>The line learns to bend.</b> Our thread draws 1941, a shirt, a bottle, a grid and finally a spring. Bending is how it solves its problem.</li>
+        <li><b>A rough, boiling squiggle.</b> Jones inked the squiggle on rice paper so it bled <a href="#src-21">[21]</a>. Our elastane is a jittery, hairy black line.</li>
+        <li><b>Colour blocking for mood.</b> White grounds explain; black grounds carry problems and turning points.</li>
+      </ul>
+    </div>
+    <div>
+      <h3>What we don't</h3>
+      <ul>
+        <li>No characters, music, lines or narrator imitation from the original.</li>
+        <li>No happy-ever-after. The film's line wins. Our thread hasn't yet, because the evidence says it hasn't.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section aria-labelledby="h-cast">
+  <div class="sec-head"><span class="eyebrow">Shapes as characters</span><h2 id="h-cast">Cast</h2></div>
+  <div class="cast">
+    <div class="member">
+      <svg viewBox="0 0 200 96" aria-hidden="true"><path d="M100 0 C 92 30 108 66 100 96" stroke="#009cde" stroke-width="6" fill="none" stroke-linecap="round"/><path d="M100 0 C 92 30 108 66 100 96" stroke="#ffffff" stroke-width="2.4" fill="none" stroke-dasharray="3 13"/></svg>
+      <h3>The Thread</h3>
+      <p>Polyester (PET). KU blue, always on screen, always flowing downward. Strong and dependable, a bit stiff.</p>
+    </div>
+    <div class="member">
+      <svg viewBox="0 0 200 96" aria-hidden="true"><circle cx="100" cy="48" r="34" stroke="#1d1d1b" stroke-width="8" fill="none"/><polygon points="94,6 110,14 94,22" fill="#1d1d1b"/></svg>
+      <h3>The Loop</h3>
+      <p>Coming back: recycling into new fibre. A black ring. The thread wants to join it.</p>
+    </div>
+    <div class="member">
+      <svg viewBox="0 0 200 96" aria-hidden="true"><path d="M40 60 q10 -40 22 -6 t 20 -10 t 18 12 t 22 -18 t 18 20 t 20 -14" stroke="#1d1d1b" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M41 62 q11 -38 21 -5 t 21 -12 t 17 14 t 23 -17 t 17 19 t 20 -13" stroke="#1d1d1b" stroke-width="1" fill="none" opacity=".7"/></svg>
+      <h3>Elastane</h3>
+      <p>The squiggle. Polyurethane, not polyester. Exciting, stretchy, in almost everything, and it jams the loop.</p>
+    </div>
+    <div class="member">
+      <svg viewBox="0 0 200 96" aria-hidden="true"><path d="M100 0 C 108 30 92 66 100 96" stroke="#009cde" stroke-width="6" fill="none" stroke-dasharray="11 7"/></svg>
+      <h3>PLA</h3>
+      <p>The lookalike. A polyester made from plants. A dashed blue line: almost the same as the thread, which is the problem.</p>
+    </div>
+  </div>
+</section>
+
+<section aria-labelledby="h-brand">
+  <div class="sec-head"><span class="eyebrow">Kingston University palette and rules</span><h2 id="h-brand">Look and layout</h2></div>
+  <div class="swatches">
+    <div class="sw" style="--c:#1d1d1b"><div></div><p><b>KU black</b> <code>#1d1d1b</code><br>Text on white, ink shapes, problem scenes.</p></div>
+    <div class="sw" style="--c:#009cde"><div></div><p><b>KU blue</b> <code>#009cde</code><br>The thread and fills only. 3.1:1 on white, so never small text.</p></div>
+    <div class="sw" style="--c:#ffb500"><div></div><p><b>KU yellow</b> <code>#ffb500</code><br>Only as a highlight behind black text: the key fact in each shot.</p></div>
+    <div class="sw" style="--c:#666666"><div></div><p><b>Grey</b> <code>#666666</code><br>Lightest text on white: sources and qualifiers.</p></div>
+    <div class="sw" style="--c:#ffffff"><div style="border-bottom:1px solid var(--rule)"></div><p><b>White</b> <code>#ffffff</code><br>Ground for explaining scenes; text on black.</p></div>
+  </div>
+  <div class="safe-demo">
+    <div class="ph" aria-hidden="true"><i style="top:0;height:14%"></i><i style="bottom:0;height:20%"></i></div>
+    <div class="cols" style="gap:16px 32px">
+      <div><h3>Safe zones</h3><p>Reels, TikTok and Shorts lay their own buttons and captions over the top ~14% and bottom ~20% of the screen. Key text stays between them. Turn on "Show safe zones" on any player to check.</p></div>
+      <div><h3>Type</h3><p>Arial bold for everything on screen, as in the KU worksheets. No italics. Each card is six words or fewer and holds for at least three seconds.</p></div>
     </div>
   </div>
 </section>
 
 <section aria-labelledby="h-board">
-  <div class="sec-head"><span class="eyebrow">17 shots · 5 parts</span><h2 id="h-board">Storyboard and script</h2></div>
-
-  <!-- ACT I -->
-  <div class="act"><span class="act-n">Act I</span><h2>What is polyester?</h2><span class="tc">0:00–1:14</span></div>
-  <div class="shots">
-
-    <article class="shot" id="s01" data-tc="0:00">
-      <figure class="frame">
-        <svg viewBox="0 0 320 180" role="img" aria-label="Title card: black ground, a jagged red line cuts across, title The Long Chain.">
-          <rect class="fk" width="320" height="180"/>
-          <g filter="url(#cut)"><polyline class="sr" stroke-width="7" stroke-linejoin="miter" points="-5,118 60,118 72,100 84,136 96,100 108,136 120,100 132,136 144,118 330,118"/></g>
-          <text class="d fp" x="22" y="64" font-size="40" rotate="-2 1 -1 2 0 -2 1 0 2 -1 1 -2 0 1">THE LONG CHAIN</text>
-          <text class="u fy" x="22" y="160" font-size="8.5">POLYESTER · RECYCLING · STRETCH</text>
-        </svg>
-      </figure>
-      <div class="notes">
-        <header><span class="num">01</span><h3>Title</h3><span class="tc">0:00–0:12 · 12 s</span></header>
-        <dl>
-          <dt>Visual</dt><dd>Black ground. A red line enters from the left, runs straight, then breaks into a jagged zigzag: the first "chain".</dd>
-          <dt>Motion</dt><dd>Line draws on to four bass hits. Title letters drop in one at a time, each slightly rotated, like cut paper landing.</dd>
-          <dt>On screen</dt><dd class="os">The Long Chain · polyester · recycling · stretch</dd>
-          <dt>Voice-over</dt><dd class="vo silent">None. Music only.</dd>
-          <dt>Sound</dt><dd>Walking double bass, bongos, a single muted trumpet stab on the title.</dd>
-        </dl>
-      </div>
-    </article>
-
-    <article class="shot" id="s02" data-tc="0:12">
-      <figure class="frame">
-        <svg viewBox="0 0 320 180" role="img" aria-label="An oil drop splits into two building blocks, ethylene glycol and terephthalic acid, which join into a long red chain labelled PET.">
-          <rect class="fp" width="320" height="180"/>
-          <g filter="url(#cut)">
-            <path class="fk" d="M52 22 C46 40 34 54 34 68 a18 18 0 0 0 36 0 C70 54 58 40 52 22Z"/>
-            <rect class="fk" x="112" y="48" width="44" height="32"/>
-            <polygon class="fk" points="228,64 219,79.6 201,79.6 192,64 201,48.4 219,48.4"/>
-            <line class="sr" x1="24" y1="132" x2="296" y2="132" stroke-width="13" stroke-dasharray="20 6"/>
-          </g>
-          <path class="sk" stroke-width="3" d="M80 64 H104 M98 58 L104 64 L98 70"/>
-          <text class="d fk" x="168" y="72" font-size="22">+</text>
-          <path class="sk" stroke-width="2" d="M134 106 V118 M210 106 V118"/>
-          <text class="u fk" x="52" y="100" font-size="7" text-anchor="middle">OIL</text>
-          <text class="u fk" x="134" y="94" font-size="6.5" text-anchor="middle">ETHYLENE</text>
-          <text class="u fk" x="134" y="102" font-size="6.5" text-anchor="middle">GLYCOL</text>
-          <text class="u fk" x="210" y="94" font-size="6.5" text-anchor="middle">TEREPHTHALIC</text>
-          <text class="u fk" x="210" y="102" font-size="6.5" text-anchor="middle">ACID</text>
-          <text class="u fk" x="160" y="162" font-size="8" text-anchor="middle">PET = POLY · ETHYLENE · TEREPHTHALATE</text>
-        </svg>
-      </figure>
-      <div class="notes">
-        <header><span class="num">02</span><h3>From oil to chain</h3><span class="tc">0:12–0:27 · 15 s</span></header>
-        <dl>
-          <dt>Visual</dt><dd>Paper ground. A black drop falls and splits into two black shapes: a block (ethylene glycol) and a hexagon (terephthalic acid). They snap together, and the pair repeats into a long red chain.</dd>
-          <dt>Motion</dt><dd>Each snap lands on a bongo hit. The chain grows left to right and turns red as it forms.</dd>
-          <dt>On screen</dt><dd class="os">PET = poly · ethylene · terephthalate</dd>
-          <dt>Voice-over</dt><dd class="vo">Most polyester starts as oil. Two chemicals made from oil link together, over and over, into one very long chain. Its name is polyethylene terephthalate. PET for short.</dd>
-          <dt>Sources</dt><dd><a href="#src-2">[2]</a> <a href="#src-3">[3]</a></dd>
-        </dl>
-      </div>
-    </article>
-
-    <article class="shot" id="s03" data-tc="0:27">
-      <figure class="frame">
-        <svg viewBox="0 0 320 180" role="img" aria-label="Two cut-paper silhouettes of chemists on a red ground beside the date 1941.">
-          <rect class="fr" width="320" height="180"/>
-          <g filter="url(#cut)">
-            <circle class="fdr" cx="112" cy="80" r="14"/>
-            <path class="fdr" d="M86 142 Q86 104 112 100 Q138 104 138 142Z"/>
-            <circle class="fk" cx="70" cy="70" r="16"/>
-            <path class="fk" d="M40 142 Q40 96 70 92 Q100 96 100 142Z"/>
-            <rect class="fk" x="0" y="140" width="320" height="40"/>
-          </g>
-          <text class="d fp" x="168" y="104" font-size="58" rotate="-2 1 -1 2">1941</text>
-          <text class="u fp" x="171" y="124" font-size="8">TERYLENE (UK) · DACRON (US)</text>
-          <text class="u fp" x="171" y="157" font-size="7">CALICO PRINTERS' ASSOCIATION</text>
-          <text class="u fp" x="171" y="168" font-size="7">LANCASHIRE, ENGLAND</text>
-        </svg>
-      </figure>
-      <div class="notes">
-        <header><span class="num">03</span><h3>Made in Lancashire</h3><span class="tc">0:27–0:41 · 14 s</span><span class="cut">Cut for short version</span></header>
-        <dl>
-          <dt>Visual</dt><dd>Red ground. Two cut-paper silhouettes in profile, Bass style. "1941" stamps in beside them.</dd>
-          <dt>Motion</dt><dd>Silhouettes slide in from opposite sides and overlap. Date stamps down on a drum hit. Brand names flick past like a ticker.</dd>
-          <dt>On screen</dt><dd class="os">1941 · Terylene (UK) · Dacron (US)</dd>
-          <dt>Voice-over</dt><dd class="vo">It was invented in Lancashire in 1941, by John Whinfield and James Dickson at the Calico Printers' Association. It was sold as Terylene in Britain, and Dacron in the United States.</dd>
-          <dt>Sources</dt><dd><a href="#src-2">[2]</a> <a href="#src-3">[3]</a></dd>
-        </dl>
-      </div>
-    </article>
-
-    <article class="shot" id="s04" data-tc="0:41">
-      <figure class="frame">
-        <svg viewBox="0 0 320 180" role="img" aria-label="Melt spinning: red chips drop into a funnel, pass through a spinneret, and come out as red filaments stretched over rollers. Steps labelled melt, push, cool, stretch.">
-          <rect class="fp" width="320" height="180"/>
-          <g filter="url(#cut)">
-            <rect class="fr" x="146" y="8" width="6" height="6"/><rect class="fr" x="158" y="14" width="6" height="6"/>
-            <rect class="fr" x="168" y="6" width="6" height="6"/><rect class="fr" x="176" y="16" width="6" height="6"/>
-            <polygon class="fk" points="134,24 198,24 176,50 156,50"/>
-            <rect class="fk" x="140" y="52" width="52" height="10"/>
-            <circle class="fk" cx="196" cy="138" r="9"/>
-            <circle class="fk" cx="250" cy="138" r="9"/>
-          </g>
-          <circle class="fp" cx="148" cy="57" r="1.6"/><circle class="fp" cx="157" cy="57" r="1.6"/><circle class="fp" cx="166" cy="57" r="1.6"/><circle class="fp" cx="175" cy="57" r="1.6"/><circle class="fp" cx="184" cy="57" r="1.6"/>
-          <path class="sr" stroke-width="1.4" d="M148 62 L164 120 M157 62 L165 120 M166 62 L166 120 M175 62 L167 120 M184 62 L168 120"/>
-          <path class="sr" stroke-width="3" d="M166 120 C166 142 180 148 196 148 H310"/>
-          <text class="d fk" x="22" y="42" font-size="15"><tspan class="fr">1 </tspan>MELT</text>
-          <text class="d fk" x="22" y="66" font-size="15"><tspan class="fr">2 </tspan>PUSH</text>
-          <text class="d fk" x="22" y="98" font-size="15"><tspan class="fr">3 </tspan>COOL</text>
-          <text class="d fk" x="22" y="146" font-size="15"><tspan class="fr">4 </tspan>STRETCH</text>
-          <text class="u fk" x="202" y="72" font-size="6.5">SPINNERET</text>
-        </svg>
-      </figure>
-      <div class="notes">
-        <header><span class="num">04</span><h3>Melt spinning</h3><span class="tc">0:41–1:00 · 19 s</span></header>
-        <dl>
-          <dt>Visual</dt><dd>Red chips tumble into a black funnel, then through a spinneret: a black bar with a row of paper-coloured holes. Fine red filaments fall, gather into one strand and run over two rollers.</dd>
-          <dt>Motion</dt><dd>Each of the four steps lights up as it happens. The strand visibly lengthens and thins between the rollers ("stretch").</dd>
-          <dt>On screen</dt><dd class="os">1 Melt · 2 Push · 3 Cool · 4 Stretch</dd>
-          <dt>Voice-over</dt><dd class="vo">To make fibre, PET chips are melted and pushed through a spinneret: a metal plate with tiny holes, like a shower head. The strands cool, then are stretched so the chains line up. It's the same plastic as a drinks bottle, in a different shape.</dd>
-          <dt>Sources</dt><dd><a href="#src-2">[2]</a> <a href="#src-3">[3]</a></dd>
-        </dl>
-      </div>
-    </article>
-
-    <article class="shot" id="s05" data-tc="1:00">
-      <figure class="frame">
-        <svg viewBox="0 0 320 180" role="img" aria-label="A grid of 100 squares where 59 are red: polyester was 59 percent of all fibre made in 2024. 88 percent of it was fossil-based.">
-          <defs>
-            <pattern id="p5g" x="24" y="30" width="11" height="11" patternUnits="userSpaceOnUse"><rect class="fg" width="9" height="9"/></pattern>
-            <pattern id="p5r" x="24" y="30" width="11" height="11" patternUnits="userSpaceOnUse"><rect class="fr" width="9" height="9"/></pattern>
-          </defs>
-          <rect class="fk" width="320" height="180"/>
-          <rect x="24" y="30" width="110" height="110" fill="url(#p5g)"/>
-          <rect x="24" y="30" width="110" height="55" fill="url(#p5r)"/>
-          <rect x="24" y="85" width="99" height="11" fill="url(#p5r)"/>
-          <text class="u fg" x="24" y="156" font-size="6.5">1 SQUARE = 1% OF ALL FIBRE</text>
-          <text class="d fr" x="150" y="84" font-size="56">59%</text>
-          <text class="u fp" x="152" y="102" font-size="8">OF ALL FIBRE MADE IN 2024</text>
-          <text class="u fp" x="152" y="113" font-size="8">WAS POLYESTER</text>
-          <text class="u fy" x="152" y="136" font-size="8">88% OF THAT: FOSSIL-BASED</text>
-          <text class="u fg" x="152" y="160" font-size="6">TEXTILE EXCHANGE, 2025</text>
-        </svg>
-      </figure>
-      <div class="notes">
-        <header><span class="num">05</span><h3>The scale</h3><span class="tc">1:00–1:14 · 14 s</span></header>
-        <dl>
-          <dt>Visual</dt><dd>Black ground. A 10 × 10 grid of grey squares; one square stands for 1% of all fibre. 59 squares flip to red.</dd>
-          <dt>Motion</dt><dd>Squares flip row by row on a hi-hat. The "59%" lands big. Then most of the red squares get a thin black outline to show the fossil-based share.</dd>
-          <dt>On screen</dt><dd class="os">59% of all fibre made in 2024 was polyester · 88% of that: fossil-based</dd>
-          <dt>Voice-over</dt><dd class="vo">Polyester is now the world's most-used fibre. In 2024 it was 59% of all fibre made, and 88% of that polyester came from fossil fuels.</dd>
-          <dt>Sources</dt><dd><a href="#src-1">[1]</a></dd>
-        </dl>
-      </div>
-    </article>
-  </div>
-
-  <!-- ACT II -->
-  <div class="act"><span class="act-n">Act II</span><h2>Pros and cons</h2><span class="tc">1:14–2:10</span></div>
-  <div class="shots">
-
-    <article class="shot" id="s06" data-tc="1:14">
-      <figure class="frame">
-        <svg viewBox="0 0 320 180" role="img" aria-label="Split frame. Left, red panel listing strengths: strong, holds its shape, quick-dry, cheap, less water than cotton. Right, a crisp red T-shirt on a hanger.">
-          <rect class="fr" width="160" height="180"/>
-          <rect class="fp" x="160" width="160" height="180"/>
-          <text class="d fp" x="18" y="40" font-size="15">STRONG</text>
-          <text class="d fp" x="18" y="62" font-size="15">HOLDS ITS SHAPE</text>
-          <text class="d fp" x="18" y="84" font-size="15">QUICK-DRY</text>
-          <text class="d fp" x="18" y="106" font-size="15">CHEAP</text>
-          <text class="d fp" x="18" y="128" font-size="15">LESS WATER</text>
-          <text class="u fp" x="18" y="140" font-size="6.5">TO MAKE THAN COTTON TO GROW</text>
-          <g filter="url(#cut)">
-            <path class="sk" stroke-width="3" d="M240 28 a6 6 0 1 1 6 6 v6 L206 64 H274 L246 40"/>
-            <polygon class="fr" points="210,68 226,62 254,62 270,68 284,90 270,96 263,88 263,142 217,142 217,88 210,96 196,90"/>
-          </g>
-          <text class="u fk" x="176" y="166" font-size="7">THE CASE FOR</text>
-        </svg>
-      </figure>
-      <div class="notes">
-        <header><span class="num">06</span><h3>The case for</h3><span class="tc">1:14–1:27 · 13 s</span></header>
-        <dl>
-          <dt>Visual</dt><dd>The frame splits. Left panel goes red and lists strengths. Right: a sharp red T-shirt on a black hanger, holding its shape.</dd>
-          <dt>Motion</dt><dd>Words stack in one by one on the beat. The shirt drops onto the hanger and doesn't wrinkle.</dd>
-          <dt>On screen</dt><dd class="os">Strong · Holds its shape · Quick-dry · Cheap · Less water</dd>
-          <dt>Voice-over</dt><dd class="vo">Designers choose it for good reasons. It's strong, keeps its shape, dries fast, and it's cheap. Making it uses far less water than growing cotton.</dd>
-          <dt>Sources</dt><dd><a href="#src-20">[20]</a></dd>
-        </dl>
-      </div>
-    </article>
-
-    <article class="shot" id="s07" data-tc="1:27">
-      <figure class="frame">
-        <svg viewBox="0 0 320 180" role="img" aria-label="Mirror split. Left, an oil drop above a toppling pile of red garments. Right, black panel listing drawbacks: fossil-based, doesn't biodegrade, cheap means more clothes, less breathable.">
-          <rect class="fp" width="160" height="180"/>
-          <rect class="fk" x="160" width="160" height="180"/>
-          <g filter="url(#cut)">
-            <path class="fk" d="M118 16 C114 28 106 36 106 46 a12 12 0 0 0 24 0 C130 36 122 28 118 16Z"/>
-            <rect class="fdr" x="44" y="78" width="84" height="13" transform="rotate(-4 86 84)"/>
-            <rect class="fr" x="30" y="94" width="98" height="13" transform="rotate(3 79 100)"/>
-            <rect class="fdr" x="38" y="110" width="94" height="13" transform="rotate(-2 85 116)"/>
-            <rect class="fr" x="26" y="126" width="108" height="13" transform="rotate(1 80 132)"/>
-            <rect class="fdr" x="32" y="142" width="100" height="13"/>
-          </g>
-          <text class="d fp" x="176" y="40" font-size="14">FOSSIL-BASED</text>
-          <text class="d fp" x="176" y="62" font-size="14">DOESN'T BIODEGRADE</text>
-          <text class="d fp" x="176" y="84" font-size="14">CHEAP = MORE CLOTHES</text>
-          <text class="d fp" x="176" y="106" font-size="14">LESS BREATHABLE</text>
-          <text class="u fy" x="176" y="166" font-size="7">THE CASE AGAINST</text>
-        </svg>
-      </figure>
-      <div class="notes">
-        <header><span class="num">07</span><h3>The case against</h3><span class="tc">1:27–1:38 · 11 s</span><span class="cut">Merge into 06 for short version</span></header>
-        <dl>
-          <dt>Visual</dt><dd>The split flips: the right panel goes black and lists drawbacks. On the left, a small oil drop hangs above a growing, toppling pile of red garments.</dd>
-          <dt>Motion</dt><dd>The pile grows one garment per beat until it leans. Use the same rhythm as shot 06 so the two read as a pair.</dd>
-          <dt>On screen</dt><dd class="os">Fossil-based · Doesn't biodegrade · Cheap = more clothes · Less breathable</dd>
-          <dt>Voice-over</dt><dd class="vo">But it's made from oil, it doesn't biodegrade, and because it's so cheap, it makes over-producing clothes easy.</dd>
-          <dt>Sources</dt><dd><a href="#src-1">[1]</a> <a href="#src-20">[20]</a></dd>
-        </dl>
-      </div>
-    </article>
-
-    <article class="shot" id="s08" data-tc="1:38">
-      <figure class="frame">
-        <svg viewBox="0 0 320 180" role="img" aria-label="A washing machine with red fibres swirling in the drum; some escape down a pipe into a wave. Text: 5 kg wash, 6,000,000 plus microfibres.">
-          <rect class="fp" width="320" height="180"/>
-          <g filter="url(#cut)">
-            <rect class="fk" x="40" y="30" width="110" height="124" rx="6"/>
-            <path class="sk" stroke-width="6" d="M150 130 H200 Q210 130 210 140 V150"/>
-          </g>
-          <rect class="fp" x="52" y="40" width="40" height="6"/>
-          <circle class="fp" cx="132" cy="43" r="4"/>
-          <circle class="fp" cx="95" cy="100" r="38"/>
-          <circle class="sr" cx="95" cy="100" r="26" stroke-width="4" stroke-dasharray="4 5"/>
-          <circle class="sr" cx="95" cy="100" r="14" stroke-width="3" stroke-dasharray="3 6"/>
-          <path class="sk" stroke-width="3" d="M196 162 q12 -8 24 0 t24 0 t24 0 t24 0 t24 0"/>
-          <path class="sr" stroke-width="2" d="M214 152 l5 -2 M232 148 l5 2 M250 154 l5 -2 M270 149 l4 3 M288 155 l5 -2"/>
-          <text class="d fk" x="176" y="52" font-size="18">ONE 5 KG WASH</text>
-          <text class="d fr" x="176" y="82" font-size="28">6,000,000+</text>
-          <text class="u fk" x="176" y="96" font-size="7">MICROFIBRES (LAB STUDY)</text>
-        </svg>
-      </figure>
-      <div class="notes">
-        <header><span class="num">08</span><h3>Microfibres</h3><span class="tc">1:38–1:52 · 14 s</span></header>
-        <dl>
-          <dt>Visual</dt><dd>A black washing machine, its drum a perfect Bass circle. Red dashes swirl inside. Some escape down the pipe and drift into a wave line.</dd>
-          <dt>Motion</dt><dd>The drum spins on a shaker loop. The number counts up fast and stops on "6,000,000+".</dd>
-          <dt>On screen</dt><dd class="os">One 5 kg wash → 6,000,000+ microfibres (lab study)</dd>
-          <dt>Voice-over</dt><dd class="vo">Every wash sheds tiny fibres. In one lab study, a five-kilogram load of polyester released more than six million. Some are small enough to slip through water treatment.</dd>
-          <dt>Sources</dt><dd><a href="#src-4">[4]</a> <a href="#src-5">[5]</a></dd>
-        </dl>
-      </div>
-    </article>
-
-    <article class="shot" id="s09" data-tc="1:52">
-      <figure class="frame">
-        <svg viewBox="0 0 320 180" role="img" aria-label="A red bottle becomes a red T-shirt. A loop arrow tries to return to the bottle but stops short; the shirt falls onto a grey waste pile. Text: less than 1 percent of all fibre comes from old clothes.">
-          <rect class="fp" width="320" height="180"/>
-          <g filter="url(#cut)">
-            <path class="fr" d="M44 40 h12 v10 q10 6 10 18 v62 q0 6 -6 6 h-20 q-6 0 -6 -6 v-62 q0 -12 10 -18Z"/>
-            <polygon class="fr" points="126,66 140,60 160,60 174,66 184,82 172,88 168,82 168,122 132,122 132,82 128,88 116,82"/>
-            <polygon class="fg" points="208,162 304,162 292,142 272,134 242,138 222,148"/>
-          </g>
-          <path class="sk" stroke-width="3" d="M74 90 H106 M100 84 L106 90 L100 96"/>
-          <path class="sk" stroke-width="3" d="M150 52 C150 14 92 8 70 24"/>
-          <path class="sk" stroke-width="2" stroke-dasharray="4 4" d="M180 110 Q206 116 224 134"/>
-          <text class="d fr" x="226" y="70" font-size="32">&lt;1%</text>
-          <text class="u fk" x="228" y="84" font-size="7">OF ALL FIBRE IS MADE</text>
-          <text class="u fk" x="228" y="94" font-size="7">FROM OLD CLOTHES</text>
-        </svg>
-      </figure>
-      <div class="notes">
-        <header><span class="num">09</span><h3>The bottle loop</h3><span class="tc">1:52–2:10 · 18 s</span></header>
-        <dl>
-          <dt>Visual</dt><dd>A red bottle morphs into a red T-shirt. A black loop arrow sets off from the shirt to return to the bottle, but stops short. The shirt drops onto a grey heap.</dd>
-          <dt>Motion</dt><dd>The arrow draws on, hesitates, stops. Silence for one beat. Then the shirt falls.</dd>
-          <dt>On screen</dt><dd class="os">Recycled polyester: mostly bottles · &lt;1% of all fibre is made from old clothes</dd>
-          <dt>Voice-over</dt><dd class="vo">Recycled polyester sounds circular. But most of it comes from plastic bottles, not old clothes. Less than one percent of all fibre is made from recycled textiles. The bottle becomes a shirt, and the shirt usually stops there.</dd>
-          <dt>Sources</dt><dd><a href="#src-1">[1]</a> <a href="#src-6">[6]</a></dd>
-        </dl>
-      </div>
-    </article>
-  </div>
-
-  <!-- ACT III -->
-  <div class="act"><span class="act-n">Act III</span><h2>Why mixes don't come back</h2><span class="tc">2:10–3:04</span></div>
-  <div class="shots">
-
-    <article class="shot" id="s10" data-tc="2:10">
-      <figure class="frame">
-        <svg viewBox="0 0 320 180" role="img" aria-label="A care label reading 88 percent polyester, 12 percent elastane, next to a yarn cross-section: a mustard elastane core wrapped in red polyester.">
-          <rect class="fk" width="320" height="180"/>
-          <g filter="url(#cut)">
-            <polygon class="fp" points="40,30 150,26 156,150 46,154"/>
-            <circle class="fr" cx="236" cy="80" r="40"/>
-            <circle class="fy" cx="236" cy="80" r="17"/>
-          </g>
-          <g transform="rotate(-2 100 90)">
-            <path class="sk" stroke-width="1" stroke-dasharray="3 3" d="M50 42 H148"/>
-            <text class="d fk" x="56" y="80" font-size="18">88% POLYESTER</text>
-            <text class="d fk" x="56" y="106" font-size="18">12% ELASTANE</text>
-            <rect class="fy" x="56" y="110" width="78" height="4"/>
-            <text class="u fk" x="56" y="138" font-size="6">MACHINE WASH 30°</text>
-          </g>
-          <text class="u fp" x="236" y="138" font-size="7" text-anchor="middle">POLYESTER WRAP</text>
-          <text class="u fy" x="236" y="150" font-size="6.5" text-anchor="middle">ELASTANE CORE = POLYURETHANE</text>
-        </svg>
-      </figure>
-      <div class="notes">
-        <header><span class="num">10</span><h3>Read the label</h3><span class="tc">2:10–2:24 · 14 s</span></header>
-        <dl>
-          <dt>Visual</dt><dd>A paper care label is stitched onto black, tilted slightly. Cut to a yarn cross-section: a mustard elastane core wrapped in red polyester.</dd>
-          <dt>Motion</dt><dd>A dashed stitch line runs across the label. The mustard underline swipes under "elastane". Push into the yarn: the red parts to reveal the mustard core.</dd>
-          <dt>On screen</dt><dd class="os">88% polyester · 12% elastane · Elastane = spandex = polyurethane</dd>
-          <dt>Voice-over</dt><dd class="vo">Now check the label on your leggings. Elastane, also called spandex, gives the stretch. It isn't polyester. It's polyurethane: a different plastic, wrapped into the yarn.</dd>
-          <dt>Sources</dt><dd><a href="#src-7">[7]</a></dd>
-        </dl>
-      </div>
-    </article>
-
-    <article class="shot" id="s11" data-tc="2:24">
-      <figure class="frame">
-        <svg viewBox="0 0 320 180" role="img" aria-label="A recycling loop with red polyester flowing round it, jammed by mustard elastane pieces. Text: a little elastane spoils the batch.">
-          <rect class="fp" width="320" height="180"/>
-          <circle class="sk" cx="104" cy="92" r="56" stroke-width="10"/>
-          <circle class="sr" cx="104" cy="92" r="56" stroke-width="4" stroke-dasharray="10 8"/>
-          <polygon class="fk" points="96,26 112,36 96,46"/>
-          <g filter="url(#cut)">
-            <rect class="fy" x="150" y="80" width="18" height="8" transform="rotate(-20 159 84)"/>
-            <rect class="fy" x="156" y="94" width="16" height="8" transform="rotate(25 164 98)"/>
-            <rect class="fy" x="146" y="104" width="14" height="7" transform="rotate(-8 153 107)"/>
-          </g>
-          <path class="sk" stroke-width="3" d="M170 66 l10 10 M180 66 l-10 10"/>
-          <text class="d fk" x="198" y="58" font-size="18">A LITTLE</text>
-          <rect class="fy" x="196" y="64" width="86" height="22"/>
-          <text class="d fk" x="200" y="82" font-size="18">ELASTANE</text>
-          <text class="d fk" x="198" y="106" font-size="14">SPOILS THE BATCH</text>
-          <text class="u fk" x="198" y="134" font-size="6.5">IN ~80% OF DISCARDED</text>
-          <text class="u fk" x="198" y="144" font-size="6.5">CLOTHES (US ESTIMATE)</text>
-        </svg>
-      </figure>
-      <div class="notes">
-        <header><span class="num">11</span><h3>The jam</h3><span class="tc">2:24–2:43 · 19 s</span><span class="cut">Shorten for short version</span></header>
-        <dl>
-          <dt>Visual</dt><dd>A black recycling loop with red polyester dashes flowing round it. Mustard bars enter at the right and the loop jams: dashes bunch up, the arrow stalls.</dd>
-          <dt>Motion</dt><dd>Flow on a steady shaker. On the jam the music drops out and the loop judders twice. A small paper "coating" peels off one mustard bar and dissolves (the research fix), but the loop stays stalled.</dd>
-          <dt>On screen</dt><dd class="os">A little elastane spoils the batch · In ~80% of discarded clothes (US estimate)</dd>
-          <dt>Voice-over</dt><dd class="vo">Recycling works best when everything going in is the same. Even a little elastane spoils a polyester batch, and one estimate finds it in around 80% of discarded clothes. Scientists are testing fixes, like coatings that dissolve away, but none is standard yet.</dd>
-          <dt>Sources</dt><dd><a href="#src-7">[7]</a> <a href="#src-19">[19]</a></dd>
-        </dl>
-      </div>
-    </article>
-
-    <article class="shot" id="s12" data-tc="2:43">
-      <figure class="frame">
-        <svg viewBox="0 0 320 180" role="img" aria-label="Left, a clean loop of identical red squares: one polymer, one route back. Right, a teal PLA circle bounces off a red PET loop: same family is not the same stream.">
-          <rect class="fp" width="320" height="180"/>
-          <rect class="fk" x="158" y="0" width="4" height="180"/>
-          <circle class="sk" cx="80" cy="84" r="40" stroke-width="6"/>
-          <g filter="url(#cut)">
-            <rect class="fr" x="73" y="37" width="14" height="14"/>
-            <rect class="fr" x="113" y="77" width="14" height="14"/>
-            <rect class="fr" x="33" y="77" width="14" height="14"/>
-            <rect class="fr" x="73" y="117" width="14" height="14"/>
-          </g>
-          <circle class="sr" cx="236" cy="84" r="40" stroke-width="6"/>
-          <g filter="url(#cut)">
-            <rect class="fr" x="229" y="37" width="14" height="14"/>
-            <rect class="fr" x="189" y="77" width="14" height="14"/>
-            <circle class="ft" cx="296" cy="50" r="9"/>
-          </g>
-          <path class="sk" stroke-width="2" d="M276 72 q8 -18 18 -14 M282 80 l-6 -8 l9 -1"/>
-          <text class="d ft" x="262" y="146" font-size="15">0.1%</text>
-          <text class="u fk" x="80" y="152" font-size="7" text-anchor="middle">ONE POLYMER,</text>
-          <text class="u fk" x="80" y="162" font-size="7" text-anchor="middle">ONE ROUTE BACK</text>
-          <text class="u fk" x="222" y="162" font-size="7" text-anchor="middle">SAME FAMILY ≠ SAME STREAM</text>
-        </svg>
-      </figure>
-      <div class="notes">
-        <header><span class="num">12</span><h3>One material, one route</h3><span class="tc">2:43–3:04 · 21 s</span></header>
-        <dl>
-          <dt>Visual</dt><dd>Split frame. Left: a clean loop where identical red squares circle and return. Right: a teal circle (PLA) tries to join a red PET loop and is bounced out.</dd>
-          <dt>Motion</dt><dd>Left loop turns smoothly. On "careful", cut to the right: the teal circle drops in, the loop flashes once, and the circle is flicked out. "0.1%" lands in teal.</dd>
-          <dt>On screen</dt><dd class="os">One polymer, one route back · Same family ≠ same stream</dd>
-          <dt>Voice-over</dt><dd class="vo">So designers ask: can stretchy clothes be made from one material? Careful. "Polyester" is a family. PLA is a polyester too, yet in bottle recycling, a tenth of one percent of PLA can spoil a PET batch. What counts is the exact plastic, and the exact route back.</dd>
-          <dt>Sources</dt><dd><a href="#src-8">[8]</a> <a href="#src-19">[19]</a></dd>
-        </dl>
-      </div>
-    </article>
-  </div>
-
-  <!-- ACT IV -->
-  <div class="act"><span class="act-n">Act IV</span><h2>The frontier</h2><span class="tc">3:04–3:58</span></div>
-  <div class="shots">
-
-    <article class="shot" id="s13" data-tc="3:04">
-      <figure class="frame">
-        <svg viewBox="0 0 320 180" role="img" aria-label="Two polyester strips, red and light red, bonded side by side, curl into a coiled spring. Text: two polyesters, one filament; stretch from shape, not rubber.">
-          <rect class="fk" width="320" height="180"/>
-          <g filter="url(#cut)">
-            <rect class="fr" x="30" y="44" width="9" height="100"/>
-            <rect class="frl" x="39" y="44" width="9" height="100"/>
-          </g>
-          <path class="sp" stroke-width="2.5" d="M58 94 H84 M78 88 L84 94 L78 100"/>
-          <path class="srl" stroke-width="4" d="M101 122 a10 30 0 1 1 14 0 a10 30 0 1 1 14 0 a10 30 0 1 1 14 0 a10 30 0 1 1 14 0 a10 30 0 1 1 14 0 a10 30 0 1 1 14 0 a10 30 0 1 1 14 0 a10 30 0 1 1 14 0 a10 30 0 1 1 14 0 a10 30 0 1 1 14 0 a10 30 0 1 1 14 0 a10 30 0 1 1 14 0 a10 30 0 1 1 14 0"/>
-          <path class="sr" stroke-width="4" d="M98 120 a10 30 0 1 1 14 0 a10 30 0 1 1 14 0 a10 30 0 1 1 14 0 a10 30 0 1 1 14 0 a10 30 0 1 1 14 0 a10 30 0 1 1 14 0 a10 30 0 1 1 14 0 a10 30 0 1 1 14 0 a10 30 0 1 1 14 0 a10 30 0 1 1 14 0 a10 30 0 1 1 14 0 a10 30 0 1 1 14 0 a10 30 0 1 1 14 0"/>
-          <text class="d fp" x="98" y="30" font-size="15">TWO POLYESTERS, ONE FILAMENT</text>
-          <text class="u fy" x="98" y="152" font-size="7">STRETCH FROM SHAPE, NOT RUBBER</text>
-          <text class="u fp" x="98" y="166" font-size="6">e.g. LYCRA® T400® · MAKER'S RECYCLING CLAIM</text>
-        </svg>
-      </figure>
-      <div class="notes">
-        <header><span class="num">13</span><h3>Stretch from shape</h3><span class="tc">3:04–3:23 · 19 s</span></header>
-        <dl>
-          <dt>Visual</dt><dd>Black ground. Two strips, red and light red, bonded side by side: two different polyesters in one filament. They curl into a coil spring.</dd>
-          <dt>Motion</dt><dd>The strips shrink at different rates and twist into the coil, which then stretches and snaps back three times on the beat. Callback to the zigzag in shot 01.</dd>
-          <dt>On screen</dt><dd class="os">Two polyesters, one filament · Stretch from shape, not rubber</dd>
-          <dt>Voice-over</dt><dd class="vo">One idea is already on sale. Join two different polyesters inside one filament. They shrink differently, so the filament curls into a spring: stretch, with no elastane. The maker says it can be chemically recycled with polyester. Ask to see independent evidence.</dd>
-          <dt>Sources</dt><dd><a href="#src-9">[9]</a> <a href="#src-10">[10]</a></dd>
-        </dl>
-      </div>
-    </article>
-
-    <article class="shot" id="s14" data-tc="3:23">
-      <figure class="frame">
-        <svg viewBox="0 0 320 180" role="img" aria-label="A teal plant stalk whose top turns into a chain of teal circles: PLA from plant sugars. Bar chart of melting points, PLA about 170 degrees, PET about 250 degrees, drawn to scale from zero.">
-          <rect class="fp" width="320" height="180"/>
-          <g filter="url(#cut)">
-            <path class="st" stroke-width="4" d="M60 160 C58 120 64 90 60 50"/>
-            <polygon class="ft" points="60,122 34,104 58,112"/>
-            <polygon class="ft" points="61,98 88,80 63,90"/>
-            <polygon class="ft" points="60,76 38,60 59,66"/>
-            <circle class="ft" cx="70" cy="40" r="5"/><circle class="ft" cx="84" cy="34" r="5"/><circle class="ft" cx="98" cy="30" r="5"/><circle class="ft" cx="112" cy="28" r="5"/><circle class="ft" cx="126" cy="28" r="5"/>
-          </g>
-          <text class="d ft" x="104" y="110" font-size="13">COOL IRON</text>
-          <text class="d ft" x="104" y="124" font-size="13">ONLY</text>
-          <text class="u fk" x="200" y="24" font-size="7">MELTING POINT</text>
-          <rect class="ft" x="200" y="82" width="30" height="68"/>
-          <rect class="fr" x="250" y="50" width="30" height="100"/>
-          <path class="sk" stroke-width="1.5" d="M192 150 H290"/>
-          <text class="u fk" x="215" y="76" font-size="7" text-anchor="middle">~170°C</text>
-          <text class="u fk" x="265" y="44" font-size="7" text-anchor="middle">~250°C</text>
-          <text class="u fk" x="215" y="162" font-size="7" text-anchor="middle">PLA</text>
-          <text class="u fk" x="265" y="162" font-size="7" text-anchor="middle">PET</text>
-          <text class="u fk" x="24" y="172" font-size="6.5">PLANT SUGARS → PLA</text>
-        </svg>
-      </figure>
-      <div class="notes">
-        <header><span class="num">14</span><h3>PLA: polyester from plants</h3><span class="tc">3:23–3:41 · 18 s</span></header>
-        <dl>
-          <dt>Visual</dt><dd>A teal stalk grows; its tip turns into a chain of teal circles. On the right, two bars compare melting points, drawn to scale from 0 °C: PLA about 170 °C, PET about 250 °C.</dd>
-          <dt>Motion</dt><dd>Leaves pop on the beat. The bars rise together; the teal one stops early. "Cool iron only" drops in beneath the plant.</dd>
-          <dt>On screen</dt><dd class="os">Plant sugars → PLA · Melts ~170 °C vs ~250 °C · Cool iron only · Compostable: industrially, not at home</dd>
-          <dt>Voice-over</dt><dd class="vo">Another route is PLA, a polyester made from plant sugars, such as corn. It's bio-based and compostable, but only in industrial composting. It melts at a much lower temperature than PET, so it needs a cool iron, and it dyes differently.</dd>
-          <dt>Sources</dt><dd><a href="#src-11">[11]</a> <a href="#src-12">[12]</a></dd>
-        </dl>
-      </div>
-    </article>
-
-    <article class="shot" id="s15" data-tc="3:41">
-      <figure class="frame">
-        <svg viewBox="0 0 320 180" role="img" aria-label="A lab-made polyester rubber shown as two teal blocks joined by a zigzag spring. Small at rest, then stretched to eleven times its length, drawn to scale against a ruler.">
-          <rect class="fk" width="320" height="180"/>
-          <g filter="url(#cut)">
-            <rect class="ft" x="40" y="40" width="6" height="10"/>
-            <rect class="ft" x="56" y="40" width="6" height="10"/>
-            <rect class="ft" x="40" y="96" width="6" height="10"/>
-            <rect class="ft" x="276" y="96" width="6" height="10"/>
-          </g>
-          <path class="sp" stroke-width="1.5" d="M46 45 l2 -4 l2 8 l2 -8 l2 8 l2 -4"/>
-          <path class="sp" stroke-width="1.5" d="M46 101 l23 -2 l23 4 l23 -4 l23 4 l23 -4 l23 4 l23 -4 l23 4 l23 -4 l23 2"/>
-          <path class="sp" stroke-width="1" d="M40 124 H282 M40 120 V128 M62 121 V127 M84 121 V127 M106 121 V127 M128 121 V127 M150 121 V127 M172 121 V127 M194 121 V127 M216 121 V127 M238 121 V127 M260 121 V127 M282 120 V128"/>
-          <text class="u fp" x="40" y="138" font-size="6.5" text-anchor="middle">0</text>
-          <text class="u fp" x="62" y="138" font-size="6.5" text-anchor="middle">1×</text>
-          <text class="u fp" x="282" y="138" font-size="6.5" text-anchor="middle">11×</text>
-          <text class="u fg" x="70" y="49" font-size="6.5">AT REST</text>
-          <text class="d fy" x="150" y="44" font-size="18">IN THE LAB</text>
-          <text class="u fp" x="150" y="58" font-size="7">ALL-POLYESTER RUBBER</text>
-          <text class="u fp" x="40" y="162" font-size="7">STRETCHES ~11× BEFORE BREAKING · NOT ON SALE</text>
-        </svg>
-      </figure>
-      <div class="notes">
-        <header><span class="num">15</span><h3>The lab frontier</h3><span class="tc">3:41–3:58 · 17 s</span><span class="cut">Cut for short version</span></header>
-        <dl>
-          <dt>Visual</dt><dd>A tiny cut-paper molecule: two hard teal blocks with a soft zigzag spring between. It stretches across the whole frame against a ruler, to scale: about 11 times its resting length.</dd>
-          <dt>Motion</dt><dd>One long pull, held on a sustained bass note, then a snap back. A paper stamp "NOT ON SALE" lands at the end.</dd>
-          <dt>On screen</dt><dd class="os">In the lab · All-polyester rubber · Stretches ~11× before breaking · Not on sale</dd>
-          <dt>Voice-over</dt><dd class="vo">In the lab, chemists have made rubbers entirely from polyesters: hard ends with a soft, springy middle. They stretch more than ten times their length. But none of this is a fibre you can order yet.</dd>
-          <dt>Sources</dt><dd><a href="#src-13">[13]</a></dd>
-        </dl>
-      </div>
-    </article>
-  </div>
-
-  <!-- CODA -->
-  <div class="act"><span class="act-n">Coda</span><h2>What you can do</h2><span class="tc">3:58–4:32</span></div>
-  <div class="shots">
-
-    <article class="shot" id="s16" data-tc="3:58">
-      <figure class="frame">
-        <svg viewBox="0 0 320 180" role="img" aria-label="A textile collection bin tagged producer pays, beside a four-point designer checklist: read the label, fewer fibres per garment, know the route back, question recycled.">
-          <rect class="fp" width="320" height="180"/>
-          <g filter="url(#cut)">
-            <polygon class="fk" points="40,62 110,62 104,152 46,152"/>
-            <rect class="fk" x="34" y="50" width="82" height="8"/>
-            <polygon class="fr" points="66,86 114,86 122,98 114,110 66,110"/>
-          </g>
-          <text class="u fp" x="70" y="101" font-size="6">PRODUCER PAYS</text>
-          <text class="d fk" x="34" y="38" font-size="13">EU LAW · 2025</text>
-          <rect class="fk" x="146" y="28" width="156" height="26"/>
-          <rect class="fk" x="146" y="60" width="156" height="26"/>
-          <rect class="fk" x="146" y="92" width="156" height="26"/>
-          <rect class="fk" x="146" y="124" width="156" height="26"/>
-          <rect class="fr" x="152" y="38" width="6" height="6"/><rect class="fr" x="152" y="70" width="6" height="6"/>
-          <rect class="fr" x="152" y="102" width="6" height="6"/><rect class="fr" x="152" y="134" width="6" height="6"/>
-          <text class="d fp" x="164" y="46" font-size="12">READ THE LABEL</text>
-          <text class="d fp" x="164" y="78" font-size="12">FEWER FIBRES PER GARMENT</text>
-          <text class="d fp" x="164" y="110" font-size="12">KNOW THE ROUTE BACK</text>
-          <text class="d fp" x="164" y="142" font-size="12">QUESTION "RECYCLED"</text>
-        </svg>
-      </figure>
-      <div class="notes">
-        <header><span class="num">16</span><h3>What changes now</h3><span class="tc">3:58–4:17 · 19 s</span></header>
-        <dl>
-          <dt>Visual</dt><dd>A black textile-collection bin with a red tag: "Producer pays". Then four black cards stack in on the right: the designer's checklist.</dd>
-          <dt>Motion</dt><dd>The tag swings onto the bin. Each card slams in on a drum hit, one per instruction in the voice-over.</dd>
-          <dt>On screen</dt><dd class="os">EU law 2025: producer pays · Read the label · Fewer fibres per garment · Know the route back · Question "recycled"</dd>
-          <dt>Voice-over</dt><dd class="vo">The rules are changing too. Under new EU law, brands will pay to collect and sort used textiles. So, as a designer: read the label. Use fewer fibres in one garment. Know how it will come back. And question the word "recycled".</dd>
-          <dt>Sources</dt><dd><a href="#src-14">[14]</a> <a href="#src-15">[15]</a></dd>
-        </dl>
-      </div>
-    </article>
-
-    <article class="shot" id="s17" data-tc="4:17">
-      <figure class="frame">
-        <svg viewBox="0 0 320 180" role="img" aria-label="End card: the red line from the title forms a loop that does not quite close. Inside, the question: what would you design if every garment had to come back?">
-          <rect class="fk" width="320" height="180"/>
-          <g filter="url(#cut)"><path class="sr" stroke-width="7" d="M170.8 22.9 A62 62 0 1 1 149.2 22.9"/></g>
-          <text class="d fp" x="160" y="74" font-size="12.5" text-anchor="middle">WHAT WOULD YOU DESIGN</text>
-          <text class="d fp" x="160" y="90" font-size="12.5" text-anchor="middle">IF EVERY GARMENT</text>
-          <text class="d fp" x="160" y="106" font-size="12.5" text-anchor="middle">HAD TO COME BACK?</text>
-          <text class="u fy" x="160" y="168" font-size="5.6" text-anchor="middle">FN4005 · RESEARCH AND DIRECTION: MATTHEW MOUNSEY-WOOD FHEA MA (RCA)</text>
-        </svg>
-      </figure>
-      <div class="notes">
-        <header><span class="num">17</span><h3>The open loop</h3><span class="tc">4:17–4:32 · 15 s</span></header>
-        <dl>
-          <dt>Visual</dt><dd>The red line from shot 01 returns and bends into a circle, but stops just short of closing. The question sits inside the gap. Credits and a source card follow.</dd>
-          <dt>Motion</dt><dd>The loop draws slowly and stops. Music resolves on an unresolved chord. Hold 4 s on the question, then credits and sources as in a Bass end sequence: type only, on the beat.</dd>
-          <dt>On screen</dt><dd class="os">What would you design if every garment had to come back?</dd>
-          <dt>Voice-over</dt><dd class="vo">What would you design, if every garment had to come back?</dd>
-          <dt>Sound</dt><dd>Bass line slows; final trumpet note left hanging.</dd>
-        </dl>
-      </div>
-    </article>
-  </div>
+  <div class="sec-head"><span class="eyebrow">17 shots · each frame is the live simulation</span><h2 id="h-board">Storyboard and script</h2></div>
+  <div id="board"><p>The storyboard builds when the page loads.</p></div>
 </section>
 
 <section aria-labelledby="h-vo">
-  <div class="sec-head"><span class="eyebrow">For recording</span><h2 id="h-vo">Voice-over read-through</h2></div>
+  <div class="sec-head"><span class="eyebrow">For recording and captions</span><h2 id="h-vo">Voice-over read-through</h2></div>
   <div class="vo-tools">
-    <span id="vo-stats">Built from the storyboard above.</span>
+    <span id="vo-stats"></span>
     <button type="button" id="vo-copy">Copy script</button>
+    <button type="button" id="srt-copy" class="ghost">Copy SRT captions</button>
     <span id="vo-msg" role="status" aria-live="polite"></span>
   </div>
-  <div class="vo-script" id="vo-script"><p>The script appears here once the page loads.</p></div>
+  <div class="vo-script" id="vo-script"></div>
 </section>
 
 <section aria-labelledby="h-facts">
   <div class="sec-head"><span class="eyebrow">Every number on screen</span><h2 id="h-facts">Fact check</h2></div>
-  <p>How sure we can be of each claim. <span class="chip strong">Strong</span> independent data or peer-reviewed. <span class="chip moderate">Moderate</span> a single study, an older source, or an estimate. <span class="chip weak">Weak</span> a claim from someone with an interest in it.</p>
+  <p>How sure we can be of each claim. <span class="chip strong">Strong</span> independent data or peer-reviewed. <span class="chip moderate">Moderate</span> one study, an older source, or an estimate. <span class="chip weak">Weak</span> a claim from someone with an interest in it.</p>
   <div class="tablewrap">
     <table>
       <thead><tr><th>Claim</th><th>Shot</th><th>Confidence</th><th>Source and notes</th></tr></thead>
       <tbody>
         <tr><td>Polyester was 59% of global fibre in 2024 (78 of 132 million tonnes); 88% of it fossil-based.</td><td class="n">05</td><td><span class="chip strong">Strong</span></td><td>Textile Exchange, Materials Market Report 2025 <a href="#src-1">[1]</a>. Industry body, but the standard reference.</td></tr>
-        <tr><td>Recycled polyester ≈ 12% of polyester (down from 12.5%); mostly bottles. &lt;1% of all fibre is from textile-to-textile recycling.</td><td class="n">09</td><td><span class="chip strong">Strong</span></td><td><a href="#src-1">[1]</a>. Changing Markets puts "not from textiles" at 98% <a href="#src-6">[6]</a>.</td></tr>
-        <tr><td>Invented 1941, Whinfield and Dickson, Calico Printers' Association; sold as Terylene and Dacron.</td><td class="n">03</td><td><span class="chip strong">Strong</span></td><td><a href="#src-2">[2]</a> <a href="#src-3">[3]</a>. Check the Lancashire location against [2] before final VO.</td></tr>
-        <tr><td>Less water to make than cotton is to grow.</td><td class="n">06</td><td><span class="chip moderate">Moderate</span></td><td>Widely agreed direction; LCA results vary by study <a href="#src-20">[20]</a>. Kept qualitative on purpose: no number on screen.</td></tr>
-        <tr><td>A 5 kg polyester wash released 6,000,000+ microfibres.</td><td class="n">08</td><td><span class="chip moderate">Moderate</span></td><td>De Falco et al. 2018 <a href="#src-4">[4]</a>. Lab conditions; shedding varies a lot by fabric and detergent. Hence "in one lab study".</td></tr>
-        <tr><td>Recycled polyester sheds ~55% more microplastics than virgin.</td><td class="n">—</td><td><span class="chip weak">Weak</span></td><td>Changing Markets, Dec 2025 <a href="#src-6">[6]</a>. NGO-commissioned, not peer-reviewed. Left out of the film; good for seminar discussion.</td></tr>
+        <tr><td>Recycled polyester ≈ 12% of polyester; mostly bottles. Under 1% of all fibre comes from textile-to-textile recycling.</td><td class="n">09</td><td><span class="chip strong">Strong</span></td><td><a href="#src-1">[1]</a>. Changing Markets puts "not from textiles" at 98% <a href="#src-6">[6]</a>.</td></tr>
+        <tr><td>Invented 1941 by Whinfield and Dickson at the Calico Printers' Association; sold as Terylene and Dacron.</td><td class="n">03</td><td><span class="chip strong">Strong</span></td><td><a href="#src-2">[2]</a> <a href="#src-3">[3]</a>. Check the Lancashire location against [2] before recording.</td></tr>
+        <tr><td>Less water to make than cotton takes to grow.</td><td class="n">06</td><td><span class="chip moderate">Moderate</span></td><td>Widely agreed direction; results vary by study <a href="#src-20">[20]</a>. Kept qualitative: no number on screen.</td></tr>
+        <tr><td>A 5 kg polyester wash released 6,000,000+ microfibres.</td><td class="n">08</td><td><span class="chip moderate">Moderate</span></td><td>De Falco et al. 2018 <a href="#src-4">[4]</a>. Lab conditions; varies widely by fabric and detergent. Hence "in one lab study".</td></tr>
+        <tr><td>Recycled polyester sheds ~55% more microplastics than virgin.</td><td class="n">–</td><td><span class="chip weak">Weak</span></td><td>Changing Markets, Dec 2025 <a href="#src-6">[6]</a>. NGO-commissioned, not peer-reviewed. Left out of the film; used in seminar question 5.</td></tr>
         <tr><td>Elastane is ~1% of fabric but in ~80% of discarded US garments; separation is hard; dissolvable coatings in pilot.</td><td class="n">11</td><td><span class="chip moderate">Moderate</span></td><td>RSC Applied Polymers 2025 <a href="#src-7">[7]</a>, citing an earlier estimate. Hence "one estimate".</td></tr>
-        <tr><td>PLA above ~0.1% disrupts PET recycling.</td><td class="n">12</td><td><span class="chip moderate">Moderate</span></td><td>NAPCOR, 2009, about bottles <a href="#src-8">[8]</a>. VO says "in bottle recycling" so the claim isn't stretched to textiles.</td></tr>
-        <tr><td>Bicomponent polyester (PET + PTT) gives stretch by helical crimp; FiT400 compatible with polyester chemical recycling.</td><td class="n">13</td><td><span class="chip weak">Weak</span></td><td>Mechanism: strong <a href="#src-9">[9]</a>. Recycling claim: the manufacturer's own tests <a href="#src-10">[10]</a>. VO names it as the maker's claim.</td></tr>
-        <tr><td>PLA melts ~170 °C (PET ~250 °C); cool iron; dyes differently; hydrolyses in hot, wet, alkaline processing.</td><td class="n">14</td><td><span class="chip strong">Strong</span></td><td><a href="#src-11">[11]</a> <a href="#src-12">[12]</a>. Melting points are typical ranges: PLA 150–180 °C, PET 250–260 °C.</td></tr>
-        <tr><td>All-polyester (PLA-based) thermoplastic elastomers reach ~1,000% elongation at break.</td><td class="n">15</td><td><span class="chip strong">Strong</span></td><td>Watts et al. 2017 <a href="#src-13">[13]</a>. 1,000% elongation = 11× original length. Lab material, not a fibre product.</td></tr>
+        <tr><td>PLA above ~0.1% disrupts PET recycling.</td><td class="n">12</td><td><span class="chip moderate">Moderate</span></td><td>NAPCOR 2009, about bottles <a href="#src-8">[8]</a>. The voice-over says "in bottle recycling" so it isn't stretched to textiles.</td></tr>
+        <tr><td>Two polyesters (PET + PTT) in one filament give stretch by helical crimp; FiT400 said to be compatible with polyester chemical recycling.</td><td class="n">13</td><td><span class="chip weak">Weak</span></td><td>Mechanism: strong <a href="#src-9">[9]</a>. Recycling claim: the manufacturer's own tests <a href="#src-10">[10]</a>. The voice-over names it as the maker's claim.</td></tr>
+        <tr><td>PLA melts ~170 °C (PET ~250 °C); cool iron; dyes differently.</td><td class="n">14</td><td><span class="chip strong">Strong</span></td><td><a href="#src-11">[11]</a> <a href="#src-12">[12]</a>. Typical ranges: PLA 150–180 °C, PET 250–260 °C.</td></tr>
+        <tr><td>All-polyester (PLA-based) thermoplastic elastomers reach ~1,000% elongation at break.</td><td class="n">15</td><td><span class="chip strong">Strong</span></td><td>Watts et al. 2017 <a href="#src-13">[13]</a>. 1,000% elongation = 11× original length. Lab material, not a fibre.</td></tr>
         <tr><td>EU textile EPR: amended Waste Framework Directive in force 17 Oct 2025; schemes within 30 months.</td><td class="n">16</td><td><span class="chip strong">Strong</span></td><td><a href="#src-14">[14]</a> <a href="#src-15">[15]</a>. Applies to products sold in the EU, including from UK brands.</td></tr>
       </tbody>
     </table>
@@ -834,24 +340,24 @@ footer b { font-weight: 500; }
 </section>
 
 <section aria-labelledby="h-corr">
-  <div class="sec-head"><span class="eyebrow">What changed from the first draft</span><h2 id="h-corr">Corrections and context</h2></div>
+  <div class="sec-head"><span class="eyebrow">Carried over from v1</span><h2 id="h-corr">Corrections and context</h2></div>
   <div class="cols">
     <div>
-      <h3>Corrections</h3>
-      <ul class="corrections">
-        <li><b>"Same polyester family" does not mean "same recycling stream".</b> PLA is a known contaminant of PET recycling <a href="#src-8">[8]</a>. The draft treated this as a footnote; the film makes it a main point (shot 12).</li>
-        <li><b>Sorona® evidence was a supplier's sales page.</b> Replaced with the bicomponent mechanism from the fibre maker, and its recycling claim labelled as the maker's.</li>
-        <li><b>EcoLASTANE is historical.</b> It was an EU FP7 project (a programme that closed to new projects in 2013). Its title refers to furanic monomers, which suggests PEF-type chemistry, not a drop-in copy of PET. The CORDIS record couldn't be opened from here; worth checking before citing.</li>
-        <li><b>The PLA elastic-yarn patent dates from 2011.</b> A patent shows an idea was claimed, not that a product exists.</li>
-        <li><b>Left out as unverified:</b> market-report claims about a Toray PLA/PBAT stretch fibre, a Danimer cross-linked PLA fibre, and PLA price premiums. They came from a market-research site with no primary source.</li>
+      <h3>Corrections to the first research draft</h3>
+      <ul>
+        <li><b>Same polyester family does not mean same recycling stream.</b> PLA contaminates PET recycling <a href="#src-8">[8]</a>. Now shot 12.</li>
+        <li><b>The Sorona® evidence was a supplier's sales page.</b> Replaced by the two-polyester mechanism, with the recycling claim labelled as the maker's.</li>
+        <li><b>EcoLASTANE is historical:</b> an EU FP7 project, from a programme that closed to new projects in 2013. Check the CORDIS record before citing it.</li>
+        <li><b>The PLA stretch-yarn patent dates from 2011.</b> A patent is a claim, not a product.</li>
+        <li><b>Left out as unverified:</b> market-report claims about new PLA stretch fibres and PLA price premiums.</li>
       </ul>
     </div>
     <div>
-      <h3>Context worth knowing (not in the film)</h3>
+      <h3>Context (not in the film)</h3>
       <ul>
-        <li><b>Textile-to-textile polyester recycling is still scaling, slowly.</b> Syre reports multi-tonne pilot output in 2025, and plans to start building a plant of up to 250,000 t/yr in Vietnam in 2027 <a href="#src-16">[16]</a>. Carbios has missed its financing target for its Longlaville enzymatic plant <a href="#src-17">[17]</a>.</li>
-        <li><b>PEF, another plant-based polyester.</b> Avantium's FDCA plant produced first batches, with commercial sales expected from late 2026 <a href="#src-18">[18]</a>. Mainly aimed at packaging so far; a possible future fibre topic.</li>
-        <li><b>Mono-material helps most within one group.</b> Cellulose, polyamide and polyester mono-streams have the most recycling options <a href="#src-19">[19]</a>.</li>
+        <li><b>Textile-to-textile polyester recycling is scaling slowly.</b> Syre plans to start building a plant of up to 250,000 t/yr in Vietnam in 2027 <a href="#src-16">[16]</a>. Carbios has missed its financing target for its Longlaville plant <a href="#src-17">[17]</a>.</li>
+        <li><b>PEF, another plant-based polyester.</b> Avantium's FDCA plant has made its first batches; commercial sales are expected from late 2026 <a href="#src-18">[18]</a>.</li>
+        <li><b>Mono-material helps most within one group:</b> cellulose, polyamide or polyester <a href="#src-19">[19]</a>.</li>
       </ul>
     </div>
   </div>
@@ -863,11 +369,11 @@ footer b { font-weight: 500; }
     <div>
       <h3>Discuss</h3>
       <ol>
-        <li>Your leggings say "78% recycled polyester, 22% elastane". Where can they go at end of life? What would you need to find out?</li>
+        <li>Your leggings say "78% recycled polyester, 22% elastane". Where can they go at the end of their life? What would you need to find out?</li>
         <li>Polyester needs less water than cotton but comes from oil. How would you decide which is better for one particular garment?</li>
-        <li>PLA is compostable, but only industrially. Is that a real benefit for a UK wardrobe? Why or why not?</li>
+        <li>PLA is compostable, but only in industrial facilities. Is that a real benefit for a UK wardrobe?</li>
         <li>A brand says its stretch fibre is "recyclable". What evidence would you ask for, and from whom?</li>
-        <li>A report says recycled polyester sheds more microplastics than virgin <a href="#src-6">[6]</a>. Who funded it, how was it tested, and how much weight should it carry?</li>
+        <li>A report says recycled polyester sheds more microplastics than virgin <a href="#src-6">[6]</a>. Who paid for it, how was it tested, and how much weight should it carry?</li>
       </ol>
     </div>
     <div>
@@ -881,24 +387,27 @@ footer b { font-weight: 500; }
 </section>
 
 <section aria-labelledby="h-prod">
-  <div class="sec-head"><span class="eyebrow">Making it</span><h2 id="h-prod">Production notes</h2></div>
+  <div class="sec-head"><span class="eyebrow">Making it</span><h2 id="h-prod">How the thread works, and production notes</h2></div>
   <div class="cols">
     <div>
-      <h3>Edit and length</h3>
+      <h3>Verlet thread, in plain words</h3>
       <ul>
-        <li>Record the voice-over first, at about 150 words a minute, and cut the animation to it.</li>
-        <li>Full version about 4½ minutes. For a 3-minute cut, drop shots 03 and 15, merge 07 into 06, and shorten 11 to its first two sentences.</li>
-        <li>Music: royalty-free jazz percussion and double bass. Check the licence covers teaching and VLE hosting.</li>
-        <li>Tools: After Effects shape layers with a light "roughen edges" for the cut-paper look, or a browser build if you want it interactive.</li>
+        <li>The thread is 110 points joined in a chain. Each frame, every point keeps moving the way it was already moving, plus a little gravity and a gentle sideways breeze.</li>
+        <li>Then the links are pulled back to their proper length, twelve times over. That's what makes it behave like thread and not like loose beads.</li>
+        <li>To draw a shape, each point is nudged a little towards a target drawing (the digits, the shirt, the spring). The links drag their neighbours along, so the thread swings into place.</li>
+        <li>Flow ticks slide along it top to bottom so it always reads as running down the screen.</li>
       </ul>
+      <p style="font-size:0.95rem"><b>Think first:</b> what would happen to the thread if the links were only corrected once per frame instead of twelve times?</p>
     </div>
     <div>
-      <h3>Accessibility</h3>
+      <h3>Production</h3>
       <ul>
-        <li>Captions on, as an SRT file plus burned-in for social. Hold on-screen text at least 3 seconds; six words or fewer per card.</li>
-        <li>No more than three flashes a second (the WCAG flash threshold). The loop "flash" in shot 12 is a single pulse.</li>
-        <li>Colour plus shape for every material, so colour-blind viewers can follow (see key).</li>
-        <li>Put the source list on the Canvas page and on the final card, so students can follow the evidence up.</li>
+        <li>Record the voice-over first, at about 150 words a minute, then fit the animation to it. The browser voice here is only a pacing guide.</li>
+        <li>To export: open <code>long-chain/index.html</code> from the repo directly in Chrome on your computer. A "Record 1080×1920" button appears there (it can't work inside a hosted page) and saves a WebM to edit in Premiere or CapCut.</li>
+        <li>Captions: use "Copy SRT captions" above, and burn them in above the bottom safe zone for social versions.</li>
+        <li>No more than three flashes a second. The hoop flash in shot 12 is one pulse.</li>
+        <li>Music: royalty-free, light and rhythmic. Check the licence covers teaching and VLE hosting.</li>
+        <li>Short cut (about 3 minutes): drop shots 03 and 15, merge 07 into 06.</li>
       </ul>
     </div>
   </div>
@@ -912,7 +421,7 @@ footer b { font-weight: 500; }
     <li id="src-3">MoDiP, <a href="https://modip.ac.uk/exhibitions/polymorphia/polyester">Polymorphia: polyester</a>; <a href="https://www.madehow.com/inventorbios/71/John-Rex-Whinfield.html">John Rex Whinfield biography</a>.</li>
     <li id="src-4">De Falco, F. et al. (2018) <a href="https://pubmed.ncbi.nlm.nih.gov/29107418/">Evaluation of microplastic release caused by textile washing processes of synthetic fabrics</a>. Environmental Pollution.</li>
     <li id="src-5">De Falco, F. et al. (2019) <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6488573/">The contribution of washing processes of synthetic clothes to microplastic pollution</a>. Scientific Reports.</li>
-    <li id="src-6">FashionNetwork (15 Dec 2025) <a href="https://uk.fashionnetwork.com/news/Microplastics-study-highlights-the-drawbacks-of-recycled-polyester,1791895.html">Microplastics study highlights the drawbacks of recycled polyester</a> (Changing Markets report).</li>
+    <li id="src-6">FashionNetwork (15 Dec 2025) <a href="https://uk.fashionnetwork.com/news/Microplastics-study-highlights-the-drawbacks-of-recycled-polyester,1791895.html">Microplastics study highlights the drawbacks of recycled polyester</a>.</li>
     <li id="src-7">RSC Applied Polymers (2025) <a href="https://pubs.rsc.org/en/content/articlehtml/2025/lp/d5lp00213c">Dissolvable chitosan coating for elastane recovery from blended textiles</a>.</li>
     <li id="src-8">EP Online (2009) <a href="https://eponline.com/articles/2009/07/30/napcor-says-pla-cannot-be-recycled-with-pet.aspx">NAPCOR says PLA cannot be recycled with PET</a>; <a href="https://waste-management-world.com/artikel/napcor-concerned-over-pla-contamination-of-pet-stream">Waste Management World</a>.</li>
     <li id="src-9">The LYCRA Company, <a href="https://lycra.com/en/business/search-technologies/lycra-t400-fiber">LYCRA® T400® fiber</a>; Carrington, <a href="https://hub.carrington.co.uk/resources/sustainable-workwear-the-future-ready-recyclable-stretch-fibre-lycra-t400-ecomade">T400® EcoMade</a>.</li>
@@ -927,61 +436,773 @@ footer b { font-weight: 500; }
     <li id="src-18">ChemAnalyst <a href="https://www.chemanalyst.com/NewsAndDeals/NewsDetails/avantium-completes-fdca-plant-commissioning-44399">Avantium completes FDCA plant commissioning</a>.</li>
     <li id="src-19">Wageningen University &amp; Research <a href="https://research.wur.nl/en/publications/textiles-for-circular-fashion-the-logic-behind-recycling-options/">Textiles for circular fashion: the logic behind recycling options</a>.</li>
     <li id="src-20">FESPA <a href="https://fespa.com/en/club-fespa-online/business-advice/lifecycle-analysis-polyester-vs-cotton">Lifecycle analysis: polyester vs cotton</a>.</li>
+    <li id="src-21">Wikipedia, <a href="https://en.wikipedia.org/wiki/The_Dot_and_the_Line">The Dot and the Line</a> (credits, award, rice-paper squiggle technique).</li>
+    <li id="src-22">Turner Classic Movies, <a href="https://www.tcm.com/articles/184173/the-dot-and-the-line">The Dot and the Line</a>; Open Culture, <a href="https://www.openculture.com/2012/09/the_dot_and_the_line.html">Chuck Jones' The Dot and the Line</a>; Cartoon Research, <a href="https://cartoonresearch.com/?p=35157">Animation History</a>.</li>
   </ol>
 </section>
 
 <footer>
-  <span>FN4005 · The Long Chain · storyboard and script, draft v1, October 2026</span>
+  <span>Digital Practice / FN4005 · The Thread and the Loop · storyboard and animatic, draft v2, October 2026</span>
   <b>Matthew Mounsey-Wood FHEA MA (RCA) LCF Alumni</b>
+  <span>Kingston School of Art, Kingston University London</span>
 </footer>
 
 </div>
 
 <script>
 (function () {
-  var WPM = 150;
-  var shots = Array.prototype.slice.call(document.querySelectorAll('.shot'));
-  var lines = [];
-  var words = 0;
-  shots.forEach(function (s) {
-    var vo = s.querySelector('dd.vo:not(.silent)');
-    if (!vo) return;
-    var text = vo.textContent.trim();
-    var n = text.split(/\s+/).length;
-    words += n;
-    lines.push({ tc: s.getAttribute('data-tc'), num: s.querySelector('.num').textContent, title: s.querySelector('h3').textContent, text: text });
-  });
+"use strict";
+// ---------- constants ----------
+var W = 360, H = 640, N = 110;
+var KU = { black: '#1d1d1b', blue: '#009cde', yellow: '#ffb500', grey: '#666666', white: '#ffffff' };
+var FONT = 'Arial, "Liberation Sans", "Helvetica Neue", Helvetica, sans-serif';
+var D = Math.PI / 180;
+var TOP = { x: 180, y: -30 }, BOT = { x: 180, y: H + 30 };
+var REDUCE = false;
+try { REDUCE = window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) {}
+var SAFE = false;
 
-  var box = document.getElementById('vo-script');
-  box.innerHTML = '';
-  lines.forEach(function (l) {
-    var row = document.createElement('div');
-    row.className = 'vo-line';
-    var t = document.createElement('span');
-    t.className = 't';
-    t.textContent = l.tc + ' · ' + l.num;
-    var p = document.createElement('p');
-    p.textContent = l.text;
-    row.appendChild(t); row.appendChild(p);
-    box.appendChild(row);
-  });
+// ---------- geometry ----------
+function pt(x, y) { return { x: x, y: y }; }
+function P(arr) { return arr.map(function (a) { return Array.isArray(a) ? pt(a[0], a[1]) : pt(a.x, a.y); }); }
+function plen(p) { var L = 0; for (var i = 1; i < p.length; i++) L += Math.hypot(p[i].x - p[i-1].x, p[i].y - p[i-1].y); return L; }
+function resample(p, n) {
+  var cum = [0];
+  for (var i = 1; i < p.length; i++) cum.push(cum[i-1] + Math.hypot(p[i].x - p[i-1].x, p[i].y - p[i-1].y));
+  var L = cum[cum.length - 1], out = [], seg = 0;
+  if (L < 1e-6) { for (var j = 0; j < n; j++) out.push(pt(p[0].x, p[0].y)); return out; }
+  for (var k = 0; k < n; k++) {
+    var s = L * k / (n - 1);
+    while (seg < p.length - 2 && cum[seg+1] < s) seg++;
+    var d = (cum[seg+1] - cum[seg]) || 1, f = (s - cum[seg]) / d;
+    out.push(pt(p[seg].x + (p[seg+1].x - p[seg].x) * f, p[seg].y + (p[seg+1].y - p[seg].y) * f));
+  }
+  return out;
+}
+function arc(cx, cy, r, a0, a1, steps) { steps = steps || 48; var o = []; for (var i = 0; i <= steps; i++) { var a = a0 + (a1 - a0) * i / steps; o.push(pt(cx + r * Math.cos(a), cy + r * Math.sin(a))); } return o; }
+function rnd(seed) { var s = seed >>> 0; return function () { s = (Math.imul(s, 1664525) + 1013904223) >>> 0; return s / 4294967296; }; }
+function hash(a, b) { var h = Math.sin(a * 127.1 + b * 311.7) * 43758.5453; return h - Math.floor(h); }
+function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
+function fade(t, a, d) { return clamp((t - a) / (d || 0.5), 0, 1); }
+function ease(u) { u = clamp(u, 0, 1); return u * u * (3 - 2 * u); }
 
-  var secs = Math.round(words / WPM * 60);
-  var mm = Math.floor(secs / 60), ss = String(secs % 60).padStart(2, '0');
-  document.getElementById('m-words').textContent = words + ' words';
-  document.getElementById('vo-stats').textContent = words + ' words · about ' + mm + ':' + ss + ' of speech at ' + WPM + ' words a minute. The rest of the runtime is music and holds.';
-
-  var plain = lines.map(function (l) { return '[' + l.tc + '] ' + l.num + ' ' + l.title + '\n' + l.text; }).join('\n\n');
-  var msg = document.getElementById('vo-msg');
-  document.getElementById('vo-copy').addEventListener('click', function () {
-    function fallback() {
-      var r = document.createRange(); r.selectNodeContents(box);
-      var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(r);
-      msg.textContent = 'Selected. Press Ctrl+C or ⌘C to copy.';
+// ---------- Verlet chain ----------
+function Chain(path, n, o) {
+  o = o || {};
+  var q = resample(path, n);
+  this.n = n;
+  this.p = q.map(function (v) { return { x: v.x, y: v.y, px: v.x, py: v.y }; });
+  this.rest = plen(path) / (n - 1) * (o.slack || 1);
+  this.restGoal = this.rest;
+  this.pinTop = o.pinTop !== false; this.pinBot = o.pinBot !== false;
+  this.top = o.top ? pt(o.top.x, o.top.y) : pt(q[0].x, q[0].y);
+  this.bot = o.bot ? pt(o.bot.x, o.bot.y) : pt(q[n-1].x, q[n-1].y);
+  this.target = null; this.k = 0; this.kGoal = 0;
+  this.g = o.g != null ? o.g : 0.03;
+  this.damp = o.damp != null ? o.damp : 0.965;
+  this.wind = o.wind != null ? o.wind : 0.02;
+  this.iter = o.iter || 12;
+  this.stiff = o.stiff != null ? o.stiff : 1;
+  this.restRate = 0.05;
+}
+Chain.prototype.setTarget = function (path, k) {
+  this.target = resample(path, this.n);
+  this.restGoal = plen(path) / (this.n - 1);
+  this.kGoal = k;
+};
+Chain.prototype.pin = function () {
+  var p = this.p;
+  if (this.pinTop) { var a = p[0]; a.x += (this.top.x - a.x) * 0.35; a.y += (this.top.y - a.y) * 0.35; }
+  if (this.pinBot) { var b = p[this.n-1]; b.x += (this.bot.x - b.x) * 0.35; b.y += (this.bot.y - b.y) * 0.35; }
+};
+Chain.prototype.step = function (t) {
+  var p = this.p, n = this.n, i;
+  this.k += (this.kGoal - this.k) * 0.06;
+  this.rest += (this.restGoal - this.rest) * this.restRate;
+  for (i = 0; i < n; i++) {
+    var q = p[i];
+    var vx = (q.x - q.px) * this.damp, vy = (q.y - q.py) * this.damp;
+    q.px = q.x; q.py = q.y;
+    q.x += vx + this.wind * Math.sin(t * 1.1 + i * 0.12);
+    q.y += vy + this.g;
+    if (this.target && this.k > 0.0005) { var T = this.target[i]; q.x += (T.x - q.x) * this.k; q.y += (T.y - q.y) * this.k; }
+  }
+  for (var it = 0; it < this.iter; it++) {
+    for (i = 0; i < n - 1; i++) {
+      var a = p[i], b = p[i+1];
+      var dx = b.x - a.x, dy = b.y - a.y, d = Math.hypot(dx, dy) || 1e-6;
+      var f = (d - this.rest) / d * 0.5 * this.stiff;
+      dx *= f; dy *= f;
+      a.x += dx; a.y += dy; b.x -= dx; b.y -= dy;
     }
-    try {
-      navigator.clipboard.writeText(plain).then(function () { msg.textContent = 'Copied.'; }, fallback);
-    } catch (e) { fallback(); }
+    this.pin();
+  }
+};
+
+function newThread() { return new Chain(P([TOP, BOT]), N, { top: TOP, bot: BOT }); }
+function World() { this.thread = newThread(); this.ex = {}; this.parts = []; }
+function enterScene(w, s, keep) {
+  if (!keep) w.thread = newThread();
+  var th = w.thread;
+  th.pinTop = true; th.pinBot = true; th.top = pt(TOP.x, TOP.y); th.bot = pt(BOT.x, BOT.y);
+  th.wind = 0.02; th.restRate = 0.05;
+  w.ex = {}; w.parts = [];
+  if (s.setup) s.setup(w);
+}
+function tick(w, s, t) {
+  if (s.update) s.update(w, t);
+  w.thread.step(t);
+  for (var key in w.ex) { var e = w.ex[key]; if (Array.isArray(e)) e.forEach(function (c) { c.step(t); }); else e.step(t); }
+}
+
+// ---------- drawing helpers ----------
+function smooth(ctx, p) {
+  ctx.beginPath(); ctx.moveTo(p[0].x, p[0].y);
+  for (var i = 1; i < p.length - 1; i++) { var mx = (p[i].x + p[i+1].x) / 2, my = (p[i].y + p[i+1].y) / 2; ctx.quadraticCurveTo(p[i].x, p[i].y, mx, my); }
+  var l = p[p.length - 1]; ctx.lineTo(l.x, l.y);
+}
+function offsetPts(p, d) {
+  return p.map(function (q, i) {
+    var a = p[Math.max(0, i-1)], b = p[Math.min(p.length-1, i+1)];
+    var dx = b.x - a.x, dy = b.y - a.y, L = Math.hypot(dx, dy) || 1;
+    return pt(q.x - dy / L * d, q.y + dx / L * d);
   });
+}
+function drawThread(ctx, c, t, bi) {
+  ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  smooth(ctx, c.p); ctx.strokeStyle = KU.blue; ctx.lineWidth = 5; ctx.stroke();
+  if (bi) { smooth(ctx, offsetPts(c.p, 1.6)); ctx.strokeStyle = KU.white; ctx.lineWidth = 1.4; ctx.stroke(); return; }
+  smooth(ctx, c.p);
+  ctx.setLineDash([3, 14]); ctx.lineDashOffset = -t * 32;
+  ctx.strokeStyle = 'rgba(255,255,255,0.8)'; ctx.lineWidth = 2; ctx.stroke(); ctx.setLineDash([]);
+}
+function drawDashed(ctx, c, t) {
+  ctx.lineCap = 'butt'; smooth(ctx, c.p);
+  ctx.setLineDash([10, 7]); ctx.lineDashOffset = -t * 32;
+  ctx.strokeStyle = KU.blue; ctx.lineWidth = 5; ctx.stroke(); ctx.setLineDash([]); ctx.lineCap = 'round';
+}
+function drawSquiggle(ctx, c, t, mask) {
+  var fr = Math.floor(t * 12), p = c.p;
+  ctx.strokeStyle = KU.black; ctx.lineCap = 'round';
+  for (var s = 0; s < 4; s++) {
+    ctx.beginPath(); var pen = false;
+    for (var i = 0; i < p.length; i++) {
+      if (mask && !mask(i)) { pen = false; continue; }
+      var x = p[i].x + (hash(i + fr * 7, s) - 0.5) * 3.4, y = p[i].y + (hash(i * 3 + fr, s + 9) - 0.5) * 3.4;
+      if (pen) ctx.lineTo(x, y); else { ctx.moveTo(x, y); pen = true; }
+    }
+    ctx.lineWidth = s ? 1 : 2.6; ctx.globalAlpha = s ? 0.7 : 1; ctx.stroke();
+  }
+  ctx.globalAlpha = 1; ctx.lineWidth = 1; ctx.beginPath();
+  for (var j = 0; j < p.length; j += 3) {
+    if (mask && !mask(j)) continue;
+    var a = hash(j, fr) * Math.PI * 2, L = 2 + hash(fr, j) * 4;
+    ctx.moveTo(p[j].x, p[j].y); ctx.lineTo(p[j].x + Math.cos(a) * L, p[j].y + Math.sin(a) * L);
+  }
+  ctx.stroke();
+}
+function txt(ctx, s, x, y, size, col, o) {
+  o = o || {};
+  ctx.font = (o.w || 700) + ' ' + size + 'px ' + FONT; ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
+  var m = ctx.measureText(s).width, x0 = o.align === 'center' ? x - m / 2 : o.align === 'right' ? x - m : x;
+  if (o.knock) { ctx.fillStyle = o.knock; ctx.fillRect(x0 - 4, y - size * 0.92, m + 8, size * 1.25); }
+  ctx.fillStyle = col; ctx.fillText(s, x0, y); return m;
+}
+function hl(ctx, s, x, y, size, o) {
+  o = o || {};
+  ctx.font = '700 ' + size + 'px ' + FONT; ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
+  var m = ctx.measureText(s).width, x0 = o.align === 'center' ? x - m / 2 : x;
+  ctx.fillStyle = KU.yellow; ctx.fillRect(x0 - 5, y - size * 0.95, m + 10, size * 1.3);
+  ctx.fillStyle = KU.black; ctx.fillText(s, x0, y); return m;
+}
+function mw(ctx, s, size) { ctx.font = '700 ' + size + 'px ' + FONT; return ctx.measureText(s).width; }
+function alpha(ctx, a) { ctx.globalAlpha = a; }
+function drawSafe(ctx) {
+  ctx.fillStyle = 'rgba(255,181,0,0.28)'; ctx.fillRect(0, 0, W, H * 0.14); ctx.fillRect(0, H * 0.8, W, H * 0.2);
+  ctx.strokeStyle = KU.yellow; ctx.lineWidth = 1.5; ctx.setLineDash([5, 4]);
+  ctx.beginPath(); ctx.moveTo(0, H * 0.14); ctx.lineTo(W, H * 0.14); ctx.moveTo(0, H * 0.8); ctx.lineTo(W, H * 0.8); ctx.stroke(); ctx.setLineDash([]);
+  txt(ctx, 'PLATFORM UI', 10, 22, 10, KU.black, { knock: KU.yellow });
+  txt(ctx, 'PLATFORM UI', 10, H * 0.8 + 18, 10, KU.black, { knock: KU.yellow });
+}
+function ring(ctx, cx, cy, r, w, col) { ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.strokeStyle = col; ctx.lineWidth = w; ctx.stroke(); }
+
+// ---------- shape paths ----------
+var SHIRT = [[180,262],[200,250],[240,262],[268,300],[248,318],[236,300],[236,430],[124,430],[124,300],[112,318],[92,300],[120,262],[160,250],[180,262]];
+function shirtPath(dy) { dy = dy || 0; return P([TOP, [180, 240 + dy]].concat(SHIRT.map(function (a) { return [a[0], a[1] + dy]; })).concat([[180, 450 + dy], BOT])); }
+var DIG = {
+  '1': [[18,22],[36,0],[36,100]],
+  '9': [[58,30],[50,8],[30,0],[10,8],[2,30],[10,52],[30,60],[50,52],[58,30],[54,70],[40,100],[14,96]],
+  '4': [[44,100],[44,0],[0,68],[60,68]]
+};
+function digitsPath(str, x0, y0, gap) {
+  var pts = [TOP];
+  str.split('').forEach(function (ch, i) { DIG[ch].forEach(function (a) { pts.push(pt(x0 + i * (60 + gap) + a[0], y0 + a[1])); }); });
+  pts.push(BOT); return P(pts);
+}
+function cellC(k) { var r = Math.floor(k / 10), c = r % 2 === 0 ? k % 10 : 9 - k % 10; return pt(53 + c * 28, 163 + r * 28); }
+var GRIDPATH = (function () { var a = [TOP, pt(180, 128)]; for (var k = 0; k < 59; k++) a.push(cellC(k)); a.push(pt(24, cellC(58).y), pt(24, 620), BOT); return P(a); })();
+var HEAP = (function () { var r = rnd(7), a = [TOP, pt(180, 330)]; for (var i = 0; i < 38; i++) { var ang = r() * Math.PI * 2, rr = 0.25 + r() * 0.75; a.push(pt(180 + Math.cos(ang) * 115 * rr, 428 + Math.sin(ang) * 44 * rr)); } a.push(pt(180, 470), BOT); return P(a); })();
+var BOTTLE = P([TOP, [180,180],[192,190],[192,215],[216,245],[216,410],[144,410],[144,245],[168,215],[168,190],[180,180],[180,430], BOT]);
+function helix(y0, y1, amp, turns, cx) { var o = []; for (var i = 0; i <= 240; i++) { var s = i / 240; o.push(pt((cx || 180) + amp * Math.sin(s * turns * Math.PI * 2), y0 + (y1 - y0) * s)); } return o; }
+var STRAIGHT = P([TOP, BOT]);
+
+// ---------- scenes ----------
+var ACTS = { I: 'What is polyester?', II: 'Pros and cons', III: "Why mixes don't come back", IV: 'The frontier', C: 'Coda' };
+var S = [
+{ id: '01', act: 'I', title: 'Title', dur: 9, bg: KU.white, src: [],
+  vo: 'This is a story about a thread, and a loop it badly wanted to join.',
+  visual: 'White ground. The thread falls from the top of the screen and runs to the bottom, as it will for the whole film. It steps aside to make room for the title.',
+  motion: 'The thread drops in, settles, then bends round the title block. Flow ticks run downward the whole time.',
+  os: 'The Thread and the Loop · A romance in lower chemistry',
+  update: function (w, t) { w.thread.setTarget(P([TOP, [180, 80], [326, 104], [326, 236], [180, 262], BOT]), t < 0.8 ? 0.02 : 0.07); },
+  front: function (ctx, w, t) {
+    alpha(ctx, fade(t, 1)); txt(ctx, 'THE THREAD', 24, 170, 34, KU.black);
+    var x = 24 + txt(ctx, 'AND THE ', 24, 210, 34, KU.black); hl(ctx, 'LOOP', x, 210, 34);
+    alpha(ctx, fade(t, 2)); txt(ctx, 'A romance in lower chemistry', 24, 244, 15, KU.grey, { w: 400 }); alpha(ctx, 1);
+  } },
+{ id: '02', act: 'I', title: 'Born from oil', dur: 12, bg: KU.white, src: [2, 3],
+  vo: 'The thread is polyester. It began as oil: two chemicals, linked together over and over, into one very long chain called PET.',
+  visual: 'A black pool of oil at the top. The thread is drawn out of it, down the screen, between two black building blocks: a square (ethylene glycol) and a hexagon (terephthalic acid).',
+  motion: 'The thread grows downward as the blocks feed it. "PET" lands near the bottom.',
+  os: 'It began as oil · PET: poly · ethylene · terephthalate',
+  update: function (w) { w.thread.setTarget(STRAIGHT, 0.03); },
+  clip: function (ctx, t) { ctx.beginPath(); ctx.rect(0, -60, W, 120 + Math.min(1, t / 7) * 640); ctx.clip(); },
+  back: function (ctx, w, t) {
+    ctx.fillStyle = KU.black; ctx.beginPath(); ctx.ellipse(180, 24, 160, 64, 0, 0, Math.PI * 2); ctx.fill();
+    alpha(ctx, fade(t, 0.8));
+    ctx.fillRect(56, 300, 34, 34);
+    ctx.beginPath(); for (var i = 0; i < 6; i++) { var a = i * 60 * D; ctx[i ? 'lineTo' : 'moveTo'](287 + 20 * Math.cos(a), 317 + 20 * Math.sin(a)); } ctx.closePath(); ctx.fill();
+    ctx.strokeStyle = KU.black; ctx.lineWidth = 3; ctx.beginPath();
+    ctx.moveTo(100, 317); ctx.lineTo(160, 317); ctx.moveTo(152, 309); ctx.lineTo(160, 317); ctx.lineTo(152, 325);
+    ctx.moveTo(258, 317); ctx.lineTo(200, 317); ctx.moveTo(208, 309); ctx.lineTo(200, 317); ctx.lineTo(208, 325); ctx.stroke();
+    txt(ctx, 'ethylene', 73, 356, 12, KU.black, { align: 'center', w: 400 }); txt(ctx, 'glycol', 73, 371, 12, KU.black, { align: 'center', w: 400 });
+    txt(ctx, 'terephthalic', 287, 356, 12, KU.black, { align: 'center', w: 400 }); txt(ctx, 'acid', 287, 371, 12, KU.black, { align: 'center', w: 400 });
+    alpha(ctx, 1);
+  },
+  front: function (ctx, w, t) {
+    alpha(ctx, fade(t, 0.5)); txt(ctx, 'IT BEGAN AS OIL', 24, 130, 20, KU.black, { knock: KU.white });
+    alpha(ctx, fade(t, 6)); hl(ctx, 'PET', 24, 468, 44);
+    txt(ctx, 'poly · ethylene · terephthalate', 24, 496, 14, KU.black, { w: 400, knock: KU.white }); alpha(ctx, 1);
+  } },
+{ id: '03', act: 'I', title: 'Born in Lancashire', dur: 14, bg: KU.black, src: [2, 3], cut: 'Cut for short version',
+  vo: "It was born in Lancashire in 1941, invented by John Whinfield and James Dickson at the Calico Printers' Association. Britain called it Terylene. America called it Dacron.",
+  visual: 'Black ground. The thread bends itself into the numbers 1941: its first shapes.',
+  motion: 'The thread pulls into each digit in turn and holds. Names fade in above and below.',
+  os: 'Lancashire, 1941 · Whinfield and Dickson · Britain: Terylene · America: Dacron',
+  update: function (w, t) { if (t < 1.2) w.thread.setTarget(STRAIGHT, 0.03); else w.thread.setTarget(digitsPath('1941', 38, 205, 15), 0.14); },
+  front: function (ctx, w, t) {
+    alpha(ctx, fade(t, 1)); txt(ctx, 'LANCASHIRE, 1941', 24, 128, 20, KU.white, { knock: KU.black });
+    txt(ctx, 'John Whinfield and James Dickson', 24, 152, 13, KU.white, { w: 400, knock: KU.black });
+    alpha(ctx, fade(t, 7)); txt(ctx, 'Britain: TERYLENE', 24, 400, 17, KU.white, { knock: KU.black });
+    alpha(ctx, fade(t, 8.5)); txt(ctx, 'America: DACRON', 24, 426, 17, KU.white, { knock: KU.black });
+    alpha(ctx, fade(t, 3)); txt(ctx, "Calico Printers' Association", 24, 456, 12, KU.white, { w: 400, knock: KU.black }); alpha(ctx, 1);
+  } },
+{ id: '04', act: 'I', title: 'Melt spinning', dur: 18, bg: KU.white, src: [2, 3],
+  vo: 'To make fibre, PET is melted and pushed through a spinneret, a plate full of tiny holes. The strands cool, then get stretched so the chains line up. Same plastic as a drinks bottle. Different shape.',
+  visual: 'Blue chips fall into a black funnel and through a spinneret. Five fine filaments come out, gather into one thread and pass between two rollers.',
+  motion: 'Chips drop on a loop. The filaments sway and converge. Each step label appears as it happens.',
+  os: '1 Melt · 2 Push · 3 Cool · 4 Stretch · Same plastic as a bottle',
+  setup: function (w) { w.ex.fil = [152, 166, 180, 194, 208].map(function (x) { return new Chain(P([[x, 244], [180, 430]]), 18, { top: pt(x, 244), bot: pt(180, 430), g: 0.04, wind: 0.015, slack: 1.04 }); }); },
+  update: function (w) { w.thread.setTarget(STRAIGHT, 0.05); },
+  clip: function (ctx) { ctx.beginPath(); ctx.rect(0, -60, W, 300); ctx.rect(0, 430, W, 300); ctx.clip(); },
+  front: function (ctx, w, t) {
+    ctx.strokeStyle = KU.blue; ctx.lineWidth = 1.6; w.ex.fil.forEach(function (c) { smooth(ctx, c.p); ctx.stroke(); });
+    ctx.fillStyle = KU.blue;
+    for (var i = 0; i < 5; i++) { var y = 72 + ((t * 50 + i * 17) % 80); if (y < 150) ctx.fillRect(158 + (i * 9) % 40, y, 7, 7); }
+    ctx.fillStyle = KU.black; ctx.beginPath(); ctx.moveTo(128, 150); ctx.lineTo(232, 150); ctx.lineTo(198, 228); ctx.lineTo(162, 228); ctx.closePath(); ctx.fill();
+    ctx.fillRect(138, 228, 84, 16); ctx.fillStyle = KU.white;
+    [152, 166, 180, 194, 208].forEach(function (x) { ctx.beginPath(); ctx.arc(x, 238, 2.4, 0, Math.PI * 2); ctx.fill(); });
+    ctx.fillStyle = KU.black; ctx.beginPath(); ctx.arc(164, 470, 10, 0, Math.PI * 2); ctx.arc(196, 470, 10, 0, Math.PI * 2); ctx.fill();
+    txt(ctx, 'SPINNERET', 232, 262, 11, KU.black, { w: 400 });
+    var L = [['1  MELT', 196, 1], ['2  PUSH', 246, 4], ['3  COOL', 346, 7], ['4  STRETCH', 476, 10]];
+    L.forEach(function (l) { alpha(ctx, fade(t, l[2])); txt(ctx, l[0], 24, l[1], 17, KU.black, { knock: KU.white }); });
+    alpha(ctx, fade(t, 13)); hl(ctx, 'SAME PLASTIC AS A BOTTLE', 24, 506, 15); alpha(ctx, 1);
+  } },
+{ id: '05', act: 'I', title: 'The scale', dur: 11, bg: KU.black, src: [1],
+  vo: "Today it's everywhere. In 2024, polyester was 59% of all fibre made. And 88% of that came from fossil fuels.",
+  visual: 'Black ground. A 10 × 10 grid where each square is 1% of all fibre. The thread snakes through 59 squares, which turn blue behind it.',
+  motion: 'The thread fills the grid row by row, then exits down the left edge.',
+  os: '59% of all fibre made in 2024 was polyester · 88% from fossil fuels',
+  update: function (w, t) { w.thread.setTarget(t < 1 ? STRAIGHT : GRIDPATH, t < 1 ? 0.03 : 0.1); },
+  back: function (ctx, w, t) {
+    var m = clamp(Math.floor((t - 1.5) / 5 * 59), 0, 59);
+    for (var k = 0; k < 100; k++) { var c = cellC(k); ctx.fillStyle = k < m ? KU.blue : KU.grey; ctx.globalAlpha = k < m ? 0.55 : 1; ctx.fillRect(c.x - 13, c.y - 13, 26, 26); }
+    ctx.globalAlpha = 1;
+  },
+  front: function (ctx, w, t) {
+    alpha(ctx, fade(t, 6.5)); txt(ctx, '59%', 322, 136, 54, KU.white, { align: 'right', knock: KU.black });
+    alpha(ctx, fade(t, 0.5)); txt(ctx, '1 square = 1% of all fibre', 40, 140, 11, KU.white, { w: 400, knock: KU.black });
+    alpha(ctx, fade(t, 6.5)); txt(ctx, 'OF ALL FIBRE MADE IN 2024', 40, 460, 15, KU.white, { knock: KU.black });
+    txt(ctx, 'WAS POLYESTER', 40, 480, 15, KU.white, { knock: KU.black });
+    alpha(ctx, fade(t, 8)); hl(ctx, '88% FROM FOSSIL FUELS', 40, 507, 15); alpha(ctx, 1);
+  } },
+{ id: '06', act: 'II', title: 'The case for', dur: 13, rep: 10, bg: KU.white, src: [20],
+  vo: "People like the thread. It's strong, it keeps its shape, it dries fast, and it's cheap. Making it takes far less water than growing cotton.",
+  visual: 'White ground. The thread draws a crisp T-shirt on a black hanger. Strengths stack at the top.',
+  motion: 'Words arrive one per beat. The shirt holds its shape while the thread sways.',
+  os: 'Strong · Holds its shape · Quick-dry · Cheap · Less water than cotton',
+  update: function (w, t) { w.thread.setTarget(t < 1 ? STRAIGHT : shirtPath(0), t < 1 ? 0.03 : 0.1); },
+  back: function (ctx) {
+    ctx.strokeStyle = KU.black; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(180, 214, 8, Math.PI, Math.PI * 2.6);
+    ctx.moveTo(180, 224); ctx.lineTo(114, 258); ctx.lineTo(246, 258); ctx.closePath(); ctx.stroke();
+  },
+  front: function (ctx, w, t) {
+    [['STRONG', 118, 1.5], ['HOLDS ITS SHAPE', 144, 3], ['QUICK-DRY', 170, 4.5], ['CHEAP', 196, 6]].forEach(function (l) { alpha(ctx, fade(t, l[2])); txt(ctx, l[0], 24, l[1], 20, KU.black, { knock: KU.white }); });
+    alpha(ctx, fade(t, 8)); hl(ctx, 'LESS WATER THAN COTTON', 24, 476, 16);
+    txt(ctx, 'to make, compared with growing cotton', 24, 500, 12, KU.grey, { w: 400, knock: KU.white }); alpha(ctx, 1);
+  } },
+{ id: '07', act: 'II', title: 'The case against', dur: 12, bg: KU.black, src: [1, 20], cut: 'Merge into 06 for short version',
+  vo: "But it's made from oil. It doesn't biodegrade. And because it's so cheap, it makes it easy to make far too many clothes.",
+  visual: 'Black ground. The shirt collapses into a tangled heap at the bottom.',
+  motion: 'The thread loses its shape and piles up; drawbacks appear one per beat.',
+  os: "Made from oil · Doesn't biodegrade · Cheap = more clothes · Less breathable",
+  update: function (w, t) { w.thread.setTarget(t < 0.6 ? shirtPath(0) : HEAP, 0.08); },
+  front: function (ctx, w, t) {
+    [['MADE FROM OIL', 118, 1], ["DOESN'T BIODEGRADE", 144, 3], ['CHEAP = MORE CLOTHES', 170, 6], ['LESS BREATHABLE', 196, 8]].forEach(function (l) { alpha(ctx, fade(t, l[2])); txt(ctx, l[0], 24, l[1], 20, KU.white, { knock: KU.black }); });
+    alpha(ctx, 1);
+  } },
+{ id: '08', act: 'II', title: 'Microfibres', dur: 14, bg: KU.white, src: [4, 5],
+  vo: 'It also sheds. In one lab study, a five-kilogram wash of polyester released more than six million microfibres. Some are small enough to slip through water treatment.',
+  visual: 'A black washing machine. The thread spirals in the drum; tiny blue fibres break off and drift out and down past a waterline.',
+  motion: 'The spiral turns with the drum. Fibres shed continuously.',
+  os: 'One 5 kg wash · 6,000,000+ microfibres (lab study)',
+  update: function (w, t) {
+    var rot = t * 2, sp = [];
+    for (var i = 0; i <= 80; i++) { var a = -90 * D + rot + i / 80 * 540 * D, r = 64 - i / 80 * 30; sp.push(pt(180 + r * Math.cos(a), 320 + r * Math.sin(a))); }
+    w.thread.setTarget(P([TOP, [180, 236]].concat(sp).concat([[180, 450], BOT])), t < 0.6 ? 0.03 : 0.12);
+    var p = w.thread.p;
+    if (t > 1.5 && w.parts.length < 260 && Math.random() < 0.6) {
+      var q = p[(Math.random() * p.length) | 0];
+      if (Math.hypot(q.x - 180, q.y - 320) < 78) w.parts.push({ x: q.x, y: q.y, px: q.x - (Math.random() - 0.5) * 1.2, py: q.y - Math.random() * 0.4, a: Math.random() * Math.PI });
+    }
+    w.parts = w.parts.filter(function (f) { var vx = (f.x - f.px) * 0.985, vy = (f.y - f.py) * 0.985 + 0.012; f.px = f.x; f.py = f.y; f.x += vx + Math.sin(t * 2 + f.a * 5) * 0.03; f.y += vy; f.a += 0.02; return f.y < H + 10; });
+  },
+  back: function (ctx) {
+    ctx.fillStyle = KU.black; ctx.beginPath(); if (ctx.roundRect) ctx.roundRect(70, 210, 220, 230, 14); else ctx.rect(70, 210, 220, 230); ctx.fill();
+    ctx.fillStyle = KU.white; ctx.fillRect(90, 224, 60, 8); ctx.beginPath(); ctx.arc(266, 228, 7, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(180, 320, 82, 0, Math.PI * 2); ctx.fill(); ring(ctx, 180, 320, 82, 3, KU.grey);
+    ctx.strokeStyle = KU.black; ctx.lineWidth = 3; ctx.beginPath(); for (var x = 0; x <= W; x += 6) ctx[x ? 'lineTo' : 'moveTo'](x, 476 + Math.sin(x / 18) * 4); ctx.stroke();
+  },
+  front: function (ctx, w, t) {
+    ctx.strokeStyle = KU.blue; ctx.lineWidth = 1.6; ctx.beginPath();
+    w.parts.forEach(function (f) { ctx.moveTo(f.x, f.y); ctx.lineTo(f.x + Math.cos(f.a) * 5, f.y + Math.sin(f.a) * 5); }); ctx.stroke();
+    alpha(ctx, fade(t, 0.5)); txt(ctx, 'ONE 5 KG WASH', 24, 118, 20, KU.black, { knock: KU.white });
+    alpha(ctx, fade(t, 5)); hl(ctx, '6,000,000+', 24, 158, 28);
+    txt(ctx, 'microfibres, in one lab study', 24, 186, 13, KU.grey, { w: 400, knock: KU.white });
+    alpha(ctx, fade(t, 10)); txt(ctx, 'Some slip through water treatment', 24, 506, 13, KU.black, { knock: KU.white }); alpha(ctx, 1);
+  } },
+{ id: '09', act: 'II', title: 'The bottle loop', dur: 20, rep: 14.5, bg: KU.white, src: [1, 6],
+  vo: 'Recycled polyester sounds like a way back. But most of it is made from plastic bottles, not old clothes. Less than one percent of all fibre comes from recycled textiles. The bottle becomes a shirt, and the shirt usually stops there.',
+  visual: 'The thread draws a bottle, then a shirt, then tries to bend back into a loop. It can\'t close it, and slides off onto a grey heap.',
+  motion: 'Three shapes, one per sentence. The gap in the loop is held for a beat before the slide.',
+  os: 'Recycled polyester: mostly bottles · <1% of fibre is from old clothes',
+  update: function (w, t) {
+    var path;
+    if (t < 6) path = BOTTLE; else if (t < 12) path = shirtPath(-40);
+    else if (t < 16) path = P([TOP, [180, 210]].concat(arc(180, 320, 100, -90 * D, 228 * D, 60)).concat([[64, 300], [64, 600], BOT]));
+    else path = P([TOP, [180, 210]].concat(arc(180, 320, 100, -90 * D, 150 * D, 40)).concat([[250, 440], [300, 470], [180, 560], BOT]));
+    w.thread.setTarget(path, 0.09);
+  },
+  back: function (ctx, w, t) {
+    alpha(ctx, fade(t, 15.5)); ctx.fillStyle = KU.grey;
+    ctx.beginPath(); ctx.moveTo(210, 492); ctx.lineTo(340, 492); ctx.lineTo(326, 470); ctx.lineTo(300, 458); ctx.lineTo(262, 462); ctx.lineTo(232, 474); ctx.closePath(); ctx.fill(); alpha(ctx, 1);
+  },
+  front: function (ctx, w, t) {
+    txt(ctx, 'RECYCLED POLYESTER:', 24, 118, 20, KU.black, { knock: KU.white });
+    alpha(ctx, fade(t, 1.5)); txt(ctx, 'MOSTLY BOTTLES', 24, 144, 20, KU.black, { knock: KU.white });
+    alpha(ctx, 1);
+    var cap = t < 6 ? 'a bottle…' : t < 12 ? '…becomes a shirt…' : '…and usually stops there.';
+    txt(ctx, cap, 24, 470, 15, KU.black, { w: 400, knock: KU.white });
+    alpha(ctx, fade(t, 12)); hl(ctx, '<1% OF FIBRE IS FROM OLD CLOTHES', 24, 503, 14); alpha(ctx, 1);
+  } },
+{ id: '10', act: 'III', title: 'Enter elastane', dur: 14, bg: KU.white, src: [7],
+  vo: "Then the thread met elastane. Stretchy, exciting, and in almost everything. But elastane, also called spandex, isn't polyester. It's polyurethane, wrapped right into the yarn.",
+  visual: 'A care label on the left. A black, hairy squiggle wriggles in from the right and wraps itself round the thread.',
+  motion: 'The squiggle\'s ink line boils, like Jones\'s rice-paper squiggle. It coils over and under the thread.',
+  os: "Enter elastane · 88% polyester, 12% elastane · It's polyurethane, not polyester",
+  setup: function (w) { w.ex.sq = new Chain(P([[420, 180], [420, 470]]), 60, { pinTop: false, pinBot: false, g: 0, wind: 0.03, iter: 8 }); },
+  update: function (w, t) {
+    w.thread.setTarget(STRAIGHT, 0.05);
+    var o = [], i;
+    if (t < 4.5) { for (i = 0; i <= 40; i++) o.push(pt(300 - Math.min(1, t / 3) * 20 + 26 * Math.sin(i * 0.9 + t * 5), 180 + i * 7.25)); }
+    else { for (i = 0; i <= 80; i++) o.push(pt(180 + 11 * Math.sin(i * 0.55 + t * 3), 190 + i * 3.5)); }
+    w.ex.sq.setTarget(o, 0.1);
+  },
+  back: function (ctx, w, t) { if (t >= 4.5) drawSquiggle(ctx, w.ex.sq, t); },
+  front: function (ctx, w, t) {
+    var sq = w.ex.sq;
+    if (t < 4.5) drawSquiggle(ctx, sq, t);
+    else drawSquiggle(ctx, sq, t, function (i) { return Math.cos(i * 0.75 + t * 3) > 0; });
+    alpha(ctx, fade(t, 0.3)); txt(ctx, 'ENTER ELASTANE', 24, 120, 26, KU.black, { knock: KU.white });
+    ctx.save(); ctx.translate(28, 150); ctx.rotate(-3 * D);
+    ctx.fillStyle = KU.white; ctx.fillRect(0, 0, 128, 60); ctx.strokeStyle = KU.black; ctx.lineWidth = 2; ctx.strokeRect(0, 0, 128, 60);
+    txt(ctx, '88% POLYESTER', 10, 24, 13, KU.black); hl(ctx, '12% ELASTANE', 10, 48, 13); ctx.restore();
+    alpha(ctx, fade(t, 6)); txt(ctx, 'Also called spandex.', 24, 468, 14, KU.black, { w: 400, knock: KU.white });
+    alpha(ctx, fade(t, 9)); hl(ctx, "IT'S POLYURETHANE, NOT POLYESTER", 24, 498, 14); alpha(ctx, 1);
+  } },
+{ id: '11', act: 'III', title: 'The jam', dur: 20, bg: KU.white, src: [7, 19],
+  vo: 'And the loop only works when everything in it is the same. A little elastane spoils a polyester batch, and one estimate finds it in about 80% of discarded clothes. Scientists are testing ways to unpick it, but none is standard yet.',
+  visual: 'The Loop, a black ring, appears. The thread runs round it, but the squiggle bunches up and jams on one side.',
+  motion: 'The ring judders twice. The jam point is marked in yellow.',
+  os: 'A little elastane spoils the batch · In ~80% of discarded clothes (US estimate)',
+  setup: function (w) { var o = []; for (var i = 0; i <= 80; i++) o.push(pt(180 + 11 * Math.sin(i * 0.55), 190 + i * 3.5)); w.ex.sq = new Chain(o, 60, { pinTop: false, pinBot: false, g: 0, wind: 0.03, iter: 8 }); },
+  update: function (w, t) {
+    w.thread.setTarget(t < 1.5 ? STRAIGHT : P([TOP, [180, 225]].concat(arc(180, 330, 105, -90 * D, 210 * D, 70)).concat([[52, 330], [52, 600], BOT])), 0.08);
+    var o = [];
+    for (var i = 0; i < 60; i++) { var s = i / 59, ang = (-90 + Math.min(s * 1.7, 1) * 125) * D, r = 105 + 9 * Math.sin(s * 50 + t * 4); o.push(pt(180 + r * Math.cos(ang), 330 + r * Math.sin(ang))); }
+    if (t < 2) { o = []; for (var j = 0; j <= 80; j++) o.push(pt(180 + 11 * Math.sin(j * 0.55 + t * 3), 190 + j * 3.5)); }
+    w.ex.sq.setTarget(o, 0.1);
+  },
+  back: function (ctx, w, t) {
+    var shake = (t > 7 && Math.sin(t * 3) > 0.75) ? Math.sin(t * 45) * 2.5 : 0;
+    alpha(ctx, fade(t, 1)); ring(ctx, 180 + shake, 330, 105, 10, KU.black);
+    ctx.fillStyle = KU.black; ctx.beginPath(); ctx.moveTo(170 + shake, 214); ctx.lineTo(192 + shake, 225); ctx.lineTo(170 + shake, 236); ctx.closePath(); ctx.fill();
+    alpha(ctx, fade(t, 6)); ctx.fillStyle = KU.yellow; ctx.beginPath(); ctx.arc(266, 390, 20, 0, Math.PI * 2); ctx.fill(); alpha(ctx, 1);
+  },
+  front: function (ctx, w, t) {
+    drawSquiggle(ctx, w.ex.sq, t);
+    alpha(ctx, fade(t, 6)); ctx.strokeStyle = KU.black; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(296, 356); ctx.lineTo(310, 370); ctx.moveTo(310, 356); ctx.lineTo(296, 370); ctx.stroke();
+    alpha(ctx, fade(t, 0.5)); txt(ctx, 'A LITTLE ELASTANE', 24, 120, 22, KU.black, { knock: KU.white });
+    alpha(ctx, fade(t, 5)); hl(ctx, 'SPOILS THE BATCH', 24, 150, 22);
+    alpha(ctx, fade(t, 10)); txt(ctx, 'Found in about 80% of discarded clothes', 24, 484, 13, KU.black, { knock: KU.white });
+    txt(ctx, '(one US estimate)', 24, 502, 12, KU.grey, { w: 400, knock: KU.white }); alpha(ctx, 1);
+  } },
+{ id: '12', act: 'III', title: 'The lookalike', dur: 21, bg: KU.white, src: [8, 19],
+  vo: "Even family can't help. PLA is a polyester too, and it looks just the same. But in bottle recycling, a tenth of one percent of PLA can spoil a batch of PET. What counts is the exact plastic, and the exact way back.",
+  visual: 'Two lines side by side: the solid thread (PET) and a dashed lookalike (PLA). A hoop stands for the PET recycling stream.',
+  motion: 'PLA slides in beside PET; the hoop flashes once and pushes it out.',
+  os: "They look the same. They aren't. · 0.1% PLA can spoil a PET batch",
+  setup: function (w) { w.ex.pla = new Chain(P([[250, 60], [250, 600]]), 60, { pinTop: false, pinBot: false, g: 0, wind: 0.025, iter: 8 }); },
+  update: function (w, t) {
+    w.thread.setTarget(P([TOP, [150, 80], [150, 600], BOT]), 0.06);
+    var x = t < 8 ? 250 : t < 11.3 ? 250 - ease((t - 8) / 2) * 44 : 330;
+    w.ex.pla.setTarget(P([[x, 70], [x, 600]]), t > 11.3 ? 0.14 : 0.07);
+  },
+  back: function (ctx, w, t) { ring(ctx, 180, 390, 62, 8, (t > 11 && t < 11.35) ? KU.yellow : KU.black); },
+  front: function (ctx, w, t) {
+    drawDashed(ctx, w.ex.pla, t);
+    alpha(ctx, fade(t, 0.5)); txt(ctx, 'THEY LOOK THE SAME.', 24, 118, 20, KU.black, { knock: KU.white });
+    alpha(ctx, fade(t, 7)); txt(ctx, "THEY AREN'T.", 24, 144, 20, KU.black, { knock: KU.white });
+    alpha(ctx, fade(t, 1.5)); txt(ctx, 'PET', 142, 186, 14, KU.black, { align: 'right', knock: KU.white });
+    txt(ctx, 'PLA', 262, 186, 14, KU.black, { knock: KU.white });
+    alpha(ctx, fade(t, 12)); hl(ctx, '0.1% PLA CAN SPOIL A PET BATCH', 24, 486, 14);
+    txt(ctx, 'in bottle recycling', 24, 506, 12, KU.grey, { w: 400, knock: KU.white }); alpha(ctx, 1);
+  } },
+{ id: '13', act: 'IV', title: 'The thread learns to bend', dur: 19, bg: KU.black, src: [9, 10], bi: true,
+  vo: 'So the thread learned to bend. Two different polyesters, joined in one filament, shrink at different rates and curl into a spring: stretch, without elastane. The maker says it can be chemically recycled with polyester. Ask to see independent evidence.',
+  visual: 'Black ground. The thread coils into a spring: a blue strand with a fine white second strand, two polyesters in one filament.',
+  motion: 'The coil forms, then stretches and recovers three times on the beat.',
+  os: "The thread learns to bend · Stretch without elastane · Maker's claim: ask for evidence",
+  update: function (w, t) {
+    if (t < 2) { w.thread.setTarget(STRAIGHT, 0.03); return; }
+    var st = t > 7 ? Math.max(0, Math.sin((t - 7) * 1.8)) : 0, y1 = 380 + 60 * st;
+    w.thread.setTarget(P([TOP, [180, 182]]).concat(helix(200, y1, 30 * (1 - 0.35 * st), 9)).concat(P([[180, y1 + 18], BOT])), 0.12);
+  },
+  front: function (ctx, w, t) {
+    alpha(ctx, fade(t, 0.5)); txt(ctx, 'THE THREAD', 24, 118, 22, KU.white, { knock: KU.black });
+    alpha(ctx, fade(t, 2.5)); hl(ctx, 'LEARNS TO BEND', 24, 146, 22);
+    alpha(ctx, fade(t, 5)); txt(ctx, 'Two polyesters, one filament', 24, 474, 14, KU.white, { knock: KU.black });
+    alpha(ctx, fade(t, 9)); hl(ctx, 'STRETCH WITHOUT ELASTANE', 24, 500, 14);
+    alpha(ctx, fade(t, 13)); txt(ctx, "Maker's claim. Ask for evidence.", 24, 172, 12, KU.white, { w: 400, knock: KU.black }); alpha(ctx, 1);
+  } },
+{ id: '14', act: 'IV', title: 'PLA: polyester from plants', dur: 19, bg: KU.white, src: [11, 12],
+  vo: "PLA has its own story. It's made from plant sugars, such as corn, and it can compost, but only in industrial facilities. It melts at a much lower temperature than PET, so it needs a cool iron, and it takes dye differently.",
+  visual: 'The thread moves to the left edge. A dashed PLA line grows up from the ground like a plant. Two bars compare melting points, drawn to scale from 0 °C.',
+  motion: 'The plant grows and its leaves open on the beat. The bars rise together; PLA stops first.',
+  os: 'Plant sugars → PLA · Cool iron only · ~170 °C vs ~250 °C · Compostable only in industrial facilities',
+  setup: function (w) { w.ex.pla = new Chain(P([[180, 560], [180, 559]]), 50, { pinTop: false, top: pt(180, 560), bot: pt(180, 560), g: 0, wind: 0.02, iter: 8 }); },
+  update: function (w, t) {
+    w.thread.setTarget(P([TOP, [52, 70], [52, 600], BOT]), 0.06);
+    var g = Math.max(0.5, clamp((t - 0.5) / 5, 0, 1) * 330), o = [];
+    for (var i = 0; i <= 30; i++) { var s = i / 30; o.push(pt(180 + 8 * Math.sin(s * 3 + t) * s, 560 - g * s)); }
+    w.ex.pla.setTarget(o, 0.12);
+  },
+  back: function (ctx, w, t) {
+    var g = clamp((t - 0.5) / 5, 0, 1) * 330; ctx.fillStyle = KU.black;
+    [[500, -1], [440, 1], [380, -1], [320, 1]].forEach(function (l) {
+      if (560 - g > l[0] - 4) return;
+      var s = l[1]; ctx.beginPath(); ctx.moveTo(180, l[0]); ctx.quadraticCurveTo(180 + s * 30, l[0] - 26, 180 + s * 40, l[0] - 10); ctx.quadraticCurveTo(180 + s * 18, l[0] - 2, 180, l[0]); ctx.fill();
+    });
+    var u = ease((t - 6) / 4), hPLA = 102 * u, hPET = 150 * Math.min(1, u * 1.47);
+    alpha(ctx, fade(t, 5.5));
+    ctx.fillStyle = 'rgba(0,156,222,0.3)'; ctx.fillRect(236, 470 - hPLA, 38, hPLA);
+    ctx.setLineDash([6, 4]); ctx.strokeStyle = KU.blue; ctx.lineWidth = 2; ctx.strokeRect(236, 470 - hPLA, 38, hPLA); ctx.setLineDash([]);
+    ctx.fillStyle = KU.blue; ctx.fillRect(292, 470 - hPET, 38, hPET);
+    ctx.strokeStyle = KU.black; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(226, 470); ctx.lineTo(342, 470); ctx.stroke();
+    txt(ctx, 'MELTING POINT', 226, 296, 11, KU.black);
+    if (u > 0.98) { txt(ctx, '~170°C', 255, 360, 12, KU.black, { align: 'center' }); txt(ctx, '~250°C', 311, 312, 12, KU.black, { align: 'center' }); }
+    txt(ctx, 'PLA', 255, 488, 12, KU.black, { align: 'center' }); txt(ctx, 'PET', 311, 488, 12, KU.black, { align: 'center' }); alpha(ctx, 1);
+  },
+  front: function (ctx, w, t) {
+    drawDashed(ctx, w.ex.pla, t);
+    alpha(ctx, fade(t, 0.5)); txt(ctx, 'PLANT SUGARS → PLA', 24, 118, 20, KU.black, { knock: KU.white });
+    alpha(ctx, fade(t, 10)); hl(ctx, 'COOL IRON ONLY', 24, 154, 18);
+    alpha(ctx, fade(t, 4)); txt(ctx, 'Compostable only in industrial facilities', 24, 508, 12, KU.black, { knock: KU.white }); alpha(ctx, 1);
+  } },
+{ id: '15', act: 'IV', title: 'The lab frontier', dur: 16, rep: 7.5, bg: KU.black, src: [13], cut: 'Cut for short version',
+  vo: "In the lab, chemists have made rubbers entirely from polyesters: hard ends with a soft, springy middle. They stretch more than ten times their length. But you can't buy them as fibre yet.",
+  visual: 'Black ground. A tiny all-polyester rubber (two white hard ends, a blue springy middle) stretches to 11 times its length beside a ruler, to scale.',
+  motion: 'Slow pull, hold, then snap back with a wobble: that wobble is the Verlet chain settling.',
+  os: 'In the lab · All-polyester rubber · Not on sale yet',
+  setup: function (w) { w.ex.rub = new Chain(P([[180, 196], [180, 222]]), 24, { top: pt(180, 196), bot: pt(180, 222), g: 0, wind: 0, damp: 0.94, iter: 6 }); w.ex.rub.restRate = 1; },
+  update: function (w, t) {
+    w.thread.setTarget(P([TOP, [48, 70], [48, 600], BOT]), 0.06);
+    var s = t < 2 ? 1 : t < 6 ? 1 + 10 * ease((t - 2) / 4) : t < 9 ? 11 : 1, L = 26 * s, r = w.ex.rub;
+    r.bot.y = 196 + L; r.restGoal = L / (r.n - 1); w.ex.rub.s = s;
+  },
+  front: function (ctx, w, t) {
+    var r = w.ex.rub, p = r.p, s = r.s || 1, A = 10 / Math.sqrt(s);
+    ctx.strokeStyle = KU.blue; ctx.lineWidth = 3; ctx.beginPath();
+    p.forEach(function (q, i) { var x = q.x + (i === 0 || i === p.length - 1 ? 0 : (i % 2 ? A : -A)); i ? ctx.lineTo(x, q.y) : ctx.moveTo(x, q.y); }); ctx.stroke();
+    ctx.fillStyle = KU.white; ctx.fillRect(165, p[0].y - 10, 30, 10); ctx.fillRect(165, p[p.length - 1].y, 30, 10);
+    ctx.strokeStyle = KU.white; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(250, 196); ctx.lineTo(250, 196 + 286);
+    for (var k = 0; k <= 11; k++) { ctx.moveTo(244, 196 + k * 26); ctx.lineTo(256, 196 + k * 26); } ctx.stroke();
+    txt(ctx, '1×', 262, 226, 11, KU.white, { w: 400 }); txt(ctx, '11×', 262, 486, 11, KU.white, { w: 400 });
+    alpha(ctx, fade(t, 0.5)); txt(ctx, 'IN THE LAB', 24, 118, 22, KU.white, { knock: KU.black });
+    txt(ctx, 'All-polyester rubber', 24, 142, 14, KU.white, { w: 400, knock: KU.black });
+    alpha(ctx, fade(t, 6)); txt(ctx, 'Stretches about 11× before breaking', 24, 166, 12, KU.white, { w: 400, knock: KU.black });
+    alpha(ctx, fade(t, 10)); hl(ctx, 'NOT ON SALE YET', 24, 506, 15); alpha(ctx, 1);
+  } },
+{ id: '16', act: 'C', title: 'What changes now', dur: 19, rep: 16, bg: KU.white, src: [14, 15],
+  vo: "The rules are changing too. Under new EU law, brands will pay to collect and sort used textiles. So, as designers: read the label. Use fewer fibres in one garment. Know how it comes back. And question the word 'recycled'.",
+  visual: 'The thread hangs straight. Four black cards are threaded onto it like swing tags.',
+  motion: 'Each card drops onto the thread on a beat and sways with it.',
+  os: "EU law 2025: brands pay to collect and sort · Read the label · Fewer fibres per garment · Know the route back · Question 'recycled'",
+  setup: function (w) { w.thread.wind = 0.05; },
+  update: function (w) { w.thread.setTarget(STRAIGHT, 0.02); },
+  front: function (ctx, w, t) {
+    alpha(ctx, fade(t, 0.5)); txt(ctx, 'EU LAW, 2025', 24, 112, 14, KU.black, { knock: KU.white });
+    alpha(ctx, fade(t, 2)); hl(ctx, 'BRANDS PAY TO COLLECT AND SORT', 24, 140, 15);
+    alpha(ctx, fade(t, 6)); txt(ctx, 'AS A DESIGNER:', 24, 188, 14, KU.black, { knock: KU.white }); alpha(ctx, 1);
+    var cards = [['READ THE LABEL', 232, 7.5], ['FEWER FIBRES PER GARMENT', 300, 9.5], ['KNOW THE ROUTE BACK', 368, 11.5], ["QUESTION 'RECYCLED'", 436, 13.5]], p = w.thread.p;
+    cards.forEach(function (c) {
+      var a = fade(t, c[2], 0.4); if (a <= 0) return;
+      var i = clamp(Math.round((c[1] + 30) / 700 * (N - 1)), 1, N - 2), q = p[i];
+      var ang = Math.atan2(p[i+1].x - p[i-1].x, p[i+1].y - p[i-1].y);
+      ctx.save(); ctx.globalAlpha = a; ctx.translate(q.x, q.y - (1 - a) * 30); ctx.rotate(-ang);
+      ctx.fillStyle = KU.black; ctx.fillRect(-125, -6, 250, 42);
+      ctx.fillStyle = KU.white; ctx.beginPath(); ctx.arc(0, 2, 4, 0, Math.PI * 2); ctx.fill();
+      txt(ctx, c[0], 0, 27, 15, KU.white, { align: 'center' }); ctx.restore();
+    });
+    ctx.globalAlpha = 1;
+  } },
+{ id: '17', act: 'C', title: 'The open loop', dur: 14, bg: KU.black, src: [],
+  vo: 'The thread is still trying to close the loop. What would you design, if every garment had to come back?',
+  visual: 'Black ground. The thread bends into a loop and reaches for its own start, but never quite closes it. The question sits inside.',
+  motion: 'The free end keeps reaching. Hold on the question for 4 seconds; credits follow.',
+  os: 'What would you design if every garment had to come back?',
+  setup: function (w) { w.thread.pinBot = false; },
+  update: function (w, t) { var e = (232 + 6 * Math.sin(t * 1.5)) * D; w.thread.setTarget(P([TOP, [180, 190]].concat(arc(180, 300, 110, -90 * D, e, 70))), t < 1 ? 0.03 : 0.1); },
+  front: function (ctx, w, t) {
+    alpha(ctx, fade(t, 3)); ['WHAT WOULD YOU DESIGN', 'IF EVERY GARMENT', 'HAD TO COME BACK?'].forEach(function (l, i) { txt(ctx, l, 180, 290 + i * 22, 15, KU.white, { align: 'center' }); });
+    alpha(ctx, fade(t, 8)); txt(ctx, 'Digital Practice / FN4005 · Kingston School of Art', 180, 470, 11, KU.white, { align: 'center', w: 400 });
+    txt(ctx, 'Matthew Mounsey-Wood FHEA MA (RCA)', 180, 488, 11, KU.white, { align: 'center', w: 400 }); alpha(ctx, 1);
+  } }
+];
+
+// ---------- timing ----------
+var starts = [], total = 0;
+S.forEach(function (s) { starts.push(total); total += s.dur; });
+function fmt(sec) { sec = Math.max(0, Math.round(sec)); return Math.floor(sec / 60) + ':' + String(sec % 60).padStart(2, '0'); }
+function sentences(s) { return s.vo.match(/[^.?!]+[.?!]+["']?/g) || [s.vo]; }
+function capTimes(s) {
+  var ss = sentences(s).map(function (x) { return x.trim(); }), words = ss.map(function (x) { return x.split(/\s+/).length; });
+  var sum = words.reduce(function (a, b) { return a + b; }, 0), lead = 0.4, span = s.dur - 0.9, acc = lead;
+  return ss.map(function (x, i) { var d = span * words[i] / sum, o = { text: x, a: acc, b: acc + d }; acc += d; return o; });
+}
+
+// ---------- render ----------
+function render(ctx, w, s, t) {
+  ctx.fillStyle = s.bg; ctx.fillRect(0, 0, W, H);
+  if (s.back) s.back(ctx, w, t);
+  ctx.save(); if (s.clip) s.clip(ctx, t); drawThread(ctx, w.thread, t, s.bi); ctx.restore();
+  if (s.front) s.front(ctx, w, t);
+  ctx.globalAlpha = 1;
+  if (SAFE) drawSafe(ctx);
+}
+
+// ---------- runners ----------
+function Runner(cv, mode, idx) {
+  this.cv = cv; this.ctx = cv.getContext('2d'); this.mode = mode; this.w = new World();
+  this.acc = 0; this.active = false; this.playing = false; this.fixedW = 0;
+  this.enter(idx || 0, false);
+}
+Runner.prototype.enter = function (i, keep) { this.si = i; this.t = 0; enterScene(this.w, S[i], keep); if (this.onScene) this.onScene(i); };
+Runner.prototype.size = function () {
+  var target = this.fixedW;
+  if (!target) { var r = this.cv.getBoundingClientRect(), dpr = Math.min(2, window.devicePixelRatio || 1); target = Math.round(r.width * dpr); }
+  if (target > 0 && this.cv.width !== target) { this.cv.width = target; this.cv.height = Math.round(target * 16 / 9); }
+};
+Runner.prototype.advance = function (n) {
+  for (var k = 0; k < n; k++) {
+    this.t += 1 / 60;
+    var s = S[this.si];
+    if (this.t > s.dur) {
+      if (this.mode === 'loop') this.enter(this.si, false);
+      else if (this.si < S.length - 1) this.enter(this.si + 1, true);
+      else { this.t = s.dur; this.playing = false; if (this.onEnd) this.onEnd(); return; }
+    }
+    tick(this.w, S[this.si], this.t);
+  }
+};
+Runner.prototype.draw = function () { this.size(); var sc = this.cv.width / W; this.ctx.setTransform(sc, 0, 0, sc, 0, 0); render(this.ctx, this.w, S[this.si], this.t); };
+Runner.prototype.running = function () { return this.mode === 'loop' ? (this.active && !REDUCE) : this.playing; };
+Runner.prototype.jumpTo = function (i, at) { this.enter(i, false); var n = Math.round((at || 0) * 60); this.advance(n); this.draw(); };
+
+var runners = [], last = performance.now();
+function frame(now) {
+  var dt = Math.min(0.1, (now - last) / 1000); last = now;
+  runners.forEach(function (r) {
+    if (!r.running()) return;
+    r.acc += dt; var n = Math.floor(r.acc * 60);
+    if (n > 4) { n = 4; r.acc = 0; } else r.acc -= n / 60;
+    if (n > 0) { r.advance(n); r.draw(); if (r.onFrame) r.onFrame(); }
+  });
+  requestAnimationFrame(frame);
+}
+
+// ---------- storyboard ----------
+function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+var board = document.getElementById('board'); board.innerHTML = '';
+var curAct = null, shotsWrap = null, boardRunners = [];
+S.forEach(function (s, i) {
+  if (s.act !== curAct) {
+    curAct = s.act;
+    var last = i; while (last + 1 < S.length && S[last + 1].act === curAct) last++;
+    var head = el('div', 'act');
+    head.appendChild(el('span', 'n', curAct === 'C' ? 'Coda' : 'Act ' + curAct));
+    head.appendChild(el('h2', null, ACTS[curAct]));
+    head.appendChild(el('span', 'tc', fmt(starts[i]) + '–' + fmt(starts[last] + S[last].dur)));
+    board.appendChild(head);
+    shotsWrap = el('div', 'shots'); board.appendChild(shotsWrap);
+  }
+  var art = el('article', 'shot'); art.id = 's' + s.id;
+  var cv = el('canvas'); cv.width = 360; cv.height = 640; cv.setAttribute('role', 'img'); cv.setAttribute('aria-label', 'Shot ' + s.id + ': ' + s.visual);
+  art.appendChild(cv);
+  var notes = el('div', 'notes'), hd = el('header');
+  hd.appendChild(el('span', 'num', s.id)); hd.appendChild(el('h3', null, s.title));
+  hd.appendChild(el('span', 'tc', fmt(starts[i]) + '–' + fmt(starts[i] + s.dur) + ' · ' + s.dur + ' s' + (s.cut ? ' · ' + s.cut : '')));
+  notes.appendChild(hd);
+  var dl = el('dl');
+  [['Visual', s.visual, ''], ['Motion', s.motion, ''], ['On screen', s.os, 'os'], ['Voice-over', s.vo, 'vo']].forEach(function (r) { dl.appendChild(el('dt', null, r[0])); dl.appendChild(el('dd', r[2], r[1])); });
+  if (s.src.length) {
+    dl.appendChild(el('dt', null, 'Sources')); var dd = el('dd');
+    s.src.forEach(function (n, k) { var a = el('a', null, '[' + n + ']'); a.href = '#src-' + n; dd.appendChild(a); if (k < s.src.length - 1) dd.appendChild(document.createTextNode(' ')); });
+    dl.appendChild(dd);
+  }
+  notes.appendChild(dl);
+  var pb = el('button', 'ghost play', 'Play from here in the animatic'); pb.type = 'button';
+  pb.addEventListener('click', function () { player.jumpTo(i, 0); player.playing = true; setPlay(); speakScene(i); document.getElementById('animatic').scrollIntoView({ behavior: REDUCE ? 'auto' : 'smooth', block: 'center' }); });
+  notes.appendChild(pb);
+  art.appendChild(notes); shotsWrap.appendChild(art);
+  var r = new Runner(cv, 'loop', i); r.rep = s.rep || s.dur * 0.62; runners.push(r); boardRunners.push(r);
+});
+
+// static resting frames, built in small batches so the page stays responsive
+(function prime(k) {
+  if (k >= boardRunners.length) return;
+  var r = boardRunners[k]; r.advance(Math.round(r.rep * 60)); r.draw();
+  setTimeout(function () { prime(k + 1); }, 0);
+})(0);
+
+if ('IntersectionObserver' in window) {
+  var io = new IntersectionObserver(function (entries) { entries.forEach(function (e) { var r = boardRunners.find(function (x) { return x.cv === e.target; }); if (r) r.active = e.isIntersecting; }); }, { rootMargin: '80px' });
+  boardRunners.forEach(function (r) { io.observe(r.cv); });
+}
+
+// ---------- animatic ----------
+var acv = document.getElementById('animatic');
+var player = new Runner(acv, 'seq', 0);
+runners.push(player);
+var track = document.getElementById('a-track'), segs = [];
+S.forEach(function (s, i) {
+  var b = el('button'); b.type = 'button'; b.style.setProperty('--d', s.dur); b.setAttribute('aria-label', 'Shot ' + s.id + ', ' + s.title);
+  b.addEventListener('click', function () { player.jumpTo(i, 0); speakScene(i); });
+  track.appendChild(b); segs.push(b);
+});
+var capEl = document.getElementById('a-cap'), shotEl = document.getElementById('a-shot'), timeEl = document.getElementById('a-time'), playBtn = document.getElementById('a-play');
+var caps = S.map(capTimes), lastCap = '';
+function updateUI() {
+  var s = S[player.si];
+  shotEl.textContent = s.id + ' · ' + s.title;
+  timeEl.textContent = fmt(starts[player.si] + player.t) + ' / ' + fmt(total);
+  segs.forEach(function (b, i) { b.className = i < player.si ? 'done' : i === player.si ? 'now' : ''; });
+  var c = caps[player.si].find(function (x) { return player.t >= x.a && player.t < x.b; });
+  var txt2 = c ? c.text : '';
+  if (txt2 !== lastCap) { lastCap = txt2; capEl.textContent = txt2 || ' '; }
+}
+player.onFrame = updateUI;
+player.onScene = function (i) { if (player.playing) speakScene(i); };
+player.onEnd = function () { setPlay(); };
+function setPlay() { playBtn.textContent = player.playing ? 'Pause' : 'Play'; }
+playBtn.addEventListener('click', function () {
+  if (!player.playing && player.si === S.length - 1 && player.t >= S[S.length - 1].dur - 0.01) player.jumpTo(0, 0);
+  player.playing = !player.playing; setPlay();
+  if (player.playing) speakScene(player.si); else stopSpeech();
+});
+document.getElementById('a-prev').addEventListener('click', function () { var i = Math.max(0, player.si - (player.t < 1.5 ? 1 : 0)); player.jumpTo(i, 0); updateUI(); speakScene(i); });
+document.getElementById('a-next').addEventListener('click', function () { var i = Math.min(S.length - 1, player.si + 1); player.jumpTo(i, 0); updateUI(); speakScene(i); });
+player.jumpTo(0, 4); updateUI(); capEl.textContent = 'Press Play to run the animatic. Captions show the voice-over.'; lastCap = null;
+
+document.getElementById('t-safe').addEventListener('change', function (e) { SAFE = e.target.checked; runners.forEach(function (r) { r.draw(); }); });
+
+// ---------- browser voice (pacing guide only) ----------
+var voiceOn = false;
+document.getElementById('t-voice').addEventListener('change', function (e) { voiceOn = e.target.checked; if (!voiceOn) stopSpeech(); else if (player.playing) speakScene(player.si); });
+function stopSpeech() { try { window.speechSynthesis.cancel(); } catch (e) {} }
+function speakScene(i) {
+  if (!voiceOn || !player.playing) return;
+  try {
+    var syn = window.speechSynthesis; syn.cancel();
+    var u = new SpeechSynthesisUtterance(S[i].vo); u.lang = 'en-GB'; u.rate = 1;
+    var v = syn.getVoices().find(function (x) { return /en[-_]GB/i.test(x.lang); }); if (v) u.voice = v;
+    syn.speak(u);
+  } catch (e) {}
+}
+
+// ---------- VO read-through + SRT ----------
+var words = 0, box = document.getElementById('vo-script');
+S.forEach(function (s, i) {
+  words += s.vo.split(/\s+/).length;
+  var row = el('div', 'vo-line'); row.appendChild(el('span', 't', fmt(starts[i]) + ' · ' + s.id));
+  row.appendChild(el('p', null, s.vo)); box.appendChild(row);
+});
+var speech = Math.round(words / 150 * 60);
+document.getElementById('m-words').textContent = words + ' words';
+document.getElementById('m-run').textContent = fmt(total);
+document.getElementById('vo-stats').textContent = words + ' words · about ' + fmt(speech) + ' of speech at 150 words a minute, in ' + fmt(total) + ' of film.';
+var plain = S.map(function (s, i) { return '[' + fmt(starts[i]) + '] ' + s.id + ' ' + s.title + '\n' + s.vo; }).join('\n\n');
+function srtTime(x) { var ms = Math.round(x * 1000), h = Math.floor(ms / 3600000), m = Math.floor(ms / 60000) % 60, sec = Math.floor(ms / 1000) % 60, r = ms % 1000; return String(h).padStart(2, '0') + ':' + String(m).padStart(2, '0') + ':' + String(sec).padStart(2, '0') + ',' + String(r).padStart(3, '0'); }
+var srt = [], n = 1;
+S.forEach(function (s, i) { caps[i].forEach(function (c) { srt.push(n++ + '\n' + srtTime(starts[i] + c.a) + ' --> ' + srtTime(starts[i] + c.b) + '\n' + c.text + '\n'); }); });
+var msg = document.getElementById('vo-msg');
+function copy(text, label) {
+  function fallback() { var r = document.createRange(); r.selectNodeContents(box); var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(r); msg.textContent = 'Copy was blocked. The script is selected: press Ctrl+C or ⌘C.'; }
+  try { navigator.clipboard.writeText(text).then(function () { msg.textContent = label + ' copied.'; }, fallback); } catch (e) { fallback(); }
+}
+document.getElementById('vo-copy').addEventListener('click', function () { copy(plain, 'Script'); });
+document.getElementById('srt-copy').addEventListener('click', function () { copy(srt.join('\n'), 'SRT captions'); });
+
+// ---------- local-only recording at 1080 × 1920 ----------
+var recBtn = document.getElementById('a-rec');
+if (location.protocol === 'file:' && window.MediaRecorder && acv.captureStream) {
+  recBtn.hidden = false;
+  recBtn.addEventListener('click', function () {
+    var chunks = [], stream = acv.captureStream(30), type = MediaRecorder.isTypeSupported('video/webm;codecs=vp9') ? 'video/webm;codecs=vp9' : 'video/webm';
+    var rec = new MediaRecorder(stream, { mimeType: type, videoBitsPerSecond: 12000000 });
+    rec.ondataavailable = function (e) { if (e.data.size) chunks.push(e.data); };
+    rec.onstop = function () {
+      player.fixedW = 0; player.draw();
+      var a = document.createElement('a'); a.href = URL.createObjectURL(new Blob(chunks, { type: 'video/webm' })); a.download = 'the-thread-and-the-loop.webm'; a.click();
+      recBtn.textContent = 'Record 1080×1920';
+    };
+    player.fixedW = 1080; player.jumpTo(0, 0); player.playing = true; setPlay();
+    var prevEnd = player.onEnd; player.onEnd = function () { setPlay(); rec.stop(); player.onEnd = prevEnd; };
+    recBtn.textContent = 'Recording… (' + fmt(total) + ')';
+    rec.start(1000);
+  });
+}
+
+requestAnimationFrame(frame);
 })();
 </script>

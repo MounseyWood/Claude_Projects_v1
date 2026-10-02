@@ -1,0 +1,987 @@
+<title>The Long Chain</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Big+Shoulders+Display:wght@700;800&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a production storyboard. Each shot is a 16:9 cut-paper frame beside its script notes; acts break the sequence. */
+:root {
+  --bg: #ECECE8;
+  --surface: #F6F6F3;
+  --fg: #161615;
+  --muted: #5A5954;
+  --rule: #CFCDC6;
+  --accent: #B3281C;
+  --strong: #2E6B3A;
+  --moderate: #8A6410;
+  --weak: #A1301F;
+
+  --display: "Big Shoulders Display", "Arial Narrow", "Helvetica Neue", sans-serif;
+  --body: "Atkinson Hyperlegible", "Verdana", "Segoe UI", sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #121211; --surface: #1B1B19; --fg: #ECEAE4; --muted: #A3A19A; --rule: #2F2E2B;
+    --accent: #E4503F; --strong: #7CC48A; --moderate: #E2B65A; --weak: #F07A66;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #121211; --surface: #1B1B19; --fg: #ECEAE4; --muted: #A3A19A; --rule: #2F2E2B;
+  --accent: #E4503F; --strong: #7CC48A; --moderate: #E2B65A; --weak: #F07A66;
+  color-scheme: dark;
+}
+
+/* Frame palette is fixed in both themes: these are the film's own colours. */
+.frame, .key {
+  --p: #E8E4D8;  /* paper ground */
+  --k: #151515;  /* ink · oil · fossil */
+  --r: #C42F1F;  /* PET polyester */
+  --rl: #EE8B73; /* a second polyester (PTT) */
+  --dr: #7A1C12; /* shadow red */
+  --y: #E3A31B;  /* elastane (polyurethane) */
+  --t: #1D7F7A;  /* PLA, plant-based */
+  --g: #9C998F;  /* other fibres, waste */
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--body);
+  font-size: 17px;
+  line-height: 1.6;
+  padding-inline: 16px;
+  padding-block: 0;
+}
+.wrap { max-width: 1180px; margin-inline: auto; padding-block: 40px 72px; display: grid; gap: 64px; }
+a { color: inherit; text-decoration-color: var(--accent); text-underline-offset: 3px; }
+a:focus-visible, button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+h1, h2, h3 { font-family: var(--display); font-weight: 800; text-transform: uppercase; line-height: 0.95; margin: 0; text-wrap: balance; letter-spacing: 0.01em; }
+p { margin: 0; max-width: 68ch; }
+.eyebrow, .label { font-family: var(--mono); font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+
+/* Header */
+.mast { display: grid; gap: 20px; }
+.mast h1 { font-size: clamp(3.4rem, 11vw, 7.5rem); }
+.mast h1 span { color: var(--accent); }
+.dek { font-size: 1.2rem; max-width: 60ch; }
+.meta { display: flex; flex-wrap: wrap; gap: 8px 28px; font-family: var(--mono); font-size: 0.85rem; font-variant-numeric: tabular-nums; border-top: 1px solid var(--rule); padding-top: 14px; }
+.meta b { font-weight: 500; color: var(--accent); }
+.sig { font-family: var(--mono); font-size: 0.85rem; color: var(--muted); }
+
+/* Section heads */
+section { display: grid; gap: 24px; }
+.sec-head { display: grid; gap: 6px; border-bottom: 3px solid var(--fg); padding-bottom: 10px; }
+.sec-head h2 { font-size: clamp(2rem, 5vw, 3rem); }
+
+/* Brief */
+.brief { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 28px 40px; }
+.brief > div { display: grid; gap: 8px; align-content: start; min-width: 0; }
+.brief h3 { font-size: 1.35rem; }
+.brief ul, .brief ol { margin: 0; padding-left: 1.2em; display: grid; gap: 6px; }
+.takeaway { font-family: var(--display); font-weight: 700; font-size: 1.9rem; line-height: 1.05; text-transform: uppercase; color: var(--accent); }
+
+/* Visual language */
+.lang { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 40px; }
+.lang ol { margin: 0; padding-left: 1.3em; display: grid; gap: 10px; }
+.lang li b { font-weight: 700; }
+.key { display: grid; gap: 10px; background: var(--k); color: var(--p); padding: 20px; border-radius: 2px; align-content: start; }
+.key .label { color: var(--g); }
+.key-row { display: grid; grid-template-columns: 44px 1fr; gap: 14px; align-items: center; font-size: 0.95rem; }
+.key-row svg { width: 44px; height: 28px; display: block; }
+.key-row b { font-family: var(--display); font-size: 1.15rem; letter-spacing: 0.02em; text-transform: uppercase; }
+
+/* Acts and shots */
+.act { display: grid; grid-template-columns: auto 1fr auto; align-items: baseline; gap: 16px; border-top: 3px solid var(--fg); padding-top: 12px; margin-top: 16px; }
+.act .act-n { font-family: var(--mono); font-size: 0.85rem; color: var(--accent); text-transform: uppercase; letter-spacing: 0.08em; }
+.act h2 { font-size: clamp(1.8rem, 4.4vw, 2.6rem); }
+.act .tc { font-family: var(--mono); font-size: 0.85rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.shots { display: grid; gap: 40px; }
+.shot { display: grid; grid-template-columns: minmax(0, 46%) minmax(0, 1fr); gap: 28px; align-items: start; }
+.frame { margin: 0; position: relative; }
+.frame svg { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; border-radius: 2px; }
+.frame::after { content: ""; position: absolute; inset: 0; pointer-events: none; opacity: 0.22; mix-blend-mode: multiply; border-radius: 2px;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.5  0 0 0 0 0.45  0 0 0 0 0.4  0 0 0 0.55 0'/></filter><rect width='160' height='160' filter='url(%23n)'/></svg>"); }
+.notes { display: grid; gap: 12px; min-width: 0; }
+.notes header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 14px; }
+.notes .num { font-family: var(--display); font-weight: 800; font-size: 2.2rem; line-height: 0.9; color: var(--accent); font-variant-numeric: tabular-nums; }
+.notes h3 { font-size: 1.6rem; }
+.notes .tc { font-family: var(--mono); font-size: 0.82rem; color: var(--muted); font-variant-numeric: tabular-nums; margin-left: auto; }
+.notes dl { margin: 0; display: grid; grid-template-columns: 6.5rem minmax(0, 1fr); gap: 6px 14px; }
+.notes dt { font-family: var(--mono); font-size: 0.74rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); padding-top: 0.25em; }
+.notes dd { margin: 0; }
+.notes dd.vo { font-size: 1.08rem; border-left: 3px solid var(--accent); padding-left: 12px; }
+.notes dd.vo.silent { border-left-color: var(--rule); color: var(--muted); font-style: italic; }
+.notes dd.os { font-family: var(--display); font-weight: 700; font-size: 1.15rem; letter-spacing: 0.02em; text-transform: uppercase; line-height: 1.25; }
+.cut { font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.06em; text-transform: uppercase; border: 1px solid var(--rule); padding: 1px 6px; border-radius: 2px; color: var(--muted); }
+
+/* SVG frame classes */
+.frame .fp { fill: var(--p); } .frame .fk { fill: var(--k); } .frame .fr { fill: var(--r); } .frame .frl { fill: var(--rl); }
+.frame .fdr { fill: var(--dr); } .frame .fy { fill: var(--y); } .frame .ft { fill: var(--t); } .frame .fg { fill: var(--g); }
+.frame .sk { stroke: var(--k); fill: none; } .frame .sr { stroke: var(--r); fill: none; } .frame .srl { stroke: var(--rl); fill: none; }
+.frame .st { stroke: var(--t); fill: none; } .frame .sp { stroke: var(--p); fill: none; } .frame .sy { stroke: var(--y); fill: none; }
+.frame .d { font-family: var(--display); font-weight: 800; }
+.frame .u { font-family: var(--mono); font-weight: 500; letter-spacing: 0.04em; }
+.key .fp { fill: var(--p); } .key .fr { fill: var(--r); } .key .frl { fill: var(--rl); } .key .fy { fill: var(--y); } .key .ft { fill: var(--t); } .key .fg { fill: var(--g); }
+.key .sp { stroke: var(--p); fill: none; }
+
+/* VO read-through */
+.vo-tools { display: flex; flex-wrap: wrap; gap: 12px 24px; align-items: center; font-family: var(--mono); font-size: 0.85rem; font-variant-numeric: tabular-nums; }
+button { font: inherit; font-family: var(--mono); font-size: 0.85rem; background: var(--fg); color: var(--bg); border: 0; padding: 8px 14px; border-radius: 2px; cursor: pointer; }
+button:hover { background: var(--accent); }
+.vo-script { margin: 0; display: grid; gap: 14px; background: var(--surface); padding: 22px; border-radius: 2px; }
+.vo-line { display: grid; grid-template-columns: 6.5rem minmax(0, 1fr); gap: 14px; }
+.vo-line .t { font-family: var(--mono); font-size: 0.8rem; color: var(--muted); font-variant-numeric: tabular-nums; padding-top: 0.2em; }
+.vo-line p { font-size: 1.08rem; }
+
+/* Fact table */
+.tablewrap { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; min-width: 720px; font-size: 0.95rem; }
+th, td { text-align: left; vertical-align: top; padding: 10px 12px; border-bottom: 1px solid var(--rule); }
+th { font-family: var(--mono); font-weight: 500; font-size: 0.74rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); border-bottom: 2px solid var(--fg); }
+td.n { font-family: var(--mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.chip { display: inline-block; font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.06em; text-transform: uppercase; padding: 2px 8px; border-radius: 2px; border: 1.5px solid currentColor; white-space: nowrap; }
+.chip.strong { color: var(--strong); } .chip.moderate { color: var(--moderate); } .chip.weak { color: var(--weak); }
+
+/* Two-column lists */
+.cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 32px 48px; }
+.cols > div { display: grid; gap: 10px; align-content: start; min-width: 0; }
+.cols h3 { font-size: 1.35rem; }
+.cols ul, .cols ol { margin: 0; padding-left: 1.2em; display: grid; gap: 8px; }
+.corrections li b { color: var(--accent); font-weight: 700; }
+.sources { margin: 0; padding-left: 2.2em; display: grid; gap: 6px; font-size: 0.92rem; columns: 2 380px; }
+.sources li { break-inside: avoid; overflow-wrap: anywhere; }
+footer { border-top: 3px solid var(--fg); padding-top: 14px; display: grid; gap: 4px; font-family: var(--mono); font-size: 0.85rem; }
+footer b { font-weight: 500; }
+
+@media (max-width: 760px) {
+  .shot { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+  .lang { grid-template-columns: minmax(0, 1fr); }
+  .act { grid-template-columns: 1fr; gap: 4px; }
+  .notes dl, .vo-line { grid-template-columns: minmax(0, 1fr); gap: 2px; }
+  .notes dd { margin-bottom: 8px; }
+  .notes .tc { margin-left: 0; width: 100%; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+</style>
+
+<!-- Shared cut-paper edge: a small displacement so shapes read as hand-cut. -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <filter id="cut" x="-5%" y="-5%" width="110%" height="110%">
+    <feTurbulence type="fractalNoise" baseFrequency="0.045" numOctaves="2" seed="7"/>
+    <feDisplacementMap in="SourceGraphic" scale="2.6"/>
+  </filter>
+</svg>
+
+<div class="wrap">
+
+<header class="mast">
+  <span class="eyebrow">FN4005 · Animated explainer · Storyboard and script</span>
+  <h1>The Long <span>Chain</span></h1>
+  <p class="dek">A short animation for first-year fashion students. What polyester is, what it does well and badly, why stretchy clothes rarely get recycled, and what researchers are trying instead. Styled after Saul Bass title sequences: flat colour, cut paper, and one red thread that keeps changing shape.</p>
+  <div class="meta" id="meta">
+    <span>Runtime <b id="m-run">4:32</b></span>
+    <span>Shots <b>17</b></span>
+    <span>Parts <b>5</b></span>
+    <span>Voice-over <b id="m-words">≈ 560 words</b></span>
+    <span>Draft <b>v1 · October 2026</b></span>
+  </div>
+  <span class="sig">Matthew Mounsey-Wood FHEA MA (RCA) LCF Alumni</span>
+</header>
+
+<section aria-labelledby="h-brief">
+  <div class="sec-head"><span class="eyebrow">Before the storyboard</span><h2 id="h-brief">Brief</h2></div>
+  <div class="brief">
+    <div>
+      <h3>One thing to remember</h3>
+      <p class="takeaway">A garment can only come back if we know what it's made of, and how it gets back.</p>
+    </div>
+    <div>
+      <h3>Audience</h3>
+      <p>FN4005 undergraduates, Level 4. No chemistry assumed. Most will own polyester and elastane without knowing it, so the care label is the way in.</p>
+    </div>
+    <div>
+      <h3>By the end, students can</h3>
+      <ol>
+        <li>Say what polyester is: PET, made mostly from oil, melt-spun into fibre.</li>
+        <li>Weigh its pros and cons in apparel.</li>
+        <li>Explain why blends, and elastane in particular, block recycling, and what "mono-material" means.</li>
+        <li>Describe two frontier routes to stretch, and ask what evidence backs each claim.</li>
+      </ol>
+    </div>
+    <div>
+      <h3>Tone</h3>
+      <p>Curious and even-handed. Polyester is neither villain nor saviour. The film models critical reading: it says who made each claim, and stops where the evidence stops.</p>
+    </div>
+  </div>
+</section>
+
+<section aria-labelledby="h-lang">
+  <div class="sec-head"><span class="eyebrow">Style guide</span><h2 id="h-lang">Visual language</h2></div>
+  <div class="lang">
+    <ol>
+      <li><b>One thread is the main character.</b> A single red line appears in every shot: it becomes a molecule, a filament, a recycling loop and, at the end, a loop that doesn't quite close.</li>
+      <li><b>Flat colour, no gradients, no 3D.</b> Five film colours plus paper. Each colour always means the same material (see key).</li>
+      <li><b>Cut-paper edges.</b> Shapes slightly irregular, type set letter by letter with small rotations, as if cut with scissors.</li>
+      <li><b>Type is part of the picture.</b> Words enter on the beat and sit inside the composition, not as subtitles.</li>
+      <li><b>Asymmetry and empty space.</b> One idea per frame. Big shapes, lots of ground.</li>
+      <li><b>Cut on the beat.</b> Jazz percussion and double bass drive the edit. Homage to the method, not a copy of any Bass sequence.</li>
+    </ol>
+    <div class="key" aria-label="Colour and shape key">
+      <span class="label">Colour and shape key · constant in every shot</span>
+      <div class="key-row"><svg viewBox="0 0 44 28" aria-hidden="true"><rect class="fr" x="4" y="6" width="16" height="16"/><rect class="fr" x="24" y="6" width="16" height="16"/></svg><span><b>Red squares</b> · PET polyester</span></div>
+      <div class="key-row"><svg viewBox="0 0 44 28" aria-hidden="true"><rect class="frl" x="4" y="6" width="16" height="16"/><rect class="fr" x="24" y="6" width="16" height="16"/></svg><span><b>Light red</b> · a second polyester (PTT), only in shot 13</span></div>
+      <div class="key-row"><svg viewBox="0 0 44 28" aria-hidden="true"><rect class="fy" x="2" y="9" width="40" height="10"/></svg><span><b>Mustard bars</b> · elastane (polyurethane)</span></div>
+      <div class="key-row"><svg viewBox="0 0 44 28" aria-hidden="true"><circle class="ft" cx="12" cy="14" r="8"/><circle class="ft" cx="32" cy="14" r="8"/></svg><span><b>Teal circles</b> · PLA and other plant-based polyesters</span></div>
+      <div class="key-row"><svg viewBox="0 0 44 28" aria-hidden="true"><rect x="1" y="3" width="42" height="22" class="sp" stroke-width="2"/></svg><span><b>Black</b> · oil, fossil feedstock, the machine</span></div>
+      <div class="key-row"><svg viewBox="0 0 44 28" aria-hidden="true"><rect class="fg" x="4" y="6" width="36" height="16"/></svg><span><b>Grey</b> · other fibres, waste</span></div>
+      <p style="font-size:0.85rem;color:var(--g)">Shape carries the meaning as well as colour, so red and teal never rely on hue alone. That keeps the film readable for colour-blind viewers.</p>
+    </div>
+  </div>
+</section>
+
+<section aria-labelledby="h-board">
+  <div class="sec-head"><span class="eyebrow">17 shots · 5 parts</span><h2 id="h-board">Storyboard and script</h2></div>
+
+  <!-- ACT I -->
+  <div class="act"><span class="act-n">Act I</span><h2>What is polyester?</h2><span class="tc">0:00–1:14</span></div>
+  <div class="shots">
+
+    <article class="shot" id="s01" data-tc="0:00">
+      <figure class="frame">
+        <svg viewBox="0 0 320 180" role="img" aria-label="Title card: black ground, a jagged red line cuts across, title The Long Chain.">
+          <rect class="fk" width="320" height="180"/>
+          <g filter="url(#cut)"><polyline class="sr" stroke-width="7" stroke-linejoin="miter" points="-5,118 60,118 72,100 84,136 96,100 108,136 120,100 132,136 144,118 330,118"/></g>
+          <text class="d fp" x="22" y="64" font-size="40" rotate="-2 1 -1 2 0 -2 1 0 2 -1 1 -2 0 1">THE LONG CHAIN</text>
+          <text class="u fy" x="22" y="160" font-size="8.5">POLYESTER · RECYCLING · STRETCH</text>
+        </svg>
+      </figure>
+      <div class="notes">
+        <header><span class="num">01</span><h3>Title</h3><span class="tc">0:00–0:12 · 12 s</span></header>
+        <dl>
+          <dt>Visual</dt><dd>Black ground. A red line enters from the left, runs straight, then breaks into a jagged zigzag: the first "chain".</dd>
+          <dt>Motion</dt><dd>Line draws on to four bass hits. Title letters drop in one at a time, each slightly rotated, like cut paper landing.</dd>
+          <dt>On screen</dt><dd class="os">The Long Chain · polyester · recycling · stretch</dd>
+          <dt>Voice-over</dt><dd class="vo silent">None. Music only.</dd>
+          <dt>Sound</dt><dd>Walking double bass, bongos, a single muted trumpet stab on the title.</dd>
+        </dl>
+      </div>
+    </article>
+
+    <article class="shot" id="s02" data-tc="0:12">
+      <figure class="frame">
+        <svg viewBox="0 0 320 180" role="img" aria-label="An oil drop splits into two building blocks, ethylene glycol and terephthalic acid, which join into a long red chain labelled PET.">
+          <rect class="fp" width="320" height="180"/>
+          <g filter="url(#cut)">
+            <path class="fk" d="M52 22 C46 40 34 54 34 68 a18 18 0 0 0 36 0 C70 54 58 40 52 22Z"/>
+            <rect class="fk" x="112" y="48" width="44" height="32"/>
+            <polygon class="fk" points="228,64 219,79.6 201,79.6 192,64 201,48.4 219,48.4"/>
+            <line class="sr" x1="24" y1="132" x2="296" y2="132" stroke-width="13" stroke-dasharray="20 6"/>
+          </g>
+          <path class="sk" stroke-width="3" d="M80 64 H104 M98 58 L104 64 L98 70"/>
+          <text class="d fk" x="168" y="72" font-size="22">+</text>
+          <path class="sk" stroke-width="2" d="M134 106 V118 M210 106 V118"/>
+          <text class="u fk" x="52" y="100" font-size="7" text-anchor="middle">OIL</text>
+          <text class="u fk" x="134" y="94" font-size="6.5" text-anchor="middle">ETHYLENE</text>
+          <text class="u fk" x="134" y="102" font-size="6.5" text-anchor="middle">GLYCOL</text>
+          <text class="u fk" x="210" y="94" font-size="6.5" text-anchor="middle">TEREPHTHALIC</text>
+          <text class="u fk" x="210" y="102" font-size="6.5" text-anchor="middle">ACID</text>
+          <text class="u fk" x="160" y="162" font-size="8" text-anchor="middle">PET = POLY · ETHYLENE · TEREPHTHALATE</text>
+        </svg>
+      </figure>
+      <div class="notes">
+        <header><span class="num">02</span><h3>From oil to chain</h3><span class="tc">0:12–0:27 · 15 s</span></header>
+        <dl>
+          <dt>Visual</dt><dd>Paper ground. A black drop falls and splits into two black shapes: a block (ethylene glycol) and a hexagon (terephthalic acid). They snap together, and the pair repeats into a long red chain.</dd>
+          <dt>Motion</dt><dd>Each snap lands on a bongo hit. The chain grows left to right and turns red as it forms.</dd>
+          <dt>On screen</dt><dd class="os">PET = poly · ethylene · terephthalate</dd>
+          <dt>Voice-over</dt><dd class="vo">Most polyester starts as oil. Two chemicals made from oil link together, over and over, into one very long chain. Its name is polyethylene terephthalate. PET for short.</dd>
+          <dt>Sources</dt><dd><a href="#src-2">[2]</a> <a href="#src-3">[3]</a></dd>
+        </dl>
+      </div>
+    </article>
+
+    <article class="shot" id="s03" data-tc="0:27">
+      <figure class="frame">
+        <svg viewBox="0 0 320 180" role="img" aria-label="Two cut-paper silhouettes of chemists on a red ground beside the date 1941.">
+          <rect class="fr" width="320" height="180"/>
+          <g filter="url(#cut)">
+            <circle class="fdr" cx="112" cy="80" r="14"/>
+            <path class="fdr" d="M86 142 Q86 104 112 100 Q138 104 138 142Z"/>
+            <circle class="fk" cx="70" cy="70" r="16"/>
+            <path class="fk" d="M40 142 Q40 96 70 92 Q100 96 100 142Z"/>
+            <rect class="fk" x="0" y="140" width="320" height="40"/>
+          </g>
+          <text class="d fp" x="168" y="104" font-size="58" rotate="-2 1 -1 2">1941</text>
+          <text class="u fp" x="171" y="124" font-size="8">TERYLENE (UK) · DACRON (US)</text>
+          <text class="u fp" x="171" y="157" font-size="7">CALICO PRINTERS' ASSOCIATION</text>
+          <text class="u fp" x="171" y="168" font-size="7">LANCASHIRE, ENGLAND</text>
+        </svg>
+      </figure>
+      <div class="notes">
+        <header><span class="num">03</span><h3>Made in Lancashire</h3><span class="tc">0:27–0:41 · 14 s</span><span class="cut">Cut for short version</span></header>
+        <dl>
+          <dt>Visual</dt><dd>Red ground. Two cut-paper silhouettes in profile, Bass style. "1941" stamps in beside them.</dd>
+          <dt>Motion</dt><dd>Silhouettes slide in from opposite sides and overlap. Date stamps down on a drum hit. Brand names flick past like a ticker.</dd>
+          <dt>On screen</dt><dd class="os">1941 · Terylene (UK) · Dacron (US)</dd>
+          <dt>Voice-over</dt><dd class="vo">It was invented in Lancashire in 1941, by John Whinfield and James Dickson at the Calico Printers' Association. It was sold as Terylene in Britain, and Dacron in the United States.</dd>
+          <dt>Sources</dt><dd><a href="#src-2">[2]</a> <a href="#src-3">[3]</a></dd>
+        </dl>
+      </div>
+    </article>
+
+    <article class="shot" id="s04" data-tc="0:41">
+      <figure class="frame">
+        <svg viewBox="0 0 320 180" role="img" aria-label="Melt spinning: red chips drop into a funnel, pass through a spinneret, and come out as red filaments stretched over rollers. Steps labelled melt, push, cool, stretch.">
+          <rect class="fp" width="320" height="180"/>
+          <g filter="url(#cut)">
+            <rect class="fr" x="146" y="8" width="6" height="6"/><rect class="fr" x="158" y="14" width="6" height="6"/>
+            <rect class="fr" x="168" y="6" width="6" height="6"/><rect class="fr" x="176" y="16" width="6" height="6"/>
+            <polygon class="fk" points="134,24 198,24 176,50 156,50"/>
+            <rect class="fk" x="140" y="52" width="52" height="10"/>
+            <circle class="fk" cx="196" cy="138" r="9"/>
+            <circle class="fk" cx="250" cy="138" r="9"/>
+          </g>
+          <circle class="fp" cx="148" cy="57" r="1.6"/><circle class="fp" cx="157" cy="57" r="1.6"/><circle class="fp" cx="166" cy="57" r="1.6"/><circle class="fp" cx="175" cy="57" r="1.6"/><circle class="fp" cx="184" cy="57" r="1.6"/>
+          <path class="sr" stroke-width="1.4" d="M148 62 L164 120 M157 62 L165 120 M166 62 L166 120 M175 62 L167 120 M184 62 L168 120"/>
+          <path class="sr" stroke-width="3" d="M166 120 C166 142 180 148 196 148 H310"/>
+          <text class="d fk" x="22" y="42" font-size="15"><tspan class="fr">1 </tspan>MELT</text>
+          <text class="d fk" x="22" y="66" font-size="15"><tspan class="fr">2 </tspan>PUSH</text>
+          <text class="d fk" x="22" y="98" font-size="15"><tspan class="fr">3 </tspan>COOL</text>
+          <text class="d fk" x="22" y="146" font-size="15"><tspan class="fr">4 </tspan>STRETCH</text>
+          <text class="u fk" x="202" y="72" font-size="6.5">SPINNERET</text>
+        </svg>
+      </figure>
+      <div class="notes">
+        <header><span class="num">04</span><h3>Melt spinning</h3><span class="tc">0:41–1:00 · 19 s</span></header>
+        <dl>
+          <dt>Visual</dt><dd>Red chips tumble into a black funnel, then through a spinneret: a black bar with a row of paper-coloured holes. Fine red filaments fall, gather into one strand and run over two rollers.</dd>
+          <dt>Motion</dt><dd>Each of the four steps lights up as it happens. The strand visibly lengthens and thins between the rollers ("stretch").</dd>
+          <dt>On screen</dt><dd class="os">1 Melt · 2 Push · 3 Cool · 4 Stretch</dd>
+          <dt>Voice-over</dt><dd class="vo">To make fibre, PET chips are melted and pushed through a spinneret: a metal plate with tiny holes, like a shower head. The strands cool, then are stretched so the chains line up. It's the same plastic as a drinks bottle, in a different shape.</dd>
+          <dt>Sources</dt><dd><a href="#src-2">[2]</a> <a href="#src-3">[3]</a></dd>
+        </dl>
+      </div>
+    </article>
+
+    <article class="shot" id="s05" data-tc="1:00">
+      <figure class="frame">
+        <svg viewBox="0 0 320 180" role="img" aria-label="A grid of 100 squares where 59 are red: polyester was 59 percent of all fibre made in 2024. 88 percent of it was fossil-based.">
+          <defs>
+            <pattern id="p5g" x="24" y="30" width="11" height="11" patternUnits="userSpaceOnUse"><rect class="fg" width="9" height="9"/></pattern>
+            <pattern id="p5r" x="24" y="30" width="11" height="11" patternUnits="userSpaceOnUse"><rect class="fr" width="9" height="9"/></pattern>
+          </defs>
+          <rect class="fk" width="320" height="180"/>
+          <rect x="24" y="30" width="110" height="110" fill="url(#p5g)"/>
+          <rect x="24" y="30" width="110" height="55" fill="url(#p5r)"/>
+          <rect x="24" y="85" width="99" height="11" fill="url(#p5r)"/>
+          <text class="u fg" x="24" y="156" font-size="6.5">1 SQUARE = 1% OF ALL FIBRE</text>
+          <text class="d fr" x="150" y="84" font-size="56">59%</text>
+          <text class="u fp" x="152" y="102" font-size="8">OF ALL FIBRE MADE IN 2024</text>
+          <text class="u fp" x="152" y="113" font-size="8">WAS POLYESTER</text>
+          <text class="u fy" x="152" y="136" font-size="8">88% OF THAT: FOSSIL-BASED</text>
+          <text class="u fg" x="152" y="160" font-size="6">TEXTILE EXCHANGE, 2025</text>
+        </svg>
+      </figure>
+      <div class="notes">
+        <header><span class="num">05</span><h3>The scale</h3><span class="tc">1:00–1:14 · 14 s</span></header>
+        <dl>
+          <dt>Visual</dt><dd>Black ground. A 10 × 10 grid of grey squares; one square stands for 1% of all fibre. 59 squares flip to red.</dd>
+          <dt>Motion</dt><dd>Squares flip row by row on a hi-hat. The "59%" lands big. Then most of the red squares get a thin black outline to show the fossil-based share.</dd>
+          <dt>On screen</dt><dd class="os">59% of all fibre made in 2024 was polyester · 88% of that: fossil-based</dd>
+          <dt>Voice-over</dt><dd class="vo">Polyester is now the world's most-used fibre. In 2024 it was 59% of all fibre made, and 88% of that polyester came from fossil fuels.</dd>
+          <dt>Sources</dt><dd><a href="#src-1">[1]</a></dd>
+        </dl>
+      </div>
+    </article>
+  </div>
+
+  <!-- ACT II -->
+  <div class="act"><span class="act-n">Act II</span><h2>Pros and cons</h2><span class="tc">1:14–2:10</span></div>
+  <div class="shots">
+
+    <article class="shot" id="s06" data-tc="1:14">
+      <figure class="frame">
+        <svg viewBox="0 0 320 180" role="img" aria-label="Split frame. Left, red panel listing strengths: strong, holds its shape, quick-dry, cheap, less water than cotton. Right, a crisp red T-shirt on a hanger.">
+          <rect class="fr" width="160" height="180"/>
+          <rect class="fp" x="160" width="160" height="180"/>
+          <text class="d fp" x="18" y="40" font-size="15">STRONG</text>
+          <text class="d fp" x="18" y="62" font-size="15">HOLDS ITS SHAPE</text>
+          <text class="d fp" x="18" y="84" font-size="15">QUICK-DRY</text>
+          <text class="d fp" x="18" y="106" font-size="15">CHEAP</text>
+          <text class="d fp" x="18" y="128" font-size="15">LESS WATER</text>
+          <text class="u fp" x="18" y="140" font-size="6.5">TO MAKE THAN COTTON TO GROW</text>
+          <g filter="url(#cut)">
+            <path class="sk" stroke-width="3" d="M240 28 a6 6 0 1 1 6 6 v6 L206 64 H274 L246 40"/>
+            <polygon class="fr" points="210,68 226,62 254,62 270,68 284,90 270,96 263,88 263,142 217,142 217,88 210,96 196,90"/>
+          </g>
+          <text class="u fk" x="176" y="166" font-size="7">THE CASE FOR</text>
+        </svg>
+      </figure>
+      <div class="notes">
+        <header><span class="num">06</span><h3>The case for</h3><span class="tc">1:14–1:27 · 13 s</span></header>
+        <dl>
+          <dt>Visual</dt><dd>The frame splits. Left panel goes red and lists strengths. Right: a sharp red T-shirt on a black hanger, holding its shape.</dd>
+          <dt>Motion</dt><dd>Words stack in one by one on the beat. The shirt drops onto the hanger and doesn't wrinkle.</dd>
+          <dt>On screen</dt><dd class="os">Strong · Holds its shape · Quick-dry · Cheap · Less water</dd>
+          <dt>Voice-over</dt><dd class="vo">Designers choose it for good reasons. It's strong, keeps its shape, dries fast, and it's cheap. Making it uses far less water than growing cotton.</dd>
+          <dt>Sources</dt><dd><a href="#src-20">[20]</a></dd>
+        </dl>
+      </div>
+    </article>
+
+    <article class="shot" id="s07" data-tc="1:27">
+      <figure class="frame">
+        <svg viewBox="0 0 320 180" role="img" aria-label="Mirror split. Left, an oil drop above a toppling pile of red garments. Right, black panel listing drawbacks: fossil-based, doesn't biodegrade, cheap means more clothes, less breathable.">
+          <rect class="fp" width="160" height="180"/>
+          <rect class="fk" x="160" width="160" height="180"/>
+          <g filter="url(#cut)">
+            <path class="fk" d="M118 16 C114 28 106 36 106 46 a12 12 0 0 0 24 0 C130 36 122 28 118 16Z"/>
+            <rect class="fdr" x="44" y="78" width="84" height="13" transform="rotate(-4 86 84)"/>
+            <rect class="fr" x="30" y="94" width="98" height="13" transform="rotate(3 79 100)"/>
+            <rect class="fdr" x="38" y="110" width="94" height="13" transform="rotate(-2 85 116)"/>
+            <rect class="fr" x="26" y="126" width="108" height="13" transform="rotate(1 80 132)"/>
+            <rect class="fdr" x="32" y="142" width="100" height="13"/>
+          </g>
+          <text class="d fp" x="176" y="40" font-size="14">FOSSIL-BASED</text>
+          <text class="d fp" x="176" y="62" font-size="14">DOESN'T BIODEGRADE</text>
+          <text class="d fp" x="176" y="84" font-size="14">CHEAP = MORE CLOTHES</text>
+          <text class="d fp" x="176" y="106" font-size="14">LESS BREATHABLE</text>
+          <text class="u fy" x="176" y="166" font-size="7">THE CASE AGAINST</text>
+        </svg>
+      </figure>
+      <div class="notes">
+        <header><span class="num">07</span><h3>The case against</h3><span class="tc">1:27–1:38 · 11 s</span><span class="cut">Merge into 06 for short version</span></header>
+        <dl>
+          <dt>Visual</dt><dd>The split flips: the right panel goes black and lists drawbacks. On the left, a small oil drop hangs above a growing, toppling pile of red garments.</dd>
+          <dt>Motion</dt><dd>The pile grows one garment per beat until it leans. Use the same rhythm as shot 06 so the two read as a pair.</dd>
+          <dt>On screen</dt><dd class="os">Fossil-based · Doesn't biodegrade · Cheap = more clothes · Less breathable</dd>
+          <dt>Voice-over</dt><dd class="vo">But it's made from oil, it doesn't biodegrade, and because it's so cheap, it makes over-producing clothes easy.</dd>
+          <dt>Sources</dt><dd><a href="#src-1">[1]</a> <a href="#src-20">[20]</a></dd>
+        </dl>
+      </div>
+    </article>
+
+    <article class="shot" id="s08" data-tc="1:38">
+      <figure class="frame">
+        <svg viewBox="0 0 320 180" role="img" aria-label="A washing machine with red fibres swirling in the drum; some escape down a pipe into a wave. Text: 5 kg wash, 6,000,000 plus microfibres.">
+          <rect class="fp" width="320" height="180"/>
+          <g filter="url(#cut)">
+            <rect class="fk" x="40" y="30" width="110" height="124" rx="6"/>
+            <path class="sk" stroke-width="6" d="M150 130 H200 Q210 130 210 140 V150"/>
+          </g>
+          <rect class="fp" x="52" y="40" width="40" height="6"/>
+          <circle class="fp" cx="132" cy="43" r="4"/>
+          <circle class="fp" cx="95" cy="100" r="38"/>
+          <circle class="sr" cx="95" cy="100" r="26" stroke-width="4" stroke-dasharray="4 5"/>
+          <circle class="sr" cx="95" cy="100" r="14" stroke-width="3" stroke-dasharray="3 6"/>
+          <path class="sk" stroke-width="3" d="M196 162 q12 -8 24 0 t24 0 t24 0 t24 0 t24 0"/>
+          <path class="sr" stroke-width="2" d="M214 152 l5 -2 M232 148 l5 2 M250 154 l5 -2 M270 149 l4 3 M288 155 l5 -2"/>
+          <text class="d fk" x="176" y="52" font-size="18">ONE 5 KG WASH</text>
+          <text class="d fr" x="176" y="82" font-size="28">6,000,000+</text>
+          <text class="u fk" x="176" y="96" font-size="7">MICROFIBRES (LAB STUDY)</text>
+        </svg>
+      </figure>
+      <div class="notes">
+        <header><span class="num">08</span><h3>Microfibres</h3><span class="tc">1:38–1:52 · 14 s</span></header>
+        <dl>
+          <dt>Visual</dt><dd>A black washing machine, its drum a perfect Bass circle. Red dashes swirl inside. Some escape down the pipe and drift into a wave line.</dd>
+          <dt>Motion</dt><dd>The drum spins on a shaker loop. The number counts up fast and stops on "6,000,000+".</dd>
+          <dt>On screen</dt><dd class="os">One 5 kg wash → 6,000,000+ microfibres (lab study)</dd>
+          <dt>Voice-over</dt><dd class="vo">Every wash sheds tiny fibres. In one lab study, a five-kilogram load of polyester released more than six million. Some are small enough to slip through water treatment.</dd>
+          <dt>Sources</dt><dd><a href="#src-4">[4]</a> <a href="#src-5">[5]</a></dd>
+        </dl>
+      </div>
+    </article>
+
+    <article class="shot" id="s09" data-tc="1:52">
+      <figure class="frame">
+        <svg viewBox="0 0 320 180" role="img" aria-label="A red bottle becomes a red T-shirt. A loop arrow tries to return to the bottle but stops short; the shirt falls onto a grey waste pile. Text: less than 1 percent of all fibre comes from old clothes.">
+          <rect class="fp" width="320" height="180"/>
+          <g filter="url(#cut)">
+            <path class="fr" d="M44 40 h12 v10 q10 6 10 18 v62 q0 6 -6 6 h-20 q-6 0 -6 -6 v-62 q0 -12 10 -18Z"/>
+            <polygon class="fr" points="126,66 140,60 160,60 174,66 184,82 172,88 168,82 168,122 132,122 132,82 128,88 116,82"/>
+            <polygon class="fg" points="208,162 304,162 292,142 272,134 242,138 222,148"/>
+          </g>
+          <path class="sk" stroke-width="3" d="M74 90 H106 M100 84 L106 90 L100 96"/>
+          <path class="sk" stroke-width="3" d="M150 52 C150 14 92 8 70 24"/>
+          <path class="sk" stroke-width="2" stroke-dasharray="4 4" d="M180 110 Q206 116 224 134"/>
+          <text class="d fr" x="226" y="70" font-size="32">&lt;1%</text>
+          <text class="u fk" x="228" y="84" font-size="7">OF ALL FIBRE IS MADE</text>
+          <text class="u fk" x="228" y="94" font-size="7">FROM OLD CLOTHES</text>
+        </svg>
+      </figure>
+      <div class="notes">
+        <header><span class="num">09</span><h3>The bottle loop</h3><span class="tc">1:52–2:10 · 18 s</span></header>
+        <dl>
+          <dt>Visual</dt><dd>A red bottle morphs into a red T-shirt. A black loop arrow sets off from the shirt to return to the bottle, but stops short. The shirt drops onto a grey heap.</dd>
+          <dt>Motion</dt><dd>The arrow draws on, hesitates, stops. Silence for one beat. Then the shirt falls.</dd>
+          <dt>On screen</dt><dd class="os">Recycled polyester: mostly bottles · &lt;1% of all fibre is made from old clothes</dd>
+          <dt>Voice-over</dt><dd class="vo">Recycled polyester sounds circular. But most of it comes from plastic bottles, not old clothes. Less than one percent of all fibre is made from recycled textiles. The bottle becomes a shirt, and the shirt usually stops there.</dd>
+          <dt>Sources</dt><dd><a href="#src-1">[1]</a> <a href="#src-6">[6]</a></dd>
+        </dl>
+      </div>
+    </article>
+  </div>
+
+  <!-- ACT III -->
+  <div class="act"><span class="act-n">Act III</span><h2>Why mixes don't come back</h2><span class="tc">2:10–3:04</span></div>
+  <div class="shots">
+
+    <article class="shot" id="s10" data-tc="2:10">
+      <figure class="frame">
+        <svg viewBox="0 0 320 180" role="img" aria-label="A care label reading 88 percent polyester, 12 percent elastane, next to a yarn cross-section: a mustard elastane core wrapped in red polyester.">
+          <rect class="fk" width="320" height="180"/>
+          <g filter="url(#cut)">
+            <polygon class="fp" points="40,30 150,26 156,150 46,154"/>
+            <circle class="fr" cx="236" cy="80" r="40"/>
+            <circle class="fy" cx="236" cy="80" r="17"/>
+          </g>
+          <g transform="rotate(-2 100 90)">
+            <path class="sk" stroke-width="1" stroke-dasharray="3 3" d="M50 42 H148"/>
+            <text class="d fk" x="56" y="80" font-size="18">88% POLYESTER</text>
+            <text class="d fk" x="56" y="106" font-size="18">12% ELASTANE</text>
+            <rect class="fy" x="56" y="110" width="78" height="4"/>
+            <text class="u fk" x="56" y="138" font-size="6">MACHINE WASH 30°</text>
+          </g>
+          <text class="u fp" x="236" y="138" font-size="7" text-anchor="middle">POLYESTER WRAP</text>
+          <text class="u fy" x="236" y="150" font-size="6.5" text-anchor="middle">ELASTANE CORE = POLYURETHANE</text>
+        </svg>
+      </figure>
+      <div class="notes">
+        <header><span class="num">10</span><h3>Read the label</h3><span class="tc">2:10–2:24 · 14 s</span></header>
+        <dl>
+          <dt>Visual</dt><dd>A paper care label is stitched onto black, tilted slightly. Cut to a yarn cross-section: a mustard elastane core wrapped in red polyester.</dd>
+          <dt>Motion</dt><dd>A dashed stitch line runs across the label. The mustard underline swipes under "elastane". Push into the yarn: the red parts to reveal the mustard core.</dd>
+          <dt>On screen</dt><dd class="os">88% polyester · 12% elastane · Elastane = spandex = polyurethane</dd>
+          <dt>Voice-over</dt><dd class="vo">Now check the label on your leggings. Elastane, also called spandex, gives the stretch. It isn't polyester. It's polyurethane: a different plastic, wrapped into the yarn.</dd>
+          <dt>Sources</dt><dd><a href="#src-7">[7]</a></dd>
+        </dl>
+      </div>
+    </article>
+
+    <article class="shot" id="s11" data-tc="2:24">
+      <figure class="frame">
+        <svg viewBox="0 0 320 180" role="img" aria-label="A recycling loop with red polyester flowing round it, jammed by mustard elastane pieces. Text: a little elastane spoils the batch.">
+          <rect class="fp" width="320" height="180"/>
+          <circle class="sk" cx="104" cy="92" r="56" stroke-width="10"/>
+          <circle class="sr" cx="104" cy="92" r="56" stroke-width="4" stroke-dasharray="10 8"/>
+          <polygon class="fk" points="96,26 112,36 96,46"/>
+          <g filter="url(#cut)">
+            <rect class="fy" x="150" y="80" width="18" height="8" transform="rotate(-20 159 84)"/>
+            <rect class="fy" x="156" y="94" width="16" height="8" transform="rotate(25 164 98)"/>
+            <rect class="fy" x="146" y="104" width="14" height="7" transform="rotate(-8 153 107)"/>
+          </g>
+          <path class="sk" stroke-width="3" d="M170 66 l10 10 M180 66 l-10 10"/>
+          <text class="d fk" x="198" y="58" font-size="18">A LITTLE</text>
+          <rect class="fy" x="196" y="64" width="86" height="22"/>
+          <text class="d fk" x="200" y="82" font-size="18">ELASTANE</text>
+          <text class="d fk" x="198" y="106" font-size="14">SPOILS THE BATCH</text>
+          <text class="u fk" x="198" y="134" font-size="6.5">IN ~80% OF DISCARDED</text>
+          <text class="u fk" x="198" y="144" font-size="6.5">CLOTHES (US ESTIMATE)</text>
+        </svg>
+      </figure>
+      <div class="notes">
+        <header><span class="num">11</span><h3>The jam</h3><span class="tc">2:24–2:43 · 19 s</span><span class="cut">Shorten for short version</span></header>
+        <dl>
+          <dt>Visual</dt><dd>A black recycling loop with red polyester dashes flowing round it. Mustard bars enter at the right and the loop jams: dashes bunch up, the arrow stalls.</dd>
+          <dt>Motion</dt><dd>Flow on a steady shaker. On the jam the music drops out and the loop judders twice. A small paper "coating" peels off one mustard bar and dissolves (the research fix), but the loop stays stalled.</dd>
+          <dt>On screen</dt><dd class="os">A little elastane spoils the batch · In ~80% of discarded clothes (US estimate)</dd>
+          <dt>Voice-over</dt><dd class="vo">Recycling works best when everything going in is the same. Even a little elastane spoils a polyester batch, and one estimate finds it in around 80% of discarded clothes. Scientists are testing fixes, like coatings that dissolve away, but none is standard yet.</dd>
+          <dt>Sources</dt><dd><a href="#src-7">[7]</a> <a href="#src-19">[19]</a></dd>
+        </dl>
+      </div>
+    </article>
+
+    <article class="shot" id="s12" data-tc="2:43">
+      <figure class="frame">
+        <svg viewBox="0 0 320 180" role="img" aria-label="Left, a clean loop of identical red squares: one polymer, one route back. Right, a teal PLA circle bounces off a red PET loop: same family is not the same stream.">
+          <rect class="fp" width="320" height="180"/>
+          <rect class="fk" x="158" y="0" width="4" height="180"/>
+          <circle class="sk" cx="80" cy="84" r="40" stroke-width="6"/>
+          <g filter="url(#cut)">
+            <rect class="fr" x="73" y="37" width="14" height="14"/>
+            <rect class="fr" x="113" y="77" width="14" height="14"/>
+            <rect class="fr" x="33" y="77" width="14" height="14"/>
+            <rect class="fr" x="73" y="117" width="14" height="14"/>
+          </g>
+          <circle class="sr" cx="236" cy="84" r="40" stroke-width="6"/>
+          <g filter="url(#cut)">
+            <rect class="fr" x="229" y="37" width="14" height="14"/>
+            <rect class="fr" x="189" y="77" width="14" height="14"/>
+            <circle class="ft" cx="296" cy="50" r="9"/>
+          </g>
+          <path class="sk" stroke-width="2" d="M276 72 q8 -18 18 -14 M282 80 l-6 -8 l9 -1"/>
+          <text class="d ft" x="262" y="146" font-size="15">0.1%</text>
+          <text class="u fk" x="80" y="152" font-size="7" text-anchor="middle">ONE POLYMER,</text>
+          <text class="u fk" x="80" y="162" font-size="7" text-anchor="middle">ONE ROUTE BACK</text>
+          <text class="u fk" x="222" y="162" font-size="7" text-anchor="middle">SAME FAMILY ≠ SAME STREAM</text>
+        </svg>
+      </figure>
+      <div class="notes">
+        <header><span class="num">12</span><h3>One material, one route</h3><span class="tc">2:43–3:04 · 21 s</span></header>
+        <dl>
+          <dt>Visual</dt><dd>Split frame. Left: a clean loop where identical red squares circle and return. Right: a teal circle (PLA) tries to join a red PET loop and is bounced out.</dd>
+          <dt>Motion</dt><dd>Left loop turns smoothly. On "careful", cut to the right: the teal circle drops in, the loop flashes once, and the circle is flicked out. "0.1%" lands in teal.</dd>
+          <dt>On screen</dt><dd class="os">One polymer, one route back · Same family ≠ same stream</dd>
+          <dt>Voice-over</dt><dd class="vo">So designers ask: can stretchy clothes be made from one material? Careful. "Polyester" is a family. PLA is a polyester too, yet in bottle recycling, a tenth of one percent of PLA can spoil a PET batch. What counts is the exact plastic, and the exact route back.</dd>
+          <dt>Sources</dt><dd><a href="#src-8">[8]</a> <a href="#src-19">[19]</a></dd>
+        </dl>
+      </div>
+    </article>
+  </div>
+
+  <!-- ACT IV -->
+  <div class="act"><span class="act-n">Act IV</span><h2>The frontier</h2><span class="tc">3:04–3:58</span></div>
+  <div class="shots">
+
+    <article class="shot" id="s13" data-tc="3:04">
+      <figure class="frame">
+        <svg viewBox="0 0 320 180" role="img" aria-label="Two polyester strips, red and light red, bonded side by side, curl into a coiled spring. Text: two polyesters, one filament; stretch from shape, not rubber.">
+          <rect class="fk" width="320" height="180"/>
+          <g filter="url(#cut)">
+            <rect class="fr" x="30" y="44" width="9" height="100"/>
+            <rect class="frl" x="39" y="44" width="9" height="100"/>
+          </g>
+          <path class="sp" stroke-width="2.5" d="M58 94 H84 M78 88 L84 94 L78 100"/>
+          <path class="srl" stroke-width="4" d="M101 122 a10 30 0 1 1 14 0 a10 30 0 1 1 14 0 a10 30 0 1 1 14 0 a10 30 0 1 1 14 0 a10 30 0 1 1 14 0 a10 30 0 1 1 14 0 a10 30 0 1 1 14 0 a10 30 0 1 1 14 0 a10 30 0 1 1 14 0 a10 30 0 1 1 14 0 a10 30 0 1 1 14 0 a10 30 0 1 1 14 0 a10 30 0 1 1 14 0"/>
+          <path class="sr" stroke-width="4" d="M98 120 a10 30 0 1 1 14 0 a10 30 0 1 1 14 0 a10 30 0 1 1 14 0 a10 30 0 1 1 14 0 a10 30 0 1 1 14 0 a10 30 0 1 1 14 0 a10 30 0 1 1 14 0 a10 30 0 1 1 14 0 a10 30 0 1 1 14 0 a10 30 0 1 1 14 0 a10 30 0 1 1 14 0 a10 30 0 1 1 14 0 a10 30 0 1 1 14 0"/>
+          <text class="d fp" x="98" y="30" font-size="15">TWO POLYESTERS, ONE FILAMENT</text>
+          <text class="u fy" x="98" y="152" font-size="7">STRETCH FROM SHAPE, NOT RUBBER</text>
+          <text class="u fp" x="98" y="166" font-size="6">e.g. LYCRA® T400® · MAKER'S RECYCLING CLAIM</text>
+        </svg>
+      </figure>
+      <div class="notes">
+        <header><span class="num">13</span><h3>Stretch from shape</h3><span class="tc">3:04–3:23 · 19 s</span></header>
+        <dl>
+          <dt>Visual</dt><dd>Black ground. Two strips, red and light red, bonded side by side: two different polyesters in one filament. They curl into a coil spring.</dd>
+          <dt>Motion</dt><dd>The strips shrink at different rates and twist into the coil, which then stretches and snaps back three times on the beat. Callback to the zigzag in shot 01.</dd>
+          <dt>On screen</dt><dd class="os">Two polyesters, one filament · Stretch from shape, not rubber</dd>
+          <dt>Voice-over</dt><dd class="vo">One idea is already on sale. Join two different polyesters inside one filament. They shrink differently, so the filament curls into a spring: stretch, with no elastane. The maker says it can be chemically recycled with polyester. Ask to see independent evidence.</dd>
+          <dt>Sources</dt><dd><a href="#src-9">[9]</a> <a href="#src-10">[10]</a></dd>
+        </dl>
+      </div>
+    </article>
+
+    <article class="shot" id="s14" data-tc="3:23">
+      <figure class="frame">
+        <svg viewBox="0 0 320 180" role="img" aria-label="A teal plant stalk whose top turns into a chain of teal circles: PLA from plant sugars. Bar chart of melting points, PLA about 170 degrees, PET about 250 degrees, drawn to scale from zero.">
+          <rect class="fp" width="320" height="180"/>
+          <g filter="url(#cut)">
+            <path class="st" stroke-width="4" d="M60 160 C58 120 64 90 60 50"/>
+            <polygon class="ft" points="60,122 34,104 58,112"/>
+            <polygon class="ft" points="61,98 88,80 63,90"/>
+            <polygon class="ft" points="60,76 38,60 59,66"/>
+            <circle class="ft" cx="70" cy="40" r="5"/><circle class="ft" cx="84" cy="34" r="5"/><circle class="ft" cx="98" cy="30" r="5"/><circle class="ft" cx="112" cy="28" r="5"/><circle class="ft" cx="126" cy="28" r="5"/>
+          </g>
+          <text class="d ft" x="104" y="110" font-size="13">COOL IRON</text>
+          <text class="d ft" x="104" y="124" font-size="13">ONLY</text>
+          <text class="u fk" x="200" y="24" font-size="7">MELTING POINT</text>
+          <rect class="ft" x="200" y="82" width="30" height="68"/>
+          <rect class="fr" x="250" y="50" width="30" height="100"/>
+          <path class="sk" stroke-width="1.5" d="M192 150 H290"/>
+          <text class="u fk" x="215" y="76" font-size="7" text-anchor="middle">~170°C</text>
+          <text class="u fk" x="265" y="44" font-size="7" text-anchor="middle">~250°C</text>
+          <text class="u fk" x="215" y="162" font-size="7" text-anchor="middle">PLA</text>
+          <text class="u fk" x="265" y="162" font-size="7" text-anchor="middle">PET</text>
+          <text class="u fk" x="24" y="172" font-size="6.5">PLANT SUGARS → PLA</text>
+        </svg>
+      </figure>
+      <div class="notes">
+        <header><span class="num">14</span><h3>PLA: polyester from plants</h3><span class="tc">3:23–3:41 · 18 s</span></header>
+        <dl>
+          <dt>Visual</dt><dd>A teal stalk grows; its tip turns into a chain of teal circles. On the right, two bars compare melting points, drawn to scale from 0 °C: PLA about 170 °C, PET about 250 °C.</dd>
+          <dt>Motion</dt><dd>Leaves pop on the beat. The bars rise together; the teal one stops early. "Cool iron only" drops in beneath the plant.</dd>
+          <dt>On screen</dt><dd class="os">Plant sugars → PLA · Melts ~170 °C vs ~250 °C · Cool iron only · Compostable: industrially, not at home</dd>
+          <dt>Voice-over</dt><dd class="vo">Another route is PLA, a polyester made from plant sugars, such as corn. It's bio-based and compostable, but only in industrial composting. It melts at a much lower temperature than PET, so it needs a cool iron, and it dyes differently.</dd>
+          <dt>Sources</dt><dd><a href="#src-11">[11]</a> <a href="#src-12">[12]</a></dd>
+        </dl>
+      </div>
+    </article>
+
+    <article class="shot" id="s15" data-tc="3:41">
+      <figure class="frame">
+        <svg viewBox="0 0 320 180" role="img" aria-label="A lab-made polyester rubber shown as two teal blocks joined by a zigzag spring. Small at rest, then stretched to eleven times its length, drawn to scale against a ruler.">
+          <rect class="fk" width="320" height="180"/>
+          <g filter="url(#cut)">
+            <rect class="ft" x="40" y="40" width="6" height="10"/>
+            <rect class="ft" x="56" y="40" width="6" height="10"/>
+            <rect class="ft" x="40" y="96" width="6" height="10"/>
+            <rect class="ft" x="276" y="96" width="6" height="10"/>
+          </g>
+          <path class="sp" stroke-width="1.5" d="M46 45 l2 -4 l2 8 l2 -8 l2 8 l2 -4"/>
+          <path class="sp" stroke-width="1.5" d="M46 101 l23 -2 l23 4 l23 -4 l23 4 l23 -4 l23 4 l23 -4 l23 4 l23 -4 l23 2"/>
+          <path class="sp" stroke-width="1" d="M40 124 H282 M40 120 V128 M62 121 V127 M84 121 V127 M106 121 V127 M128 121 V127 M150 121 V127 M172 121 V127 M194 121 V127 M216 121 V127 M238 121 V127 M260 121 V127 M282 120 V128"/>
+          <text class="u fp" x="40" y="138" font-size="6.5" text-anchor="middle">0</text>
+          <text class="u fp" x="62" y="138" font-size="6.5" text-anchor="middle">1×</text>
+          <text class="u fp" x="282" y="138" font-size="6.5" text-anchor="middle">11×</text>
+          <text class="u fg" x="70" y="49" font-size="6.5">AT REST</text>
+          <text class="d fy" x="150" y="44" font-size="18">IN THE LAB</text>
+          <text class="u fp" x="150" y="58" font-size="7">ALL-POLYESTER RUBBER</text>
+          <text class="u fp" x="40" y="162" font-size="7">STRETCHES ~11× BEFORE BREAKING · NOT ON SALE</text>
+        </svg>
+      </figure>
+      <div class="notes">
+        <header><span class="num">15</span><h3>The lab frontier</h3><span class="tc">3:41–3:58 · 17 s</span><span class="cut">Cut for short version</span></header>
+        <dl>
+          <dt>Visual</dt><dd>A tiny cut-paper molecule: two hard teal blocks with a soft zigzag spring between. It stretches across the whole frame against a ruler, to scale: about 11 times its resting length.</dd>
+          <dt>Motion</dt><dd>One long pull, held on a sustained bass note, then a snap back. A paper stamp "NOT ON SALE" lands at the end.</dd>
+          <dt>On screen</dt><dd class="os">In the lab · All-polyester rubber · Stretches ~11× before breaking · Not on sale</dd>
+          <dt>Voice-over</dt><dd class="vo">In the lab, chemists have made rubbers entirely from polyesters: hard ends with a soft, springy middle. They stretch more than ten times their length. But none of this is a fibre you can order yet.</dd>
+          <dt>Sources</dt><dd><a href="#src-13">[13]</a></dd>
+        </dl>
+      </div>
+    </article>
+  </div>
+
+  <!-- CODA -->
+  <div class="act"><span class="act-n">Coda</span><h2>What you can do</h2><span class="tc">3:58–4:32</span></div>
+  <div class="shots">
+
+    <article class="shot" id="s16" data-tc="3:58">
+      <figure class="frame">
+        <svg viewBox="0 0 320 180" role="img" aria-label="A textile collection bin tagged producer pays, beside a four-point designer checklist: read the label, fewer fibres per garment, know the route back, question recycled.">
+          <rect class="fp" width="320" height="180"/>
+          <g filter="url(#cut)">
+            <polygon class="fk" points="40,62 110,62 104,152 46,152"/>
+            <rect class="fk" x="34" y="50" width="82" height="8"/>
+            <polygon class="fr" points="66,86 114,86 122,98 114,110 66,110"/>
+          </g>
+          <text class="u fp" x="70" y="101" font-size="6">PRODUCER PAYS</text>
+          <text class="d fk" x="34" y="38" font-size="13">EU LAW · 2025</text>
+          <rect class="fk" x="146" y="28" width="156" height="26"/>
+          <rect class="fk" x="146" y="60" width="156" height="26"/>
+          <rect class="fk" x="146" y="92" width="156" height="26"/>
+          <rect class="fk" x="146" y="124" width="156" height="26"/>
+          <rect class="fr" x="152" y="38" width="6" height="6"/><rect class="fr" x="152" y="70" width="6" height="6"/>
+          <rect class="fr" x="152" y="102" width="6" height="6"/><rect class="fr" x="152" y="134" width="6" height="6"/>
+          <text class="d fp" x="164" y="46" font-size="12">READ THE LABEL</text>
+          <text class="d fp" x="164" y="78" font-size="12">FEWER FIBRES PER GARMENT</text>
+          <text class="d fp" x="164" y="110" font-size="12">KNOW THE ROUTE BACK</text>
+          <text class="d fp" x="164" y="142" font-size="12">QUESTION "RECYCLED"</text>
+        </svg>
+      </figure>
+      <div class="notes">
+        <header><span class="num">16</span><h3>What changes now</h3><span class="tc">3:58–4:17 · 19 s</span></header>
+        <dl>
+          <dt>Visual</dt><dd>A black textile-collection bin with a red tag: "Producer pays". Then four black cards stack in on the right: the designer's checklist.</dd>
+          <dt>Motion</dt><dd>The tag swings onto the bin. Each card slams in on a drum hit, one per instruction in the voice-over.</dd>
+          <dt>On screen</dt><dd class="os">EU law 2025: producer pays · Read the label · Fewer fibres per garment · Know the route back · Question "recycled"</dd>
+          <dt>Voice-over</dt><dd class="vo">The rules are changing too. Under new EU law, brands will pay to collect and sort used textiles. So, as a designer: read the label. Use fewer fibres in one garment. Know how it will come back. And question the word "recycled".</dd>
+          <dt>Sources</dt><dd><a href="#src-14">[14]</a> <a href="#src-15">[15]</a></dd>
+        </dl>
+      </div>
+    </article>
+
+    <article class="shot" id="s17" data-tc="4:17">
+      <figure class="frame">
+        <svg viewBox="0 0 320 180" role="img" aria-label="End card: the red line from the title forms a loop that does not quite close. Inside, the question: what would you design if every garment had to come back?">
+          <rect class="fk" width="320" height="180"/>
+          <g filter="url(#cut)"><path class="sr" stroke-width="7" d="M170.8 22.9 A62 62 0 1 1 149.2 22.9"/></g>
+          <text class="d fp" x="160" y="74" font-size="12.5" text-anchor="middle">WHAT WOULD YOU DESIGN</text>
+          <text class="d fp" x="160" y="90" font-size="12.5" text-anchor="middle">IF EVERY GARMENT</text>
+          <text class="d fp" x="160" y="106" font-size="12.5" text-anchor="middle">HAD TO COME BACK?</text>
+          <text class="u fy" x="160" y="168" font-size="5.6" text-anchor="middle">FN4005 · RESEARCH AND DIRECTION: MATTHEW MOUNSEY-WOOD FHEA MA (RCA)</text>
+        </svg>
+      </figure>
+      <div class="notes">
+        <header><span class="num">17</span><h3>The open loop</h3><span class="tc">4:17–4:32 · 15 s</span></header>
+        <dl>
+          <dt>Visual</dt><dd>The red line from shot 01 returns and bends into a circle, but stops just short of closing. The question sits inside the gap. Credits and a source card follow.</dd>
+          <dt>Motion</dt><dd>The loop draws slowly and stops. Music resolves on an unresolved chord. Hold 4 s on the question, then credits and sources as in a Bass end sequence: type only, on the beat.</dd>
+          <dt>On screen</dt><dd class="os">What would you design if every garment had to come back?</dd>
+          <dt>Voice-over</dt><dd class="vo">What would you design, if every garment had to come back?</dd>
+          <dt>Sound</dt><dd>Bass line slows; final trumpet note left hanging.</dd>
+        </dl>
+      </div>
+    </article>
+  </div>
+</section>
+
+<section aria-labelledby="h-vo">
+  <div class="sec-head"><span class="eyebrow">For recording</span><h2 id="h-vo">Voice-over read-through</h2></div>
+  <div class="vo-tools">
+    <span id="vo-stats">Built from the storyboard above.</span>
+    <button type="button" id="vo-copy">Copy script</button>
+    <span id="vo-msg" role="status" aria-live="polite"></span>
+  </div>
+  <div class="vo-script" id="vo-script"><p>The script appears here once the page loads.</p></div>
+</section>
+
+<section aria-labelledby="h-facts">
+  <div class="sec-head"><span class="eyebrow">Every number on screen</span><h2 id="h-facts">Fact check</h2></div>
+  <p>How sure we can be of each claim. <span class="chip strong">Strong</span> independent data or peer-reviewed. <span class="chip moderate">Moderate</span> a single study, an older source, or an estimate. <span class="chip weak">Weak</span> a claim from someone with an interest in it.</p>
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>Claim</th><th>Shot</th><th>Confidence</th><th>Source and notes</th></tr></thead>
+      <tbody>
+        <tr><td>Polyester was 59% of global fibre in 2024 (78 of 132 million tonnes); 88% of it fossil-based.</td><td class="n">05</td><td><span class="chip strong">Strong</span></td><td>Textile Exchange, Materials Market Report 2025 <a href="#src-1">[1]</a>. Industry body, but the standard reference.</td></tr>
+        <tr><td>Recycled polyester ≈ 12% of polyester (down from 12.5%); mostly bottles. &lt;1% of all fibre is from textile-to-textile recycling.</td><td class="n">09</td><td><span class="chip strong">Strong</span></td><td><a href="#src-1">[1]</a>. Changing Markets puts "not from textiles" at 98% <a href="#src-6">[6]</a>.</td></tr>
+        <tr><td>Invented 1941, Whinfield and Dickson, Calico Printers' Association; sold as Terylene and Dacron.</td><td class="n">03</td><td><span class="chip strong">Strong</span></td><td><a href="#src-2">[2]</a> <a href="#src-3">[3]</a>. Check the Lancashire location against [2] before final VO.</td></tr>
+        <tr><td>Less water to make than cotton is to grow.</td><td class="n">06</td><td><span class="chip moderate">Moderate</span></td><td>Widely agreed direction; LCA results vary by study <a href="#src-20">[20]</a>. Kept qualitative on purpose: no number on screen.</td></tr>
+        <tr><td>A 5 kg polyester wash released 6,000,000+ microfibres.</td><td class="n">08</td><td><span class="chip moderate">Moderate</span></td><td>De Falco et al. 2018 <a href="#src-4">[4]</a>. Lab conditions; shedding varies a lot by fabric and detergent. Hence "in one lab study".</td></tr>
+        <tr><td>Recycled polyester sheds ~55% more microplastics than virgin.</td><td class="n">—</td><td><span class="chip weak">Weak</span></td><td>Changing Markets, Dec 2025 <a href="#src-6">[6]</a>. NGO-commissioned, not peer-reviewed. Left out of the film; good for seminar discussion.</td></tr>
+        <tr><td>Elastane is ~1% of fabric but in ~80% of discarded US garments; separation is hard; dissolvable coatings in pilot.</td><td class="n">11</td><td><span class="chip moderate">Moderate</span></td><td>RSC Applied Polymers 2025 <a href="#src-7">[7]</a>, citing an earlier estimate. Hence "one estimate".</td></tr>
+        <tr><td>PLA above ~0.1% disrupts PET recycling.</td><td class="n">12</td><td><span class="chip moderate">Moderate</span></td><td>NAPCOR, 2009, about bottles <a href="#src-8">[8]</a>. VO says "in bottle recycling" so the claim isn't stretched to textiles.</td></tr>
+        <tr><td>Bicomponent polyester (PET + PTT) gives stretch by helical crimp; FiT400 compatible with polyester chemical recycling.</td><td class="n">13</td><td><span class="chip weak">Weak</span></td><td>Mechanism: strong <a href="#src-9">[9]</a>. Recycling claim: the manufacturer's own tests <a href="#src-10">[10]</a>. VO names it as the maker's claim.</td></tr>
+        <tr><td>PLA melts ~170 °C (PET ~250 °C); cool iron; dyes differently; hydrolyses in hot, wet, alkaline processing.</td><td class="n">14</td><td><span class="chip strong">Strong</span></td><td><a href="#src-11">[11]</a> <a href="#src-12">[12]</a>. Melting points are typical ranges: PLA 150–180 °C, PET 250–260 °C.</td></tr>
+        <tr><td>All-polyester (PLA-based) thermoplastic elastomers reach ~1,000% elongation at break.</td><td class="n">15</td><td><span class="chip strong">Strong</span></td><td>Watts et al. 2017 <a href="#src-13">[13]</a>. 1,000% elongation = 11× original length. Lab material, not a fibre product.</td></tr>
+        <tr><td>EU textile EPR: amended Waste Framework Directive in force 17 Oct 2025; schemes within 30 months.</td><td class="n">16</td><td><span class="chip strong">Strong</span></td><td><a href="#src-14">[14]</a> <a href="#src-15">[15]</a>. Applies to products sold in the EU, including from UK brands.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section aria-labelledby="h-corr">
+  <div class="sec-head"><span class="eyebrow">What changed from the first draft</span><h2 id="h-corr">Corrections and context</h2></div>
+  <div class="cols">
+    <div>
+      <h3>Corrections</h3>
+      <ul class="corrections">
+        <li><b>"Same polyester family" does not mean "same recycling stream".</b> PLA is a known contaminant of PET recycling <a href="#src-8">[8]</a>. The draft treated this as a footnote; the film makes it a main point (shot 12).</li>
+        <li><b>Sorona® evidence was a supplier's sales page.</b> Replaced with the bicomponent mechanism from the fibre maker, and its recycling claim labelled as the maker's.</li>
+        <li><b>EcoLASTANE is historical.</b> It was an EU FP7 project (a programme that closed to new projects in 2013). Its title refers to furanic monomers, which suggests PEF-type chemistry, not a drop-in copy of PET. The CORDIS record couldn't be opened from here; worth checking before citing.</li>
+        <li><b>The PLA elastic-yarn patent dates from 2011.</b> A patent shows an idea was claimed, not that a product exists.</li>
+        <li><b>Left out as unverified:</b> market-report claims about a Toray PLA/PBAT stretch fibre, a Danimer cross-linked PLA fibre, and PLA price premiums. They came from a market-research site with no primary source.</li>
+      </ul>
+    </div>
+    <div>
+      <h3>Context worth knowing (not in the film)</h3>
+      <ul>
+        <li><b>Textile-to-textile polyester recycling is still scaling, slowly.</b> Syre reports multi-tonne pilot output in 2025, and plans to start building a plant of up to 250,000 t/yr in Vietnam in 2027 <a href="#src-16">[16]</a>. Carbios has missed its financing target for its Longlaville enzymatic plant <a href="#src-17">[17]</a>.</li>
+        <li><b>PEF, another plant-based polyester.</b> Avantium's FDCA plant produced first batches, with commercial sales expected from late 2026 <a href="#src-18">[18]</a>. Mainly aimed at packaging so far; a possible future fibre topic.</li>
+        <li><b>Mono-material helps most within one group.</b> Cellulose, polyamide and polyester mono-streams have the most recycling options <a href="#src-19">[19]</a>.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section aria-labelledby="h-seminar">
+  <div class="sec-head"><span class="eyebrow">After the screening</span><h2 id="h-seminar">Seminar questions</h2></div>
+  <div class="cols">
+    <div>
+      <h3>Discuss</h3>
+      <ol>
+        <li>Your leggings say "78% recycled polyester, 22% elastane". Where can they go at end of life? What would you need to find out?</li>
+        <li>Polyester needs less water than cotton but comes from oil. How would you decide which is better for one particular garment?</li>
+        <li>PLA is compostable, but only industrially. Is that a real benefit for a UK wardrobe? Why or why not?</li>
+        <li>A brand says its stretch fibre is "recyclable". What evidence would you ask for, and from whom?</li>
+        <li>A report says recycled polyester sheds more microplastics than virgin <a href="#src-6">[6]</a>. Who funded it, how was it tested, and how much weight should it carry?</li>
+      </ol>
+    </div>
+    <div>
+      <h3>Make</h3>
+      <ol>
+        <li>Pick one stretch garment you own. Redesign it as a mono-material. List what you lose and what you gain.</li>
+        <li>Draw a care label that also tells the reader how the garment gets back into a recycling system.</li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<section aria-labelledby="h-prod">
+  <div class="sec-head"><span class="eyebrow">Making it</span><h2 id="h-prod">Production notes</h2></div>
+  <div class="cols">
+    <div>
+      <h3>Edit and length</h3>
+      <ul>
+        <li>Record the voice-over first, at about 150 words a minute, and cut the animation to it.</li>
+        <li>Full version about 4½ minutes. For a 3-minute cut, drop shots 03 and 15, merge 07 into 06, and shorten 11 to its first two sentences.</li>
+        <li>Music: royalty-free jazz percussion and double bass. Check the licence covers teaching and VLE hosting.</li>
+        <li>Tools: After Effects shape layers with a light "roughen edges" for the cut-paper look, or a browser build if you want it interactive.</li>
+      </ul>
+    </div>
+    <div>
+      <h3>Accessibility</h3>
+      <ul>
+        <li>Captions on, as an SRT file plus burned-in for social. Hold on-screen text at least 3 seconds; six words or fewer per card.</li>
+        <li>No more than three flashes a second (the WCAG flash threshold). The loop "flash" in shot 12 is a single pulse.</li>
+        <li>Colour plus shape for every material, so colour-blind viewers can follow (see key).</li>
+        <li>Put the source list on the Canvas page and on the final card, so students can follow the evidence up.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section aria-labelledby="h-src">
+  <div class="sec-head"><span class="eyebrow">Read further</span><h2 id="h-src">Sources</h2></div>
+  <ol class="sources">
+    <li id="src-1">Textile Exchange (2025) <a href="https://textileexchange.org/knowledge-center/reports/materials-market-report-2025/">Materials Market Report 2025</a>. Summary: <a href="https://apparelresources.com/business-news/manufacturing/global-fibre-output-grows-6-5-2024-synthetics-widening-lead-textile-exchange/">Apparel Resources</a>.</li>
+    <li id="src-2">Lancashire County Council Museums, <a href="https://lancashire.gov.uk/leisure-and-culture/museums/50-objects/item-details/?irn=1062">Terylene, the first polyester</a>.</li>
+    <li id="src-3">MoDiP, <a href="https://modip.ac.uk/exhibitions/polymorphia/polyester">Polymorphia: polyester</a>; <a href="https://www.madehow.com/inventorbios/71/John-Rex-Whinfield.html">John Rex Whinfield biography</a>.</li>
+    <li id="src-4">De Falco, F. et al. (2018) <a href="https://pubmed.ncbi.nlm.nih.gov/29107418/">Evaluation of microplastic release caused by textile washing processes of synthetic fabrics</a>. Environmental Pollution.</li>
+    <li id="src-5">De Falco, F. et al. (2019) <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6488573/">The contribution of washing processes of synthetic clothes to microplastic pollution</a>. Scientific Reports.</li>
+    <li id="src-6">FashionNetwork (15 Dec 2025) <a href="https://uk.fashionnetwork.com/news/Microplastics-study-highlights-the-drawbacks-of-recycled-polyester,1791895.html">Microplastics study highlights the drawbacks of recycled polyester</a> (Changing Markets report).</li>
+    <li id="src-7">RSC Applied Polymers (2025) <a href="https://pubs.rsc.org/en/content/articlehtml/2025/lp/d5lp00213c">Dissolvable chitosan coating for elastane recovery from blended textiles</a>.</li>
+    <li id="src-8">EP Online (2009) <a href="https://eponline.com/articles/2009/07/30/napcor-says-pla-cannot-be-recycled-with-pet.aspx">NAPCOR says PLA cannot be recycled with PET</a>; <a href="https://waste-management-world.com/artikel/napcor-concerned-over-pla-contamination-of-pet-stream">Waste Management World</a>.</li>
+    <li id="src-9">The LYCRA Company, <a href="https://lycra.com/en/business/search-technologies/lycra-t400-fiber">LYCRA® T400® fiber</a>; Carrington, <a href="https://hub.carrington.co.uk/resources/sustainable-workwear-the-future-ready-recyclable-stretch-fibre-lycra-t400-ecomade">T400® EcoMade</a>.</li>
+    <li id="src-10">Business Wire (14 Nov 2023) <a href="https://www.businesswire.com/news/home/20231114770892/en/The-LYCRA-Company-launches-new-LYCRA-FiT400-fiber">The LYCRA Company launches LYCRA® FiT400™ fiber</a>.</li>
+    <li id="src-11">Hemmings, J. <a href="https://www.jessicahemmings.com/pla-fibre-in-textiles-corn-on-the-job">PLA fibre in textiles: corn on the job</a>.</li>
+    <li id="src-12">MoDiP, <a href="https://www.modip.ac.uk/projects/curators-guide-synthetic-garments/featured-fibres-and-materials/polylactide">Curator's guide to synthetic garments: polylactide</a>.</li>
+    <li id="src-13">Watts, A. et al. (2017) <a href="https://pubmed.ncbi.nlm.nih.gov/28467049/">Strong, resilient, and sustainable aliphatic polyester thermoplastic elastomers</a>. Biomacromolecules.</li>
+    <li id="src-14">ERP (Oct 2025) <a href="https://erp-recycling.org/news-and-events/2025/10/waste-framework-directive-parliament-adopts-new-eu-rules-on-textiles/">Waste Framework Directive: Parliament adopts new EU rules on textiles</a>.</li>
+    <li id="src-15">Linklaters <a href="https://sustainablefutures.linklaters.com/post/102l7yl/eu-revised-waste-framework-directive-to-cater-for-food-and-textile-waste-publish">EU revised Waste Framework Directive published</a>.</li>
+    <li id="src-16">Recycling Today (Mar 2026) <a href="https://www.recyclingtoday.com/news/syre-abb-textile-chemical-recycling-polyester-vietnam-collaboration/">Syre to work with ABB on textile recycling technology</a>.</li>
+    <li id="src-17">Carbios via GlobeNewswire (3 Aug 2026) <a href="https://www.globenewswire.com/news-release/2026/08/03/3337758/0/en/carbios-provides-an-update-on-the-financing-of-its-longlaville-plant-project.html">Update on the financing of its Longlaville plant</a>.</li>
+    <li id="src-18">ChemAnalyst <a href="https://www.chemanalyst.com/NewsAndDeals/NewsDetails/avantium-completes-fdca-plant-commissioning-44399">Avantium completes FDCA plant commissioning</a>.</li>
+    <li id="src-19">Wageningen University &amp; Research <a href="https://research.wur.nl/en/publications/textiles-for-circular-fashion-the-logic-behind-recycling-options/">Textiles for circular fashion: the logic behind recycling options</a>.</li>
+    <li id="src-20">FESPA <a href="https://fespa.com/en/club-fespa-online/business-advice/lifecycle-analysis-polyester-vs-cotton">Lifecycle analysis: polyester vs cotton</a>.</li>
+  </ol>
+</section>
+
+<footer>
+  <span>FN4005 · The Long Chain · storyboard and script, draft v1, October 2026</span>
+  <b>Matthew Mounsey-Wood FHEA MA (RCA) LCF Alumni</b>
+</footer>
+
+</div>
+
+<script>
+(function () {
+  var WPM = 150;
+  var shots = Array.prototype.slice.call(document.querySelectorAll('.shot'));
+  var lines = [];
+  var words = 0;
+  shots.forEach(function (s) {
+    var vo = s.querySelector('dd.vo:not(.silent)');
+    if (!vo) return;
+    var text = vo.textContent.trim();
+    var n = text.split(/\s+/).length;
+    words += n;
+    lines.push({ tc: s.getAttribute('data-tc'), num: s.querySelector('.num').textContent, title: s.querySelector('h3').textContent, text: text });
+  });
+
+  var box = document.getElementById('vo-script');
+  box.innerHTML = '';
+  lines.forEach(function (l) {
+    var row = document.createElement('div');
+    row.className = 'vo-line';
+    var t = document.createElement('span');
+    t.className = 't';
+    t.textContent = l.tc + ' · ' + l.num;
+    var p = document.createElement('p');
+    p.textContent = l.text;
+    row.appendChild(t); row.appendChild(p);
+    box.appendChild(row);
+  });
+
+  var secs = Math.round(words / WPM * 60);
+  var mm = Math.floor(secs / 60), ss = String(secs % 60).padStart(2, '0');
+  document.getElementById('m-words').textContent = words + ' words';
+  document.getElementById('vo-stats').textContent = words + ' words · about ' + mm + ':' + ss + ' of speech at ' + WPM + ' words a minute. The rest of the runtime is music and holds.';
+
+  var plain = lines.map(function (l) { return '[' + l.tc + '] ' + l.num + ' ' + l.title + '\n' + l.text; }).join('\n\n');
+  var msg = document.getElementById('vo-msg');
+  document.getElementById('vo-copy').addEventListener('click', function () {
+    function fallback() {
+      var r = document.createRange(); r.selectNodeContents(box);
+      var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(r);
+      msg.textContent = 'Selected. Press Ctrl+C or ⌘C to copy.';
+    }
+    try {
+      navigator.clipboard.writeText(plain).then(function () { msg.textContent = 'Copied.'; }, fallback);
+    } catch (e) { fallback(); }
+  });
+})();
+</script>

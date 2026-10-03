@@ -73,6 +73,9 @@ body { margin: 0; padding-inline: 0; background: #121211; color: var(--k); font-
 .btn:focus-visible, .opt:focus-visible, .chip-btn:focus-visible, .pledge:focus-visible, .hit:focus-visible, .scrub:focus-visible, .mbtn:focus-visible { outline: 3px solid var(--y); outline-offset: 3px; }
 .bg-yellow .btn:focus-visible, .bg-yellow .opt:focus-visible { outline-color: var(--k); }
 .hit { position: absolute; z-index: 3; background: transparent; border: 0; padding: 0; cursor: pointer; border-radius: 24px; }
+.hit.hold { touch-action: none; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+.dial { position: absolute; z-index: 3; border-radius: 50%; touch-action: none; cursor: grab; }
+.dial:focus-visible { outline: 3px solid var(--y); outline-offset: 3px; }
 
 /* A number you drag up and down */
 .scrub { position: absolute; z-index: 2; font-size: clamp(54px, 16vw, 74px); font-weight: 700; letter-spacing: -0.04em; line-height: 1; cursor: ns-resize; touch-action: none; user-select: none; -webkit-user-select: none; padding: 4px 0; font-variant-numeric: tabular-nums; }
@@ -159,7 +162,7 @@ body { margin: 0; padding-inline: 0; background: #121211; color: var(--k); font-
 <div class="aside" aria-hidden="true">
   <b>The Thread and the Loop</b>
   <p>Made for phones. Open it on yours, or scroll here.</p>
-  <p>Eighteen exhibits. One thread. Pull it, cut it, shape it, wrap it, dye it. It keeps what you do.</p>
+  <p>Twenty-one exhibits. One thread. Shape it, puff it, cut it, ply it, wrap it, dye it, unzip it. It keeps what you do.</p>
 </div>
 
 <div id="bar" aria-hidden="true"></div>
@@ -219,7 +222,7 @@ body { margin: 0; padding-inline: 0; background: #121211; color: var(--k); font-
 
 <section class="frame bg-white" data-scene="shape" aria-label="Pick a nozzle">
   <div class="copy tl" data-avoid="top">
-    <p class="kicker">Shape · 1 of 3</p>
+    <p class="kicker">Fibre · 1 of 2</p>
     <h2>Pick a nozzle</h2>
     <p>The spinneret's holes set the fibre's cross-section. Pick one, then test it.</p>
     <div class="row" role="group" aria-label="Nozzle shapes" id="nozzles">
@@ -241,7 +244,7 @@ body { margin: 0; padding-inline: 0; background: #121211; color: var(--k); font-
 
 <section class="frame bg-white" data-scene="count" aria-label="How many filaments">
   <div class="copy tl" data-avoid="top">
-    <p class="kicker">Shape · 2 of 3</p>
+    <p class="kicker">Fibre · 2 of 2</p>
     <h2>One strand or hundreds?</h2>
     <p>A thread can be one thick filament, or a bundle of fine ones.</p>
     <p class="hint">Drag the number up</p>
@@ -250,15 +253,41 @@ body { margin: 0; padding-inline: 0; background: #121211; color: var(--k); font-
   <div class="card bl reserve" data-avoid="card"><p class="cl"></p><p class="ct"></p></div>
 </section>
 
+<section class="frame bg-blue" data-scene="texture" aria-label="Texture the yarn">
+  <div class="copy tl" data-avoid="top">
+    <p class="kicker">Yarn · 1 of 3</p>
+    <h2>Puff it up</h2>
+    <p id="tx-p">Flat filament feels slick, like plastic. Make it soft and bulky without cutting it.</p>
+    <p class="hint" id="tx-hint">Hold the air jet, or tap the heater</p>
+  </div>
+  <button class="hit hold" type="button" id="tx-jet" aria-label="Air jet: hold to blow air at the yarn"></button>
+  <button class="hit" type="button" id="tx-heat" aria-label="Heater: twist and heat the yarn"></button>
+  <div class="card bl reserve" data-avoid="card"><p class="cl"></p><p class="ct"></p></div>
+</section>
+
 <section class="frame bg-black" data-scene="cut" aria-label="Cut it and spin it">
   <div class="copy tl" data-avoid="top">
-    <p class="kicker">Shape · 3 of 3</p>
+    <p class="kicker">Yarn · 2 of 3</p>
     <h2>Cut it, spin it</h2>
     <p id="cut-p">Filament runs unbroken. Staple is cut short and spun, like cotton.</p>
     <p class="hint" id="cut-hint">Swipe across the thread to cut it</p>
     <button class="sr" type="button" id="cut-key">Cut the thread into staple</button>
     <div class="scrub inline" id="twist" role="slider" tabindex="0" aria-label="Twist" aria-valuemin="0" aria-valuemax="10" aria-valuenow="0" hidden><span class="sv">0</span><small>twist · drag up</small></div>
   </div>
+  <div class="card bl reserve" data-avoid="card"><p class="cl"></p><p class="ct"></p></div>
+</section>
+
+<section class="frame bg-white" data-scene="ply" aria-label="Ply the yarn">
+  <div class="copy tl" data-avoid="top">
+    <p class="kicker">Yarn · 3 of 3</p>
+    <h2>Ply it</h2>
+    <p id="ply-p">A twisted yarn stores its twist like a spring. Hang it in a loop and watch.</p>
+    <p class="hint" id="ply-hint">Tap a bobbin to add a strand</p>
+  </div>
+  <button class="hit" type="button" data-bob="1" aria-label="One strand" aria-pressed="true"></button>
+  <button class="hit" type="button" data-bob="2" aria-label="Two strands" aria-pressed="false"></button>
+  <button class="hit" type="button" data-bob="3" aria-label="Three strands" aria-pressed="false"></button>
+  <div class="dial" id="ply-dial" role="slider" tabindex="0" aria-label="Ply twist: turn clockwise for Z, anticlockwise for S" aria-valuemin="-10" aria-valuemax="10" aria-valuenow="0"></div>
   <div class="card bl reserve" data-avoid="card"><p class="cl"></p><p class="ct"></p></div>
 </section>
 
@@ -333,7 +362,7 @@ body { margin: 0; padding-inline: 0; background: #121211; color: var(--k); font-
 
 <section class="frame bg-blue" data-scene="bottle" aria-label="Recycled polyester">
   <div class="copy tr" data-avoid="top">
-    <p class="kicker">Return · 1 of 5</p>
+    <p class="kicker">Return · 1 of 6</p>
     <h2 id="bot-h">Recycled polyester?</h2>
     <p id="bot-p">Tap the shape to see where most recycled polyester comes from.</p>
     <button class="btn" type="button" id="bot-go">Next step</button>
@@ -343,7 +372,7 @@ body { margin: 0; padding-inline: 0; background: #121211; color: var(--k); font-
 
 <section class="frame bg-white" data-scene="recycle" aria-label="Feed the recycler">
   <div class="copy tr" data-avoid="top">
-    <p class="kicker">Return · 2 of 5</p>
+    <p class="kicker">Return · 2 of 6</p>
     <h2>Feed the recycler</h2>
     <p class="say" id="rc-say" hidden></p>
     <p id="rc-p">Your thread is about to go round. Predict first: will it?</p>
@@ -355,9 +384,23 @@ body { margin: 0; padding-inline: 0; background: #121211; color: var(--k); font-
   <div class="card bl reserve" data-avoid="card"><p class="cl"></p><p class="ct"></p></div>
 </section>
 
+<section class="frame bg-black" data-scene="unzip" aria-label="Chemical recycling">
+  <div class="copy tl" data-avoid="top">
+    <p class="kicker">Return · 3 of 6</p>
+    <h2>Unzip the chain</h2>
+    <p class="say" id="uz-say" hidden></p>
+    <p id="uz-p">Melting breaks links at random. Can you undo them in order instead? Think back: what did each link give off?</p>
+    <button class="btn" type="button" id="uz-go" hidden>Link it back up</button>
+  </div>
+  <button class="hit" type="button" data-r="water" aria-label="Pour in hot water"></button>
+  <button class="hit" type="button" data-r="glycol" aria-label="Pour in glycol"></button>
+  <button class="hit" type="button" data-r="enzyme" aria-label="Pour in enzymes"></button>
+  <div class="card bl reserve" data-avoid="card"><p class="cl"></p><p class="ct"></p></div>
+</section>
+
 <section class="frame bg-yellow" data-scene="spot" aria-label="Spot the PET">
   <div class="copy tl" data-avoid="top">
-    <p class="kicker">Return · 3 of 5</p>
+    <p class="kicker">Return · 4 of 6</p>
     <h2>Spot the PET</h2>
     <p class="say" id="spot-say" hidden></p>
     <p id="spot-p">Your thread forks. One strand is PET. The other is PLA, a polyester made from plants. Tap the PET.</p>
@@ -370,7 +413,7 @@ body { margin: 0; padding-inline: 0; background: #121211; color: var(--k); font-
 
 <section class="frame bg-black" data-scene="bend" aria-label="Stretch without elastane">
   <div class="copy tl" data-avoid="top">
-    <p class="kicker">Return · 4 of 5</p>
+    <p class="kicker">Return · 5 of 6</p>
     <h2>Stretch without elastane</h2>
     <p>Two polyesters in one filament shrink differently, so it curls into a spring.</p>
     <p class="hint">Pull the spring <span class="num" id="bend-n">+0%</span></p>
@@ -381,7 +424,7 @@ body { margin: 0; padding-inline: 0; background: #121211; color: var(--k); font-
 
 <section class="frame bg-white" data-scene="heat" aria-label="PLA and heat">
   <div class="copy tl" data-avoid="top">
-    <p class="kicker">Return · 5 of 5</p>
+    <p class="kicker">Return · 6 of 6</p>
     <h2>Turn up the heat</h2>
     <p>Two plies: PET, and PLA made from plant sugars. Which melts first?</p>
     <p class="hint">Drag the number up</p>
@@ -427,15 +470,17 @@ body { margin: 0; padding-inline: 0; background: #121211; color: var(--k); font-
   <ol>
     <li>Explain how PET becomes fibre: polymerise, melt-spin, draw.</li>
     <li>Link fibre form to performance: cross-section, filament count, filament versus staple, twist.</li>
+    <li>Explain how texturing and plying change a yarn: loops and crimp for bulk, balanced twist for a calm, strong thread.</li>
     <li>Compare two ways of colouring polyester and what each costs.</li>
     <li>Explain why blends with natural fibres or elastane block recycling, and judge claims about alternatives.</li>
+    <li>Compare mechanical and chemical recycling: what each keeps, what each costs, and what is proven at scale.</li>
   </ol>
   <h3>How it teaches</h3>
   <ul>
-    <li><b>The thread is the controller.</b> Students pull, cut, twist, wrap, dye, fork, melt and knot it. The idea and the action are the same thing.</li>
+    <li><b>The thread is the controller.</b> Students pull, blow, cut, twist, ply, wrap, dye, recycle, unzip, fork, melt and knot it. The idea and the action are the same thing.</li>
     <li><b>Discovery, not display.</b> Facts arrive as numbered discovery cards when students find them. A wrong test gives a question back, not the answer.</li>
     <li><b>Predict, then test.</b> The 59% guess, the nozzle tests, will it recycle, spot the PET, which ply melts first.</li>
-    <li><b>Consequences carry forward.</b> Shape, filament count, staple, partner fibre, colour, draw, shedding, elastane, PLA and promises all stay with the thread. The care label reads them back.</li>
+    <li><b>Consequences carry forward.</b> Shape, filament count, texture, staple, plies, partner fibre, colour, draw, shedding, melt rounds, elastane, PLA and promises all stay with the thread. The care label reads them back.</li>
   </ul>
   <h3>Seminar questions</h3>
   <ol>
@@ -444,6 +489,7 @@ body { margin: 0; padding-inline: 0; background: #121211; color: var(--k); font-
     <li>Microfibre feels softest. Is that worth more shedding? For which garment?</li>
     <li>Solution dyeing claims big water savings. What evidence would convince you, and who should provide it?</li>
     <li>Redesign one garment you own as a mono-material. What do you lose? What do you gain?</li>
+    <li>Chemical recycling can separate blends. Does that make blends acceptable again? What would you need to know first?</li>
   </ol>
   <h3>How sure are we?</h3>
   <ul>
@@ -451,6 +497,10 @@ body { margin: 0; padding-inline: 0; background: #121211; color: var(--k); font-
     <li><span class="chip s">Strong</span> Invented 1941 by Whinfield and Dickson [2][3].</li>
     <li><span class="chip s">Strong</span> Trilobal sparkles, hollow insulates, multichannel wicks [13][14].</li>
     <li><span class="chip s">Strong</span> Microfibre: under 1 decitex per filament [15].</li>
+    <li><span class="chip s">Strong</span> Linking terephthalic acid and ethylene glycol gives off water [27].</li>
+    <li><span class="chip s">Strong</span> Air-jet texturing blows multifilament yarn into loops for bulk [25]; false-twist texturing gives crimp [26].</li>
+    <li><span class="chip m">Moderate</span> "Much clothing polyester is false-twist textured": a 1985 patent puts it above 70%; no recent figure found [26].</li>
+    <li><span class="chip s">Strong</span> Plying opposite to the singles twist balances a yarn; sewing threads are 2, 3 or 4 ply [24].</li>
     <li><span class="chip m">Moderate</span> Staple often cut near cotton length, around 32–38 mm [16].</li>
     <li><span class="chip m">Moderate</span> Core-spun thread: polyester filament core, cotton or polyester wrap [17].</li>
     <li><span class="chip s">Strong</span> Polyester dyes with disperse dyes at around 130°C under pressure [18].</li>
@@ -460,6 +510,11 @@ body { margin: 0; padding-inline: 0; background: #121211; color: var(--k); font-
     <li><span class="chip m">Moderate</span> Elastane in ~80% of discarded US clothes: one estimate [6].</li>
     <li><span class="chip m">Moderate</span> No scalable fibre-to-fibre route for polycotton yet; one plant due 2028 [21].</li>
     <li><span class="chip m">Moderate</span> Dyes compromise recycled polyester; removal still in research [22].</li>
+    <li><span class="chip m">Moderate</span> Repeated melting shortens PET chains and lowers its properties [28].</li>
+    <li><span class="chip s">Strong</span> Engineered enzyme: 90% of PET broken down in 10 hours, lab scale, 2020 [29].</li>
+    <li><span class="chip m">Moderate</span> First full-size enzymatic plant planned for 2028; its financing was not closed by September 2026 [30].</li>
+    <li><span class="chip m">Moderate</span> Glycolysis of mixed textiles: cotton survives, polyester and elastane break down, dyes slow it (one lab study) [31].</li>
+    <li><span class="chip w">Weak</span> Chemical recycling's footprint: depends on plant and energy; studies disagree [32].</li>
     <li><span class="chip m">Moderate</span> 0.1% PLA spoils PET: bottle recycling, 2009 [7].</li>
     <li><span class="chip w">Weak</span> Two-polyester stretch fibre recycles with polyester: the maker's own tests [8][9].</li>
     <li><span class="chip s">Strong</span> PLA melts ~170°C, PET ~250°C [10]. All-polyester rubbers reach ~11× length in the lab [11].</li>
@@ -492,6 +547,15 @@ body { margin: 0; padding-inline: 0; background: #121211; color: var(--k); font-
     <li><a href="https://research.chalmers.se/en/publication/547807">Chalmers, polycotton recycling</a>; <a href="https://wwd.com/sourcing-journal/industry-news/circular-polyester-material-innovation-textile-circ-ambercycle-syre-re-up-1238837618/">Sourcing Journal, Circ plant 2028</a></li>
     <li><a href="https://www.hb.se/en/about-ub/current/news-archive/2026/may/new-study-reveals-a-way-to-process-coloured-polyester-textile-waste-without-chemicals/">University of Borås (2026), coloured polyester waste</a></li>
     <li><a href="https://patents.google.com/patent/US5693103">US Patent 5,693,103, Process for dyeing polyester/cotton blends</a></li>
+    <li><a href="https://spinoffmagazine.com/finding-balance/">Spin Off, Finding balance</a>; <a href="https://www.textiletechnologies.co.uk/en-es/pages/sewing-threads">Textile Technologies, sewing threads</a></li>
+    <li><a href="https://patents.google.com/patent/US4598538A/en">US Patent 4,598,538, air texturized yarn</a></li>
+    <li><a href="https://patents.google.com/patent/US4534164">US Patent 4,534,164, textured yarn (false twist)</a></li>
+    <li><a href="https://www.britannica.com/science/polyethylene-terephthalate">Britannica, polyethylene terephthalate</a></li>
+    <li><a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12899093/">Repeated thermo-mechanical processing of PET (PMC)</a></li>
+    <li><a href="https://www.inrae.fr/en/news/development-new-enzyme-recycling-pet-plastic-waste-new-bottles">INRAE on Tournier et al. (2020), Nature</a></li>
+    <li><a href="https://www.globenewswire.com/news-release/2026/08/03/3337758/0/en/carbios-provides-an-update-on-the-financing-of-its-longlaville-plant-project.html">Carbios (2026), Longlaville financing update</a>; <a href="https://www.carbios.com/en/carbios-reaches-milestone-of-100-batches-at-its-industrial-demonstration-plant-and-expands-its-licensing-offering-to-the-textile-market/">Carbios (2026), textile milestone</a></li>
+    <li><a href="https://www.chemistryworld.com/news/glycolysis-method-breaks-down-mixed-textiles-for-recycling/4019783.article">Chemistry World, glycolysis of mixed textiles</a>; <a href="https://www.ri.se/en/expertise-areas/expertises/recyclability-of-polyester">RISE, recyclability of polyester</a></li>
+    <li><a href="https://textileexchange.org/app/uploads/2026/06/Polyester-LCA_Summary.pdf">Textile Exchange (2026), Polyester LCA summary</a></li>
   </ol>
   <p style="margin-top:14px">Visual style after The Dot and the Line (Chuck Jones and Maurice Noble, MGM, 1965).</p>
 </div>
@@ -506,11 +570,11 @@ var D = Math.PI / 180;
 var RM = false; try { RM = window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) {}
 
 // What the student has done to their thread. Every later exhibit reads this.
-var G = { draw: 1, shape: 'round', fil: 1, staple: false, twist: 0, partner: null, elastane: false, colour: null, mix: null, dye: null, pla: false, stripped: null, shed: 0, bi: false, links: 0, knots: 0 };
+var G = { draw: 1, shape: 'round', fil: 1, tex: null, loops: 0, crimp: 0, staple: false, twist: 0, ply: 1, plyTwist: 0, plyBal: false, partner: null, elastane: false, colour: null, mix: null, dye: null, pla: false, stripped: null, shed: 0, rounds: 0, reborn: null, bi: false, links: 0, knots: 0 };
 
 // Discoveries: found by doing, numbered like museum labels.
 var DISC = {
-  link: 'Ethylene glycol and terephthalic acid, both mostly from oil, link into the long chain called PET.',
+  link: 'Ethylene glycol and terephthalic acid, both mostly from oil, link into the long chain called PET. Linking them gives off water.',
   y1941: 'Polyester was invented in Lancashire in 1941 by John Whinfield and James Dickson, and sold as Terylene.',
   draw: 'Stretching lines the chains up. The fibre gets stronger and less stretchy.',
   trilobal: 'Three lobes act like little prisms. Trilobal fibres sparkle.',
@@ -519,8 +583,12 @@ var DISC = {
   mono: 'Monofilament: one thick strand. Stiff and see-through, like fishing line.',
   multi: 'Multifilament: a bundle. A "150D/48F" yarn has 48 filaments. Smooth and drapey.',
   micro: 'Microfibre: each filament under 1 decitex, finer than silk. Very soft.',
+  aty: 'Air-jet texturing: a jet of air blows the filaments into tiny loops. The yarn turns bulky and soft, and stays unbroken.',
+  dty: 'False-twist texturing: twist, heat, untwist. Each filament keeps a crimp, which adds bulk and a little stretch. Much clothing polyester is made this way.',
   staple: 'Staple fibre is cut short, often near the length of cotton (about 32–38 mm), so it can be spun with cotton.',
   twist: 'More twist locks the loose ends in. In one lab study, high-twist yarns shed less.',
+  snarl: 'A twisted yarn wants to untwist. Let it go slack and it kinks back on itself.',
+  ply: 'Plying the other way balances the twist, so the yarn hangs calm. Sewing thread is usually 2, 3 or 4 plies.',
   cotton: 'Core-spun: a polyester core for strength, cotton outside for feel and dye. Common in sewing thread.',
   wool: 'Wool on the outside, polyester inside: two different fibres that a recycler would have to separate.',
   elastane: 'Elastane (spandex) is polyurethane, not polyester. One estimate finds it in about 80% of discarded clothes.',
@@ -531,6 +599,10 @@ var DISC = {
   bottle: 'Most recycled polyester was a plastic bottle. Under 1% of all fibre comes from recycled textiles.',
   jam: 'Blends jam the loop. Separating polycotton is still mostly in the lab; one large plant is due in 2028.',
   loop: 'One material can, in principle, go round again.',
+  downcycle: 'Each melt breaks some links, so the chains get shorter and weaker. After a few rounds, PET only suits less demanding uses.',
+  unzip: 'Chemical recycling runs the reaction backwards. Water, glycol or methanol break every link, and the building blocks can be made into PET as good as new.',
+  enzyme: 'In a 2020 lab study, an engineered enzyme broke down 90% of PET in 10 hours. The first full-size plant is planned for 2028.',
+  separate: 'In one lab study, cotton came out whole while the polyester and elastane broke down. Dyes and finishes slowed the reaction.',
   pla: 'PLA looks like PET. In bottle recycling, just 0.1% PLA can spoil a batch of PET.',
   spring: 'Two polyesters in one filament curl into a spring: stretch without elastane. The maker says it recycles with polyester; ask for proof.',
   rubber: 'In the lab, all-polyester rubbers stretch to about 11 times their length. Not on sale as fibre yet.',
@@ -756,6 +828,20 @@ function scrub(el, o) {
   return { set: set, get: function () { return v; } };
 }
 
+// A dial you turn with a finger, or step with the arrow keys. Clockwise is positive.
+function dial(el, o) {
+  var v = o.value, on = false, a0 = 0, acc = 0;
+  function show() { el.setAttribute('aria-valuenow', v); el.setAttribute('aria-valuetext', o.fmt(v)); }
+  function set(nv) { nv = clamp(Math.round(nv), o.min, o.max); if (nv === v) return; v = nv; show(); o.onChange(v); }
+  function ang(e) { var r = el.getBoundingClientRect(); return Math.atan2(e.clientY - r.top - r.height / 2, e.clientX - r.left - r.width / 2); }
+  el.addEventListener('pointerdown', function (e) { on = true; a0 = ang(e); acc = v; try { el.setPointerCapture(e.pointerId); } catch (x) {} e.preventDefault(); });
+  el.addEventListener('pointermove', function (e) { if (!on) return; var a = ang(e), d = a - a0; if (d > Math.PI) d -= Math.PI * 2; if (d < -Math.PI) d += Math.PI * 2; a0 = a; acc = clamp(acc + d / o.per, o.min - .49, o.max + .49); if (o.onTurn) o.onTurn(d); set(acc); });
+  el.addEventListener('pointerup', function () { on = false; }); el.addEventListener('pointercancel', function () { on = false; });
+  el.addEventListener('keydown', function (e) { var d = e.key === 'ArrowUp' || e.key === 'ArrowRight' ? 1 : e.key === 'ArrowDown' || e.key === 'ArrowLeft' ? -1 : 0; if (d) { if (o.onTurn) o.onTurn(d * o.per); set(v + d); e.preventDefault(); } });
+  show(); return { set: set, get: function () { return v; } };
+}
+function drop(ctx, x, y, r, col) { ctx.fillStyle = col; ctx.beginPath(); ctx.moveTo(x, y - r * 2); ctx.quadraticCurveTo(x + r * .9, y - r * .6, x + r, y); ctx.arc(x, y, r, 0, Math.PI); ctx.quadraticCurveTo(x - r * .9, y - r * .6, x, y - r * 2); ctx.fill(); }
+
 // The microscope: a black lens showing the thread cut end-on.
 function lens(ctx, cx, cy, R, shape, n, ink) {
   disc(ctx, cx, cy, R + 6, KU.w); disc(ctx, cx, cy, R, KU.k);
@@ -855,6 +941,9 @@ SCENES.oil = {
       var sx = .22 * W + (a.x - .22 * W) * u, syy = sy + (a.y - sy) * u - lift, hx = .78 * W + (b.x - .78 * W) * u, hy = sy + (b.y - sy) * u - lift;
       ctx.fillStyle = KU.w; ctx.fillRect(sx - 11, syy - 11, 22, 22); ctx.fillStyle = KU.k; ctx.fillRect(sx - 9, syy - 9, 18, 18);
       hexagon(ctx, hx, hy, 13, KU.w); hexagon(ctx, hx, hy, 11, KU.k);
+      // linking gives off water
+      var age = fl ? f.t - fl.t - .5 : 9;
+      if (age > 0 && age < 1.8) { var dx = -16 - age * 26, dy = -age * 40; ctx.globalAlpha = 1 - age / 1.8; drop(ctx, (sx + hx) / 2 + dx, (syy + hy) / 2 + dy, 6, KU.b); if (i < 2) { ctx.font = '700 14px ' + FONT; ctx.fillStyle = KU.k; ctx.textAlign = 'right'; ctx.fillText('water', (sx + hx) / 2 + dx - 10, (syy + hy) / 2 + dy + 4); ctx.textAlign = 'left'; } ctx.globalAlpha = 1; }
     }
   }
 };
@@ -966,6 +1055,67 @@ SCENES.count = {
   front: function (ctx, f) { var g = this.geo(f); lens(ctx, g.cx, g.cy, g.R, G.shape, G.fil, KU.b); label(ctx, f, 'cut end', g.cx, g.cy + g.R + 24, 14, KU.k, 'center'); }
 };
 
+// Two ways to texture filament: hold the air jet to blow loops, or twist and heat it to crimp it.
+SCENES.texture = {
+  n: 150,
+  init: function (f) {
+    var self = this, jet = $('tx-jet'); f.s.blow = false; f.s.until = 0; f.s.held = 0; f.s.ht = -9; f.parts = [];
+    jet.addEventListener('pointerdown', function (e) { f.s.blow = true; try { jet.setPointerCapture(e.pointerId); } catch (x) {} e.preventDefault(); });
+    ['pointerup', 'pointercancel', 'lostpointercapture'].forEach(function (t) { jet.addEventListener(t, function () { f.s.blow = false; }); });
+    jet.addEventListener('click', function () { f.s.until = f.t + 1.4; });
+    $('tx-heat').addEventListener('click', function () { self.heat(f); });
+  },
+  multi: function () { return G.fil >= 6; },
+  few: function (f, how) { if (f.s.toldM) return; f.s.toldM = true; card(f, 'One filament', how === 'air' ? 'One thick filament just bends in the wind. Loops need lots of fine filaments. Scroll up and add some?' : 'One thick filament just kinks. Bulk needs lots of fine filaments. Scroll up and add some?'); },
+  heat: function (f) {
+    f.s.ht = f.t; f.chain.kick(0, 3);
+    if (!this.multi()) { this.few(f, 'heat'); return; }
+    if (G.tex !== 'crimp') { G.tex = 'crimp'; G.crimp = 0; G.loops = 0; renderLabel(); }
+  },
+  geo: function (f) {
+    var st = stage(f), W = f.w, x = .5 * W, jy = st.t + st.h * .28, hh = clamp(st.h * .26, 60, 120), hy = st.t + st.h * .52;
+    return { st: st, x: x, jy: jy, jt: x - 30, j0: .06 * W, hx: x + 12, hy: hy, hw: .24 * W, hh: hh, sy: hy + hh + 30 };
+  },
+  path: function (f) { var g = this.geo(f), W = f.w; return [pt(.87 * W, g.st.t + 4), pt(g.x, g.st.t + g.st.h * .1), pt(g.x, g.hy - 8), pt(g.hx - 7, g.hy + 12), pt(g.hx - 7, g.hy + g.hh - 12), pt(g.x, g.sy), pt(g.x, g.st.b - g.st.h * .03), pt(.87 * W, g.st.b - 4)]; },
+  k: 0.1,
+  tick: function (f) {
+    var g = this.geo(f), blowing = f.s.blow || f.t < f.s.until, c = f.chain, i;
+    if (blowing) {
+      f.s.held += 1 / 60;
+      for (i = 0; i < c.n; i++) { var q = c.p[i], d = Math.abs(q.y - g.jy); if (d < 50 && q.x > g.jt) q.x += 2.6 * (1 - d / 50); }
+      for (i = 0; i < 3; i++) f.parts.push({ x: g.jt, y: g.jy + (Math.random() - .5) * 24, v: 5 + Math.random() * 4 });
+      if (this.multi()) {
+        if (G.tex !== 'air') { G.tex = 'air'; G.loops = 0; G.crimp = 0; }
+        G.loops = Math.min(1, G.loops + 1 / 60 / 2.2);
+        if (G.loops >= .7 && !f.s.toldA) { f.s.toldA = true; card(f, 'aty'); renderLabel(); }
+      } else if (f.s.held > 1.2) this.few(f, 'air');
+    }
+    if (G.tex === 'crimp' && G.crimp < 1) { G.crimp = Math.min(1, G.crimp + 1 / 60 / 1.6); if (G.crimp >= 1 && !f.s.toldC) { f.s.toldC = true; card(f, 'dty'); renderLabel(); } }
+    f.parts = f.parts.filter(function (o) { o.x += o.v; o.y += (Math.random() - .5) * 1.4; return o.x < f.w + 20; });
+  },
+  back: function (ctx, f) {
+    var g = this.geo(f), on = f.t - f.s.ht < 2.2, i;
+    // the heater plate
+    ctx.fillStyle = KU.k; ctx.fillRect(g.hx, g.hy, g.hw, g.hh);
+    ctx.fillStyle = on ? KU.y : KU.g; ctx.fillRect(g.hx + 6, g.hy + 6, g.hw - 12, g.hh - 12);
+    if (on) { ctx.strokeStyle = KU.k; ctx.lineWidth = 2; for (i = 0; i < 3; i++) { var hx = g.hx + g.hw * (.3 + i * .2), o = Math.sin(f.t * 8 + i) * 3; ctx.beginPath(); ctx.moveTo(hx, g.hy + g.hh - 14); ctx.quadraticCurveTo(hx + 6 + o, g.hy + g.hh / 2, hx, g.hy + 14); ctx.stroke(); } }
+    // the twister under it, spinning while the heater is on
+    disc(ctx, g.x, g.sy, 17, KU.k); var a = on ? f.t * 14 : 0; ctx.strokeStyle = KU.w; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(g.x - Math.cos(a) * 12, g.sy - Math.sin(a) * 12); ctx.lineTo(g.x + Math.cos(a) * 12, g.sy + Math.sin(a) * 12); ctx.stroke();
+    place($('tx-heat'), g.hx - 4, g.hy - 8, g.hw + 12, g.hh + 16);
+    // the air jet
+    var bl = f.s.blow || f.t < f.s.until, kick = bl ? Math.sin(f.t * 60) * 1.2 : 0;
+    ctx.fillStyle = KU.k; ctx.beginPath(); ctx.moveTo(g.j0, g.jy - 22 + kick); ctx.lineTo(g.jt - 14, g.jy - 22 + kick); ctx.lineTo(g.jt, g.jy - 7); ctx.lineTo(g.jt, g.jy + 7); ctx.lineTo(g.jt - 14, g.jy + 22 - kick); ctx.lineTo(g.j0, g.jy + 22 - kick); ctx.closePath(); ctx.fill();
+    ctx.fillStyle = bl ? KU.y : KU.w; ctx.fillRect(g.j0 + 10, g.jy - 7, 26, 14);
+    place($('tx-jet'), g.j0 - 6, g.jy - 34, g.jt - g.j0 + 12, 68);
+  },
+  front: function (ctx, f) {
+    var g = this.geo(f); ctx.strokeStyle = KU.w; ctx.lineWidth = 2.4; ctx.lineCap = 'round';
+    f.parts.forEach(function (o) { ctx.beginPath(); ctx.moveTo(o.x, o.y); ctx.lineTo(o.x + 10, o.y); ctx.stroke(); });
+    label(ctx, f, 'AIR JET', g.j0, g.jy + 44, 14, KU.k, 'left');
+    label(ctx, f, 'HEATER', g.hx + g.hw, g.hy + g.hh + 24, 14, KU.k, 'right');
+  }
+};
+
 // Swipe across the thread to cut it into staple. Then drag the twist up to spin it.
 SCENES.cut = {
   n: 140,
@@ -999,6 +1149,75 @@ SCENES.cut = {
     f.falls.forEach(function (c) { strokeChain(ctx, c, KU.b, 5); });
     var tr = f.s.trail.filter(function (q) { return f.t - q.t < .35; });
     if (tr.length > 1) { ctx.strokeStyle = KU.y; ctx.lineWidth = 4; ctx.lineCap = 'round'; ctx.beginPath(); tr.forEach(function (q, i) { ctx[i ? 'lineTo' : 'moveTo'](q.x, q.y); }); ctx.stroke(); }
+  }
+};
+
+// Ply it: add bobbins, then turn the dial. Twist the right way and the hanging loop calms down.
+SCENES.ply = {
+  n: 240,
+  init: function (f) {
+    var self = this; f.s.sn = .5; f.s.dir = 1; f.s.rot = 0; f.s.calm = 0;
+    f.el.querySelectorAll('[data-bob]').forEach(function (b) { b.addEventListener('click', function () { self.setPly(f, +b.dataset.bob); }); });
+    f.dial = dial($('ply-dial'), { value: 0, min: -10, max: 10, per: .55, fmt: function (v) { return v === 0 ? 'no ply twist' : (v < 0 ? 'S twist ' : 'Z twist ') + Math.abs(v); },
+      onTurn: function (d) { f.s.rot += d; }, onChange: function (v) { G.plyTwist = v; self.check(f); } });
+  },
+  singles: function () { return G.staple ? Math.max(3, G.twist) : 4; },
+  net: function () { return G.ply >= 2 ? this.singles() + G.plyTwist : this.singles(); },
+  setPly: function (f, n) { G.ply = n; f.el.querySelectorAll('[data-bob]').forEach(function (b) { b.setAttribute('aria-pressed', +b.dataset.bob <= n); }); this.strands(f); this.check(f); f.chain.kick(3, 0); },
+  check: function (f) {
+    var net = this.net(), s = this.singles(), h = $('ply-hint');
+    G.plyBal = G.ply >= 2 && Math.abs(net) <= 1;
+    if (G.ply < 2) { h.textContent = 'Tap a bobbin to add a strand'; if (G.plyTwist !== 0 && !f.s.h1) { f.s.h1 = true; card(f, 'One strand', 'One strand has nothing to twist round. Tap a second bobbin first.'); } }
+    else if (G.plyBal) { h.textContent = 'Balanced: the loop hangs calm'; $('ply-p').textContent = 'The ply twist cancels the twist in each strand.'; }
+    else {
+      h.textContent = 'Turn the dial. Which way calms the loop?';
+      if (net > s + 1 && !f.s.h2) { f.s.h2 = true; card(f, 'Worse', 'It snarls more. Twisting the same way stores more energy. Which way would undo it?'); }
+      if (net < -2 && !f.s.h3) { f.s.h3 = true; card(f, 'Too far', 'Now it snarls the other way. Ease the dial back.'); }
+    }
+    renderLabel();
+  },
+  geo: function (f) {
+    var st = stage(f), W = f.w, rb = clamp(.055 * W, 16, 24), by = st.t + rb + 14, R = clamp(.1 * W, 30, 42), cy = by + rb + R + 22 + st.h * .03;
+    return { st: st, rb: rb, by: by, bx: [.78 * W, .56 * W, .34 * W], cx: .5 * W, cy: cy, R: R, top: cy + R + 8, bot: st.b - 10, hw: .17 * W };
+  },
+  strands: function (f) { var g = this.geo(f), o = []; for (var k = 1; k < G.ply; k++) { var c = new Chain([pt(g.bx[k], g.by + g.rb + 2), pt(g.cx, g.cy)], 30, { wind: .02, iter: 8 }); c.grabbable = false; o.push(c); } f.extras = o; },
+  layout: function (f) { this.strands(f); },
+  path: function (f) {
+    var g = this.geo(f), W = f.w, sn = f.s.sn, dir = f.s.dir, o = [pt(.87 * W, g.st.t), pt(g.bx[0] + g.rb + 3, g.by), pt(g.bx[0], g.by + g.rb + 3), pt(g.cx, g.cy)];
+    var depth = (g.bot - g.top) * (1 - .3 * sn);
+    // the hanging loop: its two legs wind round each other as the yarn snarls
+    for (var i = 0; i <= 80; i++) { var th = i / 80 * Math.PI * 2, t = (1 - Math.cos(th)) / 2, ph = dir * sn * Math.PI * 4.5 * t * t, w = g.hw * (1 - .45 * sn * t); o.push(pt(g.cx + w * Math.sin(th) * Math.cos(ph), g.top + depth * t)); }
+    return o.concat([pt(.8 * W, g.top + 14), pt(.8 * W, g.bot)]);
+  },
+  k: 0.1,
+  split: function (f) { return { y: this.geo(f).cy, above: { ply: 1 } }; },
+  tick: function (f) {
+    var net = this.net(), tgt = G.ply >= 2 ? clamp((Math.abs(net) - 1) / 7, 0, 1) : clamp(this.singles() / 7, .4, 1);
+    if (Math.abs(net) > 1) f.s.dir = net < 0 ? -1 : 1;
+    f.s.sn += (tgt - f.s.sn) * .03;
+    if (G.ply === 1 && f.vt > 2.2 && !f.s.told) { f.s.told = true; card(f, 'snarl'); }
+    f.s.calm = G.plyBal ? f.s.calm + 1 / 60 : 0;
+    if (f.s.calm > .8 && !f.s.toldP) { f.s.toldP = true; card(f, 'ply'); }
+  },
+  back: function (ctx, f) {
+    var g = this.geo(f), ink = inkFor(f.bg), cs = casingFor(ink);
+    g.bx.forEach(function (x, k) {
+      var on = k < G.ply, y = g.by, r = g.rb;
+      if (on) { ctx.fillStyle = ink; ctx.fillRect(x - r, y - r + 2, 2 * r, 2 * r - 4); ctx.strokeStyle = cs; ctx.lineWidth = 1.2; ctx.beginPath(); for (var j = -r + 5; j < r - 2; j += 4) { ctx.moveTo(x - r, y + j); ctx.lineTo(x + r, y + j + 2); } ctx.stroke(); }
+      else { ctx.fillStyle = KU.k; ctx.fillRect(x - 4, y - r, 8, 2 * r); }
+      ctx.fillStyle = KU.k; ctx.fillRect(x - r - 5, y - r - 4, 2 * r + 10, 6); ctx.fillRect(x - r - 5, y + r - 2, 2 * r + 10, 6);
+      place(f.el.querySelector('[data-bob="' + (k + 1) + '"]'), x - r - 12, y - r - 12, 2 * r + 24, 2 * r + 24);
+    });
+    disc(ctx, g.cx, g.cy, g.R, KU.k); ring(ctx, g.cx, g.cy, g.R - 9, 2, KU.g);
+    for (var a = 0; a < 3; a++) { var an = f.s.rot + a * 2.094; ctx.strokeStyle = KU.w; ctx.lineWidth = 4; ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(g.cx + Math.cos(an) * 10, g.cy + Math.sin(an) * 10); ctx.lineTo(g.cx + Math.cos(an) * (g.R - 6), g.cy + Math.sin(an) * (g.R - 6)); ctx.stroke(); }
+    place($('ply-dial'), g.cx - g.R - 8, g.cy - g.R - 8, 2 * g.R + 16, 2 * g.R + 16);
+  },
+  front: function (ctx, f) {
+    var g = this.geo(f), ink = inkFor(f.bg), cs = casingFor(ink), v = G.plyTwist;
+    f.extras.forEach(function (c) { cased(ctx, c, ink, cs, 3.4); });
+    disc(ctx, g.cx, g.cy, 8, KU.w); disc(ctx, g.cx, g.cy, 4, KU.k);
+    label(ctx, f, v < 0 ? 'S ' + (-v) : 'S', g.cx - g.R - 14, g.cy + 7, v < 0 ? 22 : 16, KU.k, 'right');
+    label(ctx, f, v > 0 ? 'Z ' + v : 'Z', g.cx + g.R + 14, g.cy + 7, v > 0 ? 22 : 16, KU.k, 'left');
   }
 };
 
@@ -1192,9 +1411,11 @@ SCENES.recycle = {
     if (!this.blocked() && f.coil) f.coil.step(f.t, [], 0);
     if (f.s.rec && !f.s.done && f.t - f.s.rt > 1.7) {
       f.s.done = true; var bad = this.blocked();
-      setBg(f, bad ? 'black' : 'blue'); say($('rc-say'), bad ? 'Jammed.' : 'It goes round.');
-      $('rc-p').textContent = bad ? 'The ' + bad + ' and the polyester would have to be separated first.' : 'One material. Now try it with elastane: tap the coil.';
-      $('rc-strip').hidden = !bad; if (bad) $('rc-strip').textContent = 'Strip the ' + bad + ' off'; $('rc-hint').textContent = bad ? 'Strip it, then tap the ring' : 'Tap the coil'; card(f, bad ? 'jam' : 'loop'); f.measure();
+      if (!bad) { G.rounds = Math.min(4, G.rounds + 1); renderLabel(); }
+      var tired = !bad && G.rounds >= 3;
+      setBg(f, bad ? 'black' : 'blue'); say($('rc-say'), bad ? 'Jammed.' : tired ? 'Weaker each time.' : 'It goes round.');
+      $('rc-p').textContent = bad ? 'The ' + bad + ' and the polyester would have to be separated first.' : tired ? 'Each melt breaks some links. Could chemistry rebuild them? Scroll on.' : 'One material. Melted ' + G.rounds + (G.rounds === 1 ? ' time' : ' times') + '. Go again, or tap the coil to add elastane.';
+      $('rc-strip').hidden = !bad; if (bad) $('rc-strip').textContent = 'Strip the ' + bad + ' off'; $('rc-hint').textContent = bad ? 'Strip it, then tap the ring' : 'Tap the ring again'; card(f, bad ? 'jam' : tired ? 'downcycle' : 'loop'); f.measure();
     }
   },
   back: function (ctx, f) {
@@ -1206,6 +1427,103 @@ SCENES.recycle = {
     place($('rc-ring'), g.cx - g.r, g.cy - g.r, g.r * 2, g.r * 2); place($('rc-coil'), g.peg.x - 34, g.peg.y - 10, 68, this.blocked() ? 0 : g.cl + 24);
   },
   front: function (ctx, f) { if (!this.blocked() && f.coil) drawSquiggle(ctx, f.coil, f.t, f.bg === 'black' ? KU.w : KU.k); }
+};
+
+// Chemical recycling: pour in a reagent and the chain unzips into its building blocks. Then link it back up, clean.
+SCENES.unzip = {
+  n: 160,
+  R: { water: ['WATER', 'Hydrolysis.', 'Hot water goes back into each link it once gave off. The chain falls apart into its two building blocks.', KU.b],
+       glycol: ['GLYCOL', 'Glycolysis.', 'Glycol breaks each link. The building blocks are filtered and cleaned, ready to link again.', KU.w],
+       enzyme: ['ENZYME', 'Enzymes.', 'An engineered enzyme snips the links one by one, in warm water.', KU.y] },
+  init: function (f) {
+    var self = this; this.clear(f); f.s.r = null;
+    f.el.querySelectorAll('[data-r]').forEach(function (b) { b.addEventListener('click', function () { self.pour(f, b.dataset.r); }); });
+    $('uz-go').addEventListener('click', function () { self.rebuild(f); });
+  },
+  clear: function (f) { f.s.u = 0; f.s.rb = 0; f.s.surf = null; f.s.mono = []; f.s.sp = []; f.s.q = []; f.s.done = false; },
+  pour: function (f, r) {
+    if (f.s.r && f.t - f.s.pt < 3.6 && !f.s.done) return;
+    this.clear(f); f.s.r = r; f.s.pt = f.t;
+    f.s.old = look(f); f.s.hadP = G.reborn ? null : G.partner; f.s.hadE = G.elastane; f.s.hadC = G.reborn ? null : G.colour;
+    $('uz-go').hidden = true; $('uz-say').hidden = true; f.measure();
+  },
+  rebuild: function (f) {
+    f.s.rb = f.t; G.reborn = f.s.r; G.rounds = 0; G.elastane = false; syncUI();
+    $('uz-go').hidden = true; say($('uz-say'), 'Linked again.');
+    $('uz-p').textContent = 'As good as new: no dye, no partner fibre. But its footprint depends on the plant and its power, and few plants run at scale yet.';
+    f.measure();
+  },
+  geo: function (f) {
+    // flasks stand in a column beside the vessel, so the vessel keeps its height on short screens
+    var st = stage(f), W = f.w, fw = clamp(.14 * W, 40, 56), gap = 26, fh = clamp((st.h - 12) / 3 - gap, 30, 62), x = .13 * W;
+    var fl = [0, 1, 2].map(function (k) { return pt(x, st.t + 6 + k * (fh + gap)); });
+    return { st: st, fl: fl, fw: fw, fh: fh, vx: .27 * W, vw: .64 * W, vy: st.t + 14, vb: Math.max(st.t + 90, st.b - 10), tx: .66 * W };
+  },
+  level: function (f) {
+    var g = this.geo(f); if (!f.s.r) return g.vb;
+    var fill = ease((f.t - f.s.pt - .3) / 1.1), drain = f.s.rb ? ease((f.t - f.s.rb - 1.4) / 1) : 0;
+    return g.vb - (g.vb - g.vy - 14) * .8 * fill * (1 - drain);
+  },
+  liquid: function (f) { var c = this.R[f.s.r][3]; return f.s.hadC ? mix(c, f.s.hadC, .55 * f.s.u) : c; },
+  path: function (f) { var g = this.geo(f), W = f.w; return [pt(.87 * W, g.st.t - 16), pt(g.tx, g.vy - 4), pt(g.tx, g.vb + 4), pt(g.tx + 10, g.vb + 26)]; },
+  k: 0.1,
+  hide: function (f) {
+    var big = f.h + 40, s0 = f.s.surf; if (s0 == null) return [big, big];
+    if (f.s.rb) return [s0 + (big - s0) * ease((f.t - f.s.rb) / 1.6), big];
+    return [s0, s0 + (big - s0) * f.s.u];
+  },
+  split: function (f) { return f.s.rb && f.s.old ? { y: f.s.surf, above: f.s.old } : null; },
+  tick: function (f) {
+    if (!f.s.r) return;
+    var g = this.geo(f), c = f.chain, lv = this.level(f), i;
+    if (f.s.surf == null && f.t - f.s.pt > 1.5) f.s.surf = lv;
+    if (f.s.surf != null && !f.s.rb) {
+      f.s.u = clamp((f.t - f.s.pt - 1.5) / 2.2, 0, 1);
+      var H = f.s.surf + (f.h + 40 - f.s.surf) * f.s.u;
+      for (i = 0; i < c.n; i++) { var q = c.p[i]; if (!f.s.sp[i] && q.y > f.s.surf && q.y < Math.min(H, g.vb - 6)) { f.s.sp[i] = true; if (i % 2 === 0) f.s.mono.push({ x: q.x, y: q.y, vx: (Math.random() - .5) * 1.6, vy: -Math.random() * .8, k: (i / 2) % 2, a: Math.random() * 6 }); } }
+      if (f.s.u >= 1 && !f.s.done) {
+        f.s.done = true; var R = this.R[f.s.r];
+        say($('uz-say'), R[1]); $('uz-p').textContent = R[2]; $('uz-go').hidden = false;
+        if (f.s.hadE) { G.elastane = false; syncUI(); }
+        card(f, 'unzip'); if (f.s.r === 'enzyme') f.s.q.push('enzyme'); if (f.s.hadP || f.s.hadE) f.s.q.push('separate'); f.s.qt = f.t + 4.5;
+      }
+    }
+    if (f.s.q.length && f.t > f.s.qt) { card(f, f.s.q.shift()); f.s.qt = f.t + 4.5; }
+    var top = Math.min(lv, g.vb - 20);
+    f.s.mono = f.s.mono.filter(function (m) {
+      if (f.s.rb) { var dx = g.tx - m.x, dy = g.vb - m.y, d = Math.hypot(dx, dy); m.x += dx / d * 5; m.y += dy / d * 5; return d > 8; }
+      m.vx = (m.vx + (Math.random() - .5) * .15) * .98; m.vy = (m.vy + (Math.random() - .5) * .15 - .004) * .98; m.x += m.vx; m.y += m.vy; m.a += m.vx * .05;
+      if (m.x < g.vx + 12 || m.x > g.vx + g.vw - 12) m.vx *= -1; if (m.y < top + 10 || m.y > g.vb - 12) m.vy *= -1;
+      m.x = clamp(m.x, g.vx + 12, g.vx + g.vw - 12); m.y = clamp(m.y, top + 10, g.vb - 12); return true;
+    });
+  },
+  back: function (ctx, f) {
+    var g = this.geo(f), self = this, lv = this.level(f);
+    if (lv < g.vb - 1) { ctx.fillStyle = this.liquid(f); ctx.fillRect(g.vx, lv, g.vw, g.vb - lv); }
+    ctx.strokeStyle = KU.w; ctx.lineWidth = 4; ctx.lineJoin = 'round'; ctx.beginPath(); ctx.moveTo(g.vx, g.vy); ctx.lineTo(g.vx, g.vb); ctx.lineTo(g.tx - 12, g.vb); ctx.moveTo(g.tx + 12, g.vb); ctx.lineTo(g.vx + g.vw, g.vb); ctx.lineTo(g.vx + g.vw, g.vy); ctx.stroke();
+    ['water', 'glycol', 'enzyme'].forEach(function (r, k) {
+      var x = g.fl[k].x, cy = g.fl[k].y + g.fh / 2, R = self.R[r], act = f.s.r === r, age = f.t - f.s.pt, tilt = act ? ease(age / .3) * (1 - ease((age - 1.5) / .4)) : 0;
+      ctx.save(); ctx.translate(x, cy); ctx.rotate(tilt * .85);
+      var w = g.fw, h = g.fh;
+      ctx.beginPath(); ctx.moveTo(-w * .15, -h / 2); ctx.lineTo(w * .15, -h / 2); ctx.lineTo(w * .15, -h * .12); ctx.lineTo(w / 2, h / 2); ctx.lineTo(-w / 2, h / 2); ctx.lineTo(-w * .15, -h * .12); ctx.closePath();
+      ctx.save(); ctx.clip(); ctx.fillStyle = R[3]; ctx.fillRect(-w, h * .05 - (act ? 0 : 0), w * 2, h); ctx.restore();
+      ctx.strokeStyle = KU.w; ctx.lineWidth = 3; ctx.stroke(); ctx.restore();
+      if (act && tilt > .4) { var mx = x + g.fw * .42, my = cy - g.fh * .2; ctx.strokeStyle = R[3]; ctx.lineWidth = 5; ctx.setLineDash([8, 7]); ctx.lineDashOffset = -f.t * 120; ctx.beginPath(); ctx.moveTo(mx, my); ctx.quadraticCurveTo(g.vx + 26, my - 6, g.vx + 30, Math.max(lv, my + 20)); ctx.stroke(); ctx.setLineDash([]); }
+      place(f.el.querySelector('[data-r="' + r + '"]'), x - g.fw / 2 - 8, g.fl[k].y - 6, g.fw + 16, g.fh + 26);
+    });
+  },
+  front: function (ctx, f) {
+    var g = this.geo(f), self = this, lv = this.level(f);
+    ['water', 'glycol', 'enzyme'].forEach(function (r, k) { label(ctx, f, self.R[r][0], g.fl[k].x, g.fl[k].y + g.fh + 16, 12, KU.w, 'center'); });
+    f.s.mono.forEach(function (m) { if (m.k) { hexagon(ctx, m.x, m.y, 8, KU.w); hexagon(ctx, m.x, m.y, 6, KU.k); } else { ctx.fillStyle = KU.w; ctx.fillRect(m.x - 7, m.y - 7, 14, 14); ctx.fillStyle = KU.k; ctx.fillRect(m.x - 5, m.y - 5, 10, 10); } });
+    if (f.s.hadP && f.s.u > .4 && !f.s.rb) {
+      // the cotton result is from a lab study; for wool we found no data, and say so
+      var sy0 = Math.max(lv, g.vy) + 22;
+      if (f.s.hadP === 'cotton') { var pts = []; for (var i = 0; i < 26; i++) pts.push(pt(g.vx + 14 + i * (g.vw * .45) / 25, sy0 + Math.sin(i * .7 + f.t * 2) * 5)); drawSquiggle(ctx, { p: pts }, f.t, lum(this.liquid(f)) > .45 ? KU.k : '#e8e1cf'); }
+      var tag = f.s.hadP === 'cotton' ? 'Cotton comes out whole' : 'Wool? No data found';
+      ctx.font = '700 13px ' + FONT; var tw = ctx.measureText(tag).width; ctx.fillStyle = KU.k; ctx.fillRect(g.vx + 6, g.vb - 30, tw + 14, 22); ctx.fillStyle = KU.w; ctx.textAlign = 'left'; ctx.fillText(tag, g.vx + 13, g.vb - 14);
+    }
+  }
 };
 
 // The thread forks into two identical strands. Tap the PET; the other falls away.
@@ -1336,7 +1654,7 @@ SCENES.knots = {
 // The thread reads itself back. One material closes the loop.
 SCENES.end = {
   n: 170,
-  clean: function () { return !G.elastane && !G.pla && !G.partner; },
+  clean: function () { return !G.elastane && !G.pla && (!G.partner || G.reborn); },
   geo: function (f) {
     var q = f.named.q, W = f.w; if (!q) return { cx: .5 * W, cy: .3 * f.h, r: .38 * W };
     var cx = (q.l + q.r) / 2, cy = (q.t + q.b) / 2, hw = (q.r - q.l) / 2 - 12, hh = (q.b - q.t) / 2 - 12, need = Math.hypot(hw, hh) + 18, r = clamp(need, .32 * W, .44 * W);
@@ -1357,28 +1675,34 @@ SCENES.end = {
 
 // ---------- shared state → words ----------
 function syncUI() { $('bend-swap').hidden = !G.elastane; renderLabel(); }
-var SHAPES = { round: 'round', trilobal: 'trilobal (sparkles)', hollow: 'hollow (insulates)', channel: 'channelled (wicks)' };
+var SHAPES = { round: 'round', trilobal: 'trilobal', hollow: 'hollow', channel: 'channelled' };
+var REAGENT = { water: 'hydrolysis', glycol: 'glycolysis', enzyme: 'enzymes' };
 function renderLabel() {
+  var fibre = (G.fil === 1 ? 'one ' : G.fil + ' ') + SHAPES[G.shape] + (G.fil === 1 ? ' filament' : ' filaments') + (G.fil >= 144 ? ' (microfibre)' : '');
+  var yarn = [G.staple ? 'staple (twist ' + G.twist + ')' : 'continuous filament'];
+  if (G.tex === 'air' && G.loops > .2) yarn.push('air-textured'); if (G.tex === 'crimp' && G.crimp > .5) yarn.push('crimped');
+  if (G.ply >= 2) yarn.push(G.ply + '-ply, ' + (G.plyBal ? 'balanced' : 'snarly'));
+  var wrapped = G.elastane ? 'elastane' : G.partner ? (G.reborn ? G.partner + ', removed by chemistry' : G.partner) : G.stripped ? 'nothing (' + G.stripped + ' stripped off)' : G.bi ? 'nothing: built-in spring' : 'nothing';
   var rows = [
-    ['Fibre', G.pla ? 'PET + PLA splice' : 'PET'],
-    ['Shape', SHAPES[G.shape]],
-    ['Filaments', G.fil === 1 ? 'one (monofilament)' : G.fil >= 144 ? G.fil + ' (microfibre)' : G.fil],
-    ['Form', G.staple ? 'staple, twist ' + G.twist + '/10' : 'continuous filament'],
-    ['Wrapped in', G.elastane ? 'elastane' : G.partner || (G.stripped ? 'nothing (' + G.stripped + ' stripped off)' : G.bi ? 'nothing: built-in spring' : 'nothing')],
-    ['Colour', G.colour ? (G.colour === KU.k ? 'black' : 'yellow') + (G.dye === 'melt' ? ', in the melt' : ', dye bath') : 'undyed'],
+    ['Polymer', G.pla ? 'PET + PLA splice' : 'PET'],
+    ['Fibre', fibre],
+    ['Yarn', yarn.join(' · ')],
+    ['Wrapped in', wrapped],
+    ['Colour', G.colour ? (G.reborn ? 'dye removed by chemistry' : (G.colour === KU.k ? 'black' : 'yellow') + (G.dye === 'melt' ? ', in the melt' : ', dye bath')) : 'undyed'],
     ['Drawn', G.draw > 1.05 ? '×' + G.draw.toFixed(1) : 'not stretched'],
     ['Shed', G.shed + ' fibres'],
+    ['Recycled', G.reborn ? 'unzipped (' + REAGENT[G.reborn] + ')' : G.rounds ? 'melted ' + G.rounds + (G.rounds === 1 ? ' time' : ' times') : 'not yet'],
     ['Promises', G.knots ? G.knots + (G.knots === 1 ? ' knot' : ' knots') : 'none yet'],
     ['Discoveries', NFOUND + ' of ' + NDISC]
   ];
   var dl = $('pass'); dl.innerHTML = '';
   rows.forEach(function (r) { var dt = document.createElement('dt'), dd = document.createElement('dd'); dt.textContent = r[0]; dd.textContent = r[1]; dl.appendChild(dt); dl.appendChild(dd); });
-  var clean = !G.elastane && !G.pla && !G.partner;
+  var clean = !G.elastane && !G.pla && (!G.partner || G.reborn);
   say($('end-say'), clean ? 'Can come back.' : 'Can\'t come back.');
   $('end-p').textContent = clean
-    ? 'One material, so in principle it can go round again. In practice, under 1% of fibre does today.' + (G.colour ? ' Your dye will still have to come out.' : '')
+    ? (G.reborn ? 'Rebuilt from its building blocks, so it can go round again, if a plant exists and its energy is clean.' : 'One material, so in principle it can go round again. In practice, under 1% of fibre does today.' + (G.colour ? ' Your dye will still have to come out.' : ''))
     : G.elastane ? 'The elastane wrapped round it jams the loop. Scroll up to the spring and pull it off.'
-    : G.partner ? 'The ' + G.partner + ' wrapped round it has to be separated first. Scroll up to the recycler and strip it.'
+    : G.partner && !G.reborn ? 'The ' + G.partner + ' wrapped round it has to be separated first. Scroll up: strip it in the recycler, or unzip the chain.'
     : 'PLA in a PET batch spoils it. Scroll up to Spot the PET and try again.';
 }
 
@@ -1520,21 +1844,29 @@ function bumpText(now) {
 
 // What the thread looks like in this exhibit: everything done to it so far.
 function look(f) {
-  var i = f.i;
+  var i = f.i, rb = G.reborn && i >= IDX.unzip;
   return {
     shape: i >= IDX.shape ? G.shape : 'round',
     fil: i >= IDX.count ? G.fil : 1,
+    loops: i >= IDX.texture && G.tex === 'air' ? G.loops : 0,
+    crimp: i >= IDX.texture && G.tex === 'crimp' ? G.crimp : 0,
     staple: i >= IDX.cut && G.staple,
     twist: G.twist,
-    partner: i >= IDX.blend ? G.partner : null,
-    colour: i > IDX.colour ? G.colour : i === IDX.colour ? G.mix : null,
+    ply: i >= IDX.ply ? G.ply : 1,
+    plyDir: G.plyTwist < 0 ? -1 : 1,
+    partner: i >= IDX.blend && !rb ? G.partner : null,
+    colour: rb ? null : i > IDX.colour ? G.colour : i === IDX.colour ? G.mix : null,
+    rounds: i >= IDX.recycle && !rb ? G.rounds : 0,
     fresh: i === IDX.blend ? ease((f.t - f.s.wt) / 1) : 1
   };
 }
-function drawMain(ctx, f, cum, flow) {
-  var c = f.chain, p = c.p, L = look(f), ink = L.colour || inkFor(f.bg), casing = casingFor(ink), n = c.n, i, k;
+function drawMain(ctx, f, cum, flow, over) {
+  var c = f.chain, p = c.p, L = look(f), key;
+  if (over) for (key in over) L[key] = over[key];
+  var ink = L.colour || inkFor(f.bg), casing = casingFor(ink), n = c.n, i, k;
   var w = f.i > IDX.spin ? clamp(7.4 - .6 * (G.draw - 1), 4.8, 7.4) : 7;
   if (L.fil > 1) w += Math.min(4, Math.log(L.fil) * .7);
+  w += 1.8 * L.crimp + L.loops;
   if (f.sc.alpha) ctx.globalAlpha = f.sc.alpha(f);
   var nm = normals(p);
   // natural-fibre sheath, under everything
@@ -1546,14 +1878,20 @@ function drawMain(ctx, f, cum, flow) {
     ctx.stroke();
   }
   strokeP(ctx, p, casing, w + 3.4);
-  if (L.fil <= 1) {
+  if (L.ply >= 2) {
+    // plies wind round each other; the slope shows S or Z
+    var np = L.ply, pw = w * (np === 2 ? .58 : .46), amp = w * .27;
+    for (k = 0; k < np; k++) { (function (k) { var off = offsetBy(p, nm, function (j) { return amp * Math.sin(j * .55 * L.plyDir + k * 2 * Math.PI / np); }); strokeP(ctx, off, casing, pw + 2.4); strokeP(ctx, off, ink, pw); })(k); }
+  } else if (L.fil <= 1) {
     strokeP(ctx, p, ink, w);
     if (L.shape === 'hollow') strokeP(ctx, p, casing, w * .34);
     if (L.shape === 'channel') { strokeP(ctx, offsetBy(p, nm, function () { return w * .22; }), casing, 1.2); strokeP(ctx, offsetBy(p, nm, function () { return -w * .22; }), casing, 1.2); }
   } else {
     var ns = L.fil >= 144 ? 9 : L.fil >= 24 ? 6 : L.fil >= 6 ? 4 : 2, sw = w / ns * 1.15;
-    for (k = 0; k < ns; k++) { (function (k) { var base = (k - (ns - 1) / 2) / ns * w * .92; strokeP(ctx, offsetBy(p, nm, function (j) { return base + Math.sin(j * .33 + k * 1.7) * w * .1; }), ink, sw); })(k); }
+    for (k = 0; k < ns; k++) { (function (k) { var base = (k - (ns - 1) / 2) / ns * w * .92; strokeP(ctx, offsetBy(p, nm, function (j) { return base + Math.sin(j * .33 + k * 1.7) * w * .1 + Math.sin(j * 1.9 + k * 2.3) * w * .2 * L.crimp; }), ink, sw); })(k); }
   }
+  // air-jet loops stand off the surface
+  if (L.loops > 0) { ctx.strokeStyle = ink; ctx.lineWidth = 1.3; for (i = 2; i < n - 2; i += 2) { if (hash(i, 41) > L.loops * .8) continue; var sd0 = hash(i, 42) > .5 ? 1 : -1, lr = 2.4 + hash(i, 43) * 3.6, q0 = p[i]; ctx.beginPath(); ctx.arc(q0.x + nm[i].x * sd0 * (w * .5 + lr * .6), q0.y + nm[i].y * sd0 * (w * .5 + lr * .6), lr, 0, Math.PI * 2); ctx.stroke(); } }
   // spun staple: fibre ends stick out; more twist tucks them in
   if (L.staple) {
     var loose = clamp(1 - L.twist / 11, .12, 1); ctx.strokeStyle = ink; ctx.lineWidth = 1.3; ctx.beginPath();
@@ -1567,11 +1905,13 @@ function drawMain(ctx, f, cum, flow) {
   if (L.shape === 'trilobal') { var fr = Math.floor(f.t * 3); for (i = 3; i < n - 3; i += 5) { if (hash(i, fr) < .78) continue; var tw = .6 + .4 * Math.sin(f.t * 10 + i); star(ctx, p[i].x + nm[i].x * w * .3, p[i].y + nm[i].y * w * .3, 6 * tw, KU.w); star(ctx, p[i].x + nm[i].x * w * .3, p[i].y + nm[i].y * w * .3, 3 * tw, KU.y); } }
   var bi = f.sc.bi || (G.bi && f.i >= IDX.bend);
   if (bi) { strokeP(ctx, offsetBy(p, nm, function () { return w * .28; }), casing, 1.6); }
-  else if (L.fil <= 1 && !L.staple) { ctx.lineCap = 'butt'; smooth(ctx, p); ctx.setLineDash([3, 14]); ctx.lineDashOffset = cum - flow; ctx.strokeStyle = casing; ctx.lineWidth = 2; ctx.stroke(); ctx.setLineDash([]); }
+  else if (L.fil <= 1 && !L.staple && L.ply < 2) { ctx.lineCap = 'butt'; smooth(ctx, p); ctx.setLineDash([3, 14]); ctx.lineDashOffset = cum - flow; ctx.strokeStyle = casing; ctx.lineWidth = 2; ctx.stroke(); ctx.setLineDash([]); }
   var sp = null;
   if (G.pla && f.name === 'spot' && f.s.ans !== null) sp = SCENES.spot.splice(f);
   else if (G.pla && f.i > IDX.spot) sp = [(n * .44) | 0, (n * .56) | 0];
   if (sp) cased(ctx, c, ink, casing, w, [11, 7], sp[0], sp[1]);
+  // every melt breaks links: the chain shows as shorter pieces
+  if (L.rounds > 0) { ctx.strokeStyle = casing; ctx.lineWidth = 2.4; ctx.beginPath(); var stp = Math.max(4, 15 - L.rounds * 3); for (i = 3; i < n - 3; i += stp) { var a1 = p[i], n1 = nm[i]; ctx.moveTo(a1.x - n1.x * w * .62, a1.y - n1.y * w * .62); ctx.lineTo(a1.x + n1.x * w * .62, a1.y + n1.y * w * .62); } ctx.stroke(); }
   if (G.shed > 0 && f.i > IDX.wash) {
     var fray = clamp(G.shed / 300, 0, 1); ctx.strokeStyle = ink; ctx.lineWidth = 1.4; ctx.beginPath();
     for (i = 2; i < n - 2; i += 3) { if (hash(i, 1) > fray) continue; var q3 = p[i], ang = hash(i, 2) * Math.PI * 2, ll = w * .6 + hash(i, 3) * 6; ctx.moveTo(q3.x, q3.y); ctx.lineTo(q3.x + Math.cos(ang) * ll, q3.y + Math.sin(ang) * ll); }
@@ -1592,7 +1932,11 @@ function draw(sy) {
       if (f.sq) drawSquiggle(ctx, f.sq, f.t, sqCol);
       ctx.save();
       if (f.sc.hide) { var hb = f.sc.hide(f); ctx.beginPath(); ctx.rect(0, -10, f.w, hb[0] + 10); ctx.rect(0, hb[1], f.w, f.h - hb[1] + 10); ctx.clip(); }
-      drawMain(ctx, f, cum, flow);
+      var spl = f.sc.split ? f.sc.split(f) : null;
+      if (spl) {
+        ctx.save(); ctx.beginPath(); ctx.rect(0, -10, f.w, spl.y + 10); ctx.clip(); drawMain(ctx, f, cum, flow, spl.above); ctx.restore();
+        ctx.save(); ctx.beginPath(); ctx.rect(0, spl.y, f.w, f.h - spl.y + 10); ctx.clip(); drawMain(ctx, f, cum, flow, spl.below); ctx.restore();
+      } else drawMain(ctx, f, cum, flow);
       ctx.restore();
       if (f.sq && !f.sq.falling) drawSquiggle(ctx, f.sq, f.t, sqCol, function (i) { return Math.cos(i * .75 + f.t * 3) > 0; });
       if (f.sc.front) f.sc.front(ctx, f);

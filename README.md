@@ -2,4 +2,4 @@
 
 | Project | Branch | Status |
 | --- | --- | --- |
-| [The Thread and the Loop](long-chain/) — FN4005 interactive vertical scroll piece on polyester, recycling and stretch | `claude/trending-motion-graphics-4e49gm` | v5: the thread is the controller |
+| [The Thread and the Loop](long-chain/) — FN4005 interactive vertical fibre lab on polyester, recycling and fibre form | `claude/trending-motion-graphics-4e49gm` | v6: discovery-led exhibits |

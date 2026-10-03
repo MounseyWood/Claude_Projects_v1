@@ -1,7 +1,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>The Thread and the Loop</title>
 <style>
-/* Layout: a phone-width vertical feed of full-screen frames that snap like a social feed. One Verlet thread runs through every frame and is the controller: you pull it, scrub it, fork it, knot it, and it keeps what you do. Text blocks are solid objects the thread cannot cross. */
+/* Layout: a phone-width vertical feed of full-screen exhibits that snap like a social feed. One Verlet thread runs through every exhibit and is the controller: you pull it, cut it, shape it, wrap it, dye it, and it keeps what you do. Facts arrive as discovery cards. Text blocks are solid objects the thread cannot cross. */
 :root {
   --k: #1d1d1b;   /* KU black */
   --b: #009cde;   /* KU blue: lines and fills only */
@@ -20,8 +20,7 @@ body { margin: 0; padding-inline: 0; background: #121211; color: var(--k); font-
 #bar { position: fixed; top: 0; height: 4px; background: var(--y); z-index: 5; width: 0; pointer-events: none; }
 .sr { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
-.frame { position: relative; height: 100svh; min-height: 620px; scroll-snap-align: start; overflow: hidden; transition: background-color .45s; }
-.frame.long { height: auto; min-height: 100svh; overflow: visible; }
+.frame { position: relative; height: 100svh; min-height: 640px; scroll-snap-align: start; overflow: hidden; transition: background-color .45s; }
 .bg-white { background-color: var(--w); color: var(--k); }
 .bg-black { background-color: var(--k); color: var(--w); }
 .bg-blue { background-color: var(--b); color: var(--k); }
@@ -30,37 +29,60 @@ body { margin: 0; padding-inline: 0; background: #121211; color: var(--k); font-
 .on-dark { color: var(--w); }
 
 .copy { position: absolute; z-index: 2; max-width: 72%; }
-.tl { top: 6%; left: 6%; }
-.tr { top: 6%; right: 6%; }
+.tl { top: 5.5%; left: 6%; }
+.tr { top: 5.5%; right: 6%; }
 .bl { bottom: 6%; left: 6%; }
-.frame h1, .frame h2 { margin: 0 0 14px; font-weight: 700; text-transform: uppercase; letter-spacing: -0.02em; line-height: 0.9; text-wrap: balance; }
+.br { bottom: 6%; right: 6%; }
+.kicker { font-size: 13px !important; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; margin: 0 0 10px !important; opacity: .8; }
+.frame h1, .frame h2 { margin: 0 0 12px; font-weight: 700; text-transform: uppercase; letter-spacing: -0.02em; line-height: 0.9; text-wrap: balance; }
 .frame h2 { font-size: clamp(34px, 10.4vw, 50px); overflow-wrap: break-word; }
-.tugcol h2 { font-size: clamp(30px, 8.6vw, 40px); }
-.frame p { margin: 0 0 10px; font-size: 19px; line-height: 1.32; }
-.hint { font-size: 15px !important; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; margin-top: 14px !important; }
+.frame p { margin: 0 0 10px; font-size: 18px; line-height: 1.32; }
+.hint { font-size: 14px !important; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; margin-top: 12px !important; }
 .mark { background: var(--y); color: var(--k); padding: 0 0.12em; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
 .pill { display: inline-block; background: var(--w); color: var(--k); font-weight: 700; font-size: 14px; padding: 6px 12px; border-radius: 999px; margin-bottom: 18px; }
 .say { font-size: clamp(30px, 9vw, 42px) !important; font-weight: 700; text-transform: uppercase; line-height: 0.95 !important; letter-spacing: -0.02em; margin: 0 0 10px !important; }
-.num { font-size: clamp(30px, 9vw, 40px); font-weight: 700; font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
+.num { font-size: clamp(28px, 8.6vw, 38px); font-weight: 700; font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
 .big { font-size: clamp(76px, 25vw, 120px); font-weight: 700; line-height: 0.82; letter-spacing: -0.04em; margin: 0 0 10px; font-variant-numeric: tabular-nums; }
 .popin { animation: popin .5s cubic-bezier(.2, 1.5, .4, 1) both; }
 @keyframes popin { from { opacity: 0; transform: scale(.7) rotate(-3deg); } to { opacity: 1; transform: none; } }
+
+/* Discovery cards */
+.card { position: absolute; z-index: 3; max-width: 74%; min-height: 110px; background: var(--y); color: var(--k); padding: 12px 16px 12px; border-radius: 6px; }
+.bg-yellow .card { background: var(--k); color: var(--w); }
+.card .cl { font-size: 12px !important; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; margin: 0 0 6px !important; }
+.card .ct { font-size: 17px !important; line-height: 1.3 !important; margin: 0 !important; }
+.card.reserve { visibility: hidden; }
+.card.show { animation: cardin .55s cubic-bezier(.2, 1.4, .4, 1) both; }
+@keyframes cardin { from { opacity: 0; transform: translateY(22px) scale(.92); } to { opacity: 1; transform: none; } }
 
 /* Cover */
 .cover .title { top: 15%; left: 50%; transform: translateX(-50%); width: 74%; max-width: 74%; text-align: center; }
 .cover h1 { font-size: clamp(52px, 15.5vw, 76px); }
 
 /* Controls */
-.btn { font: 700 17px/1 var(--font); border: 0; border-radius: 999px; padding: 15px 22px; min-height: 50px; cursor: pointer; background: var(--k); color: var(--w); margin-top: 6px; }
+.row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.btn, .opt { font: 700 16px/1.1 var(--font); border: 0; border-radius: 999px; padding: 13px 18px; min-height: 48px; cursor: pointer; background: var(--k); color: var(--w); }
+.opt { background: transparent; color: inherit; box-shadow: inset 0 0 0 2.5px currentColor; display: inline-flex; align-items: center; gap: 8px; padding: 9px 14px 9px 10px; min-height: 46px; font-size: 15px; }
+.opt[aria-pressed="true"] { background: var(--k); color: var(--w); box-shadow: none; }
 .bg-black .btn, .on-dark .btn { background: var(--w); color: var(--k); }
-.btn:focus-visible, .chip-btn:focus-visible, .pledge:focus-visible, .hit:focus-visible, .temp:focus-visible, .mbtn:focus-visible { outline: 3px solid var(--y); outline-offset: 3px; }
-.bg-yellow .btn:focus-visible { outline-color: var(--k); }
+.bg-black .opt[aria-pressed="true"], .bg-blue .opt[aria-pressed="true"] { background: var(--w); color: var(--k); }
+.opt svg { width: 26px; height: 26px; flex: none; }
+.opt svg .s { fill: currentColor; } .opt svg .h { fill: var(--w); }
+.opt[aria-pressed="true"] svg .h { fill: var(--k); }
+.sw { width: 22px; height: 22px; border-radius: 50%; flex: none; box-shadow: inset 0 0 0 2px currentColor; }
+.btn:focus-visible, .opt:focus-visible, .chip-btn:focus-visible, .pledge:focus-visible, .hit:focus-visible, .scrub:focus-visible, .mbtn:focus-visible { outline: 3px solid var(--y); outline-offset: 3px; }
+.bg-yellow .btn:focus-visible, .bg-yellow .opt:focus-visible { outline-color: var(--k); }
 .hit { position: absolute; z-index: 3; background: transparent; border: 0; padding: 0; cursor: pointer; border-radius: 24px; }
 
+/* A number you drag up and down */
+.scrub { position: absolute; z-index: 2; font-size: clamp(54px, 16vw, 74px); font-weight: 700; letter-spacing: -0.04em; line-height: 1; cursor: ns-resize; touch-action: none; user-select: none; -webkit-user-select: none; padding: 4px 0; font-variant-numeric: tabular-nums; }
+.scrub small { display: block; font-size: 14px; letter-spacing: .08em; text-transform: uppercase; margin-top: 4px; }
+.scrub.inline { position: static; display: inline-block; font-size: clamp(44px, 13vw, 60px); margin-top: 6px; }
+
 /* Tug of war */
-.tugwrap { position: absolute; z-index: 2; top: 6%; left: 6%; right: 6%; display: grid; grid-template-columns: 36.4% 47.7%; column-gap: 15.9%; }
+.tugwrap { position: absolute; z-index: 2; top: 5.5%; left: 6%; right: 6%; display: grid; grid-template-columns: 36.4% 47.7%; column-gap: 15.9%; }
 .tugcol { display: flex; flex-direction: column; align-items: flex-start; gap: 7px; }
-.tugcol h2 { margin-bottom: 8px !important; }
+.tugcol h2 { font-size: clamp(30px, 8.6vw, 40px) !important; margin-bottom: 8px !important; }
 .chip-btn { font: 700 16px/1.15 var(--font); text-align: left; border-radius: 999px; padding: 9px 14px; min-height: 42px; cursor: pointer; background: transparent; }
 .pros .chip-btn { color: var(--k); border: 2.5px solid var(--k); }
 .pros .chip-btn[aria-pressed="true"] { background: var(--k); color: var(--w); }
@@ -72,36 +94,34 @@ body { margin: 0; padding-inline: 0; background: #121211; color: var(--k); font-
 .mbtn:active { transform: scale(.94); }
 .disp { position: absolute; z-index: 3; background: var(--y); color: var(--k); font: 700 16px/1 ui-monospace, Menlo, Consolas, monospace; white-space: nowrap; display: flex; align-items: center; padding: 0 10px; border-radius: 4px; font-variant-numeric: tabular-nums; }
 
-/* Heat */
-.temp { position: absolute; z-index: 2; left: 6%; top: 50%; font-size: clamp(52px, 15vw, 70px); font-weight: 700; letter-spacing: -0.04em; line-height: 1; cursor: ns-resize; touch-action: none; user-select: none; -webkit-user-select: none; padding: 6px 0; font-variant-numeric: tabular-nums; }
-.temp small { display: block; font-size: 15px; letter-spacing: .05em; text-transform: uppercase; }
-
 /* Promises */
 .pledges { position: absolute; z-index: 2; left: 6%; width: 64%; display: flex; flex-direction: column; gap: 14px; align-items: flex-start; }
 .pledge { font: 700 19px/1.15 var(--font); text-align: left; border: 2.5px solid var(--k); border-radius: 999px; padding: 12px 18px; background: transparent; color: var(--k); cursor: pointer; min-height: 50px; }
 .pledge[aria-pressed="true"] { background: var(--k); color: var(--w); }
-.bg-yellow .pledge[aria-pressed="true"] { background: var(--k); color: var(--y); }
+.bg-yellow .pledge[aria-pressed="true"] { color: var(--y); }
 
 /* End: a woven care label */
-.endwrap { position: absolute; z-index: 2; top: 7%; bottom: 6%; left: 6%; right: 6%; display: flex; flex-direction: column; justify-content: space-between; pointer-events: none; }
+.endwrap { position: absolute; z-index: 2; top: 5%; bottom: 4.5%; left: 6%; right: 6%; display: flex; flex-direction: column; justify-content: space-between; pointer-events: none; }
 .endwrap > * { pointer-events: auto; }
-.endq { align-self: center; width: 74%; text-align: center; margin-top: 7%; }
-.endq h2 { font-size: clamp(24px, 7vw, 32px) !important; line-height: 1 !important; margin: 0 !important; }
-.label { align-self: flex-end; width: 82%; background: var(--w); color: var(--k); padding: 18px 20px 16px; outline: 2px dashed var(--k); outline-offset: -8px; }
-.label .lt { font-size: 14px !important; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; margin: 0 0 8px !important; }
-.label dl { margin: 0 0 12px; display: grid; grid-template-columns: auto 1fr; gap: 3px 12px; font-size: 17px; line-height: 1.25; }
+.endq { align-self: center; width: 70%; text-align: center; margin-top: 4%; }
+.endq h2 { font-size: clamp(22px, 6.4vw, 30px) !important; line-height: 1 !important; margin: 0 !important; }
+.label { align-self: flex-end; width: 86%; background: var(--w); color: var(--k); padding: 16px 18px 14px; outline: 2px dashed var(--k); outline-offset: -8px; }
+.label .lt { font-size: 13px !important; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; margin: 0 0 6px !important; }
+.label dl { margin: 0 0 10px; display: grid; grid-template-columns: auto 1fr; gap: 2px 12px; font-size: 15px; line-height: 1.22; }
 .label dt { color: var(--g); }
 .label dd { margin: 0; font-weight: 700; }
-.label .say { font-size: clamp(26px, 7.6vw, 34px) !important; }
-.label p { font-size: 16px !important; }
+.label .say { font-size: clamp(24px, 7vw, 30px) !important; }
+.label p { font-size: 15px !important; }
+.label .btn { font-size: 14px; padding: 10px 14px; min-height: 42px; }
 
-/* Notes frame */
-.notes-inner { position: relative; z-index: 2; padding: 64px 24px 80px 56px; display: grid; gap: 36px; }
-.notes-inner h2 { font-size: 36px; line-height: 0.95; text-transform: uppercase; margin: 0; }
-.notes-inner h3 { font-size: 19px; margin: 0 0 8px; text-transform: uppercase; }
-.notes-inner p, .notes-inner li { font-size: 17px; line-height: 1.45; }
-.notes-inner ul, .notes-inner ol { margin: 0; padding-left: 1.15em; display: grid; gap: 8px; }
-.notes-inner a { color: inherit; text-decoration-color: var(--b); text-decoration-thickness: 2px; text-underline-offset: 3px; overflow-wrap: anywhere; }
+/* Tutor sheet */
+.sheet { position: fixed; z-index: 20; top: 0; bottom: 0; overflow-y: auto; background: var(--w); color: var(--k); padding: 24px 24px 64px; overscroll-behavior: contain; }
+.sheet h2 { font-size: 34px; line-height: .95; text-transform: uppercase; margin: 8px 0 18px; }
+.sheet h3 { font-size: 18px; margin: 26px 0 8px; text-transform: uppercase; }
+.sheet p, .sheet li { font-size: 16px; line-height: 1.45; }
+.sheet ul, .sheet ol { margin: 0; padding-left: 1.15em; display: grid; gap: 7px; }
+.sheet a { color: inherit; text-decoration-color: var(--b); text-decoration-thickness: 2px; text-underline-offset: 3px; overflow-wrap: anywhere; }
+.sheet .close { position: sticky; top: 0; float: right; }
 .chip { display: inline-block; font-size: 12px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; padding: 1px 7px; border-radius: 999px; border: 2px solid currentColor; }
 .chip.s { color: #2d6a36; } .chip.m { color: #7a5600; } .chip.w { color: #a22a1c; }
 .sig { font-size: 15px; color: var(--g); }
@@ -111,10 +131,21 @@ body { margin: 0; padding-inline: 0; background: #121211; color: var(--k); font-
 @media (prefers-reduced-motion: no-preference) {
   .js .frame:not(.seen) .w { opacity: 0; transform: translateY(0.45em) scale(0.55) rotate(-9deg); }
   .frame.seen .w { animation: pop .6s cubic-bezier(.2, 1.55, .4, 1) both; animation-delay: calc(var(--i) * 65ms); }
-  .js .frame:not(.seen) .copy p, .js .frame:not(.seen) .btn, .js .frame:not(.seen) .chip-btn, .js .frame:not(.seen) .pledge, .js .frame:not(.seen) .pill, .js .frame:not(.seen) .temp { opacity: 0; transform: translateY(14px); }
-  .frame.seen .copy p, .frame.seen .btn, .frame.seen .chip-btn, .frame.seen .pledge, .frame.seen .pill, .frame.seen .temp { transition: opacity .5s .35s, transform .6s .35s cubic-bezier(.2, 1.4, .4, 1); }
+  .js .frame:not(.seen) .copy > p, .js .frame:not(.seen) .row, .js .frame:not(.seen) .btn, .js .frame:not(.seen) .scrub, .js .frame:not(.seen) .pledge, .js .frame:not(.seen) .chip-btn { opacity: 0; transform: translateY(14px); }
+  .frame.seen .copy > p, .frame.seen .row, .frame.seen .btn, .frame.seen .scrub, .frame.seen .pledge, .frame.seen .chip-btn { transition: opacity .5s .35s, transform .6s .35s cubic-bezier(.2, 1.4, .4, 1); }
 }
 @keyframes pop { from { opacity: 0; transform: translateY(0.45em) scale(0.55) rotate(-9deg); } to { opacity: 1; transform: none; } }
+
+/* Short screens: tighter type so the exhibits keep their room */
+@media (max-height: 760px) {
+  .frame h2 { font-size: clamp(30px, 9vw, 42px); margin-bottom: 8px; }
+  .frame p { font-size: 16px; line-height: 1.28; }
+  .kicker { margin-bottom: 6px !important; }
+  .btn, .opt { min-height: 44px; padding-top: 10px; padding-bottom: 10px; }
+  .card { min-height: 96px; padding: 10px 14px; }
+  .card .ct { font-size: 15px !important; }
+  .scrub { font-size: clamp(44px, 13vw, 58px); }
+}
 
 /* Desktop surround */
 .aside { display: none; }
@@ -128,7 +159,7 @@ body { margin: 0; padding-inline: 0; background: #121211; color: var(--k); font-
 <div class="aside" aria-hidden="true">
   <b>The Thread and the Loop</b>
   <p>Made for phones. Open it on yours, or scroll here.</p>
-  <p>The thread is the controller. Pull it, scrub it, fork it, knot it. It keeps what you do.</p>
+  <p>Eighteen exhibits. One thread. Pull it, cut it, shape it, wrap it, dye it. It keeps what you do.</p>
 </div>
 
 <div id="bar" aria-hidden="true"></div>
@@ -140,39 +171,16 @@ body { margin: 0; padding-inline: 0; background: #121211; color: var(--k); font-
   <div class="copy title" data-avoid="title">
     <span class="pill">Digital Practice / FN4005</span>
     <h1>The Thread &amp; the <span class="mark">Loop</span></h1>
-    <p>Polyester, stretch, and the way back.</p>
+    <p>An interactive fibre lab. Make a polyester thread, then find out if it can come back.</p>
   </div>
   <div class="copy bl" data-avoid="bottom" style="max-width:50%">
     <p class="hint">Scroll down.<br>Pull the thread.<br>It remembers.</p>
   </div>
 </section>
 
-<section class="frame bg-white" data-scene="oil" aria-label="What polyester is">
-  <div class="copy tl on-dark" data-avoid="top" style="max-width:64%">
-    <h2>It begins as oil</h2>
-    <p>Two chemicals from oil link up, again and again, into one long chain: <b>PET</b>.</p>
-    <p class="hint">Tap to link them · <span id="oil-n">0</span></p>
-  </div>
-</section>
-
-<section class="frame bg-blue" data-scene="y1941" aria-label="Invented in 1941">
-  <div class="copy tr" data-avoid="top">
-    <h2>Lancashire, 1941</h2>
-    <p>John Whinfield and James Dickson invented it at the Calico Printers' Association. Britain called it Terylene. America, Dacron.</p>
-  </div>
-</section>
-
-<section class="frame bg-white" data-scene="spin" aria-label="Melt spinning">
-  <div class="copy tl" data-avoid="top">
-    <h2>Melt, push, cool, stretch</h2>
-    <p>Melted PET is pushed through a spinneret, then stretched. Stretching lines the chains up and makes the fibre strong.</p>
-    <p class="hint">Pull the thread down <span class="num" id="spin-out">×1.0</span></p>
-    <label class="sr">Stretch the fibre <input type="range" id="spin-r" min="1" max="5" step="0.1" value="1"></label>
-  </div>
-</section>
-
 <section class="frame bg-yellow" data-scene="guess" aria-label="How much fibre is polyester">
   <div class="copy tl" data-avoid="top">
+    <p class="kicker">Warm-up</p>
     <div id="guess-q">
       <h2>Guess first</h2>
       <p>Of all the fibre the world makes, how much is polyester?</p>
@@ -186,6 +194,105 @@ body { margin: 0; padding-inline: 0; background: #121211; color: var(--k); font-
       <p id="guess-you"></p>
     </div>
   </div>
+</section>
+
+<section class="frame bg-white" data-scene="oil" aria-label="Make the polymer">
+  <div class="copy tl on-dark" data-avoid="top" style="max-width:64%">
+    <p class="kicker">Make · 1 of 2</p>
+    <h2>Link the chain</h2>
+    <p>Two chemicals from oil link up, again and again, into one long chain: <b>PET</b>.</p>
+    <p class="hint">Tap to link them · <span id="oil-n">0</span></p>
+  </div>
+  <div class="card bl reserve" data-avoid="card"><p class="cl"></p><p class="ct"></p></div>
+</section>
+
+<section class="frame bg-white" data-scene="spin" aria-label="Melt spinning">
+  <div class="copy tl" data-avoid="top">
+    <p class="kicker">Make · 2 of 2</p>
+    <h2>Melt, push, stretch</h2>
+    <p>Melted PET is pushed through a spinneret, cooled, then stretched.</p>
+    <p class="hint">Pull the thread down <span class="num" id="spin-out">×1.0</span></p>
+    <label class="sr">Stretch the fibre <input type="range" id="spin-r" min="1" max="5" step="0.1" value="1"></label>
+  </div>
+  <div class="card bl reserve" data-avoid="card"><p class="cl"></p><p class="ct"></p></div>
+</section>
+
+<section class="frame bg-white" data-scene="shape" aria-label="Pick a nozzle">
+  <div class="copy tl" data-avoid="top">
+    <p class="kicker">Shape · 1 of 3</p>
+    <h2>Pick a nozzle</h2>
+    <p>The spinneret's holes set the fibre's cross-section. Pick one, then test it.</p>
+    <div class="row" role="group" aria-label="Nozzle shapes" id="nozzles">
+      <button class="opt" type="button" data-shape="round" aria-pressed="true">Round</button>
+      <button class="opt" type="button" data-shape="trilobal" aria-pressed="false">Trilobal</button>
+      <button class="opt" type="button" data-shape="hollow" aria-pressed="false">Hollow</button>
+      <button class="opt" type="button" data-shape="channel" aria-pressed="false">Channelled</button>
+    </div>
+  </div>
+  <div class="copy" data-avoid="tests" id="tests" style="left:6%">
+    <div class="row" role="group" aria-label="Tests">
+      <button class="btn" type="button" data-test="light">Shine</button>
+      <button class="btn" type="button" data-test="cold">Chill</button>
+      <button class="btn" type="button" data-test="sweat">Sweat</button>
+    </div>
+  </div>
+  <div class="card bl reserve" data-avoid="card"><p class="cl"></p><p class="ct"></p></div>
+</section>
+
+<section class="frame bg-white" data-scene="count" aria-label="How many filaments">
+  <div class="copy tl" data-avoid="top">
+    <p class="kicker">Shape · 2 of 3</p>
+    <h2>One strand or hundreds?</h2>
+    <p>A thread can be one thick filament, or a bundle of fine ones.</p>
+    <p class="hint">Drag the number up</p>
+  </div>
+  <div class="scrub" data-avoid="scrub" id="fil-n" role="slider" tabindex="0" aria-label="Filaments in the thread" aria-valuemin="1" aria-valuemax="300" aria-valuenow="1"><span class="sv">1</span><small>filament</small></div>
+  <div class="card bl reserve" data-avoid="card"><p class="cl"></p><p class="ct"></p></div>
+</section>
+
+<section class="frame bg-black" data-scene="cut" aria-label="Cut it and spin it">
+  <div class="copy tl" data-avoid="top">
+    <p class="kicker">Shape · 3 of 3</p>
+    <h2>Cut it, spin it</h2>
+    <p id="cut-p">Filament runs unbroken. Staple is cut short and spun, like cotton.</p>
+    <p class="hint" id="cut-hint">Swipe across the thread to cut it</p>
+    <button class="sr" type="button" id="cut-key">Cut the thread into staple</button>
+    <div class="scrub inline" id="twist" role="slider" tabindex="0" aria-label="Twist" aria-valuemin="0" aria-valuemax="10" aria-valuenow="0" hidden><span class="sv">0</span><small>twist · drag up</small></div>
+  </div>
+  <div class="card bl reserve" data-avoid="card"><p class="cl"></p><p class="ct"></p></div>
+</section>
+
+<section class="frame bg-blue" data-scene="blend" aria-label="Wrap it in another fibre">
+  <div class="copy tl" data-avoid="top">
+    <p class="kicker">Combine · 1 of 2</p>
+    <h2>Wrap it</h2>
+    <p>Pick a partner fibre to wrap round your polyester core.</p>
+    <div class="row" role="group" aria-label="Partner fibre" id="partners">
+      <button class="opt" type="button" data-p="cotton" aria-pressed="false">Cotton</button>
+      <button class="opt" type="button" data-p="wool" aria-pressed="false">Wool</button>
+      <button class="opt" type="button" data-p="elastane" aria-pressed="false">Elastane</button>
+      <button class="opt" type="button" data-p="none" aria-pressed="true">None</button>
+    </div>
+  </div>
+  <div class="card bl reserve" data-avoid="card"><p class="cl"></p><p class="ct"></p></div>
+</section>
+
+<section class="frame bg-white" data-scene="colour" aria-label="Colour it">
+  <div class="copy tl" data-avoid="top">
+    <p class="kicker">Combine · 2 of 2</p>
+    <h2>Colour it</h2>
+    <p>Polyester shrugs off water, so ordinary dyes won't take. Pick a colour, then a method.</p>
+    <div class="row" role="group" aria-label="Colour" id="swatches">
+      <button class="opt" type="button" data-c="yellow" aria-pressed="true"><span class="sw" style="background:var(--y)"></span>Yellow</button>
+      <button class="opt" type="button" data-c="black" aria-pressed="false"><span class="sw" style="background:var(--k)"></span>Black</button>
+    </div>
+    <div class="row" role="group" aria-label="Method" id="methods">
+      <button class="btn" type="button" data-m="bath">Dye bath</button>
+      <button class="btn" type="button" data-m="melt">Into the melt</button>
+    </div>
+  </div>
+  <div class="scrub" data-avoid="temp" id="dye-t" role="slider" tabindex="0" aria-label="Dye bath temperature" aria-valuemin="20" aria-valuemax="140" aria-valuenow="60" hidden><span class="sv">60°C</span><small>bath · drag up</small></div>
+  <div class="card bl reserve" data-avoid="card"><p class="cl"></p><p class="ct"></p></div>
 </section>
 
 <section class="frame split" data-scene="tug" aria-label="For and against">
@@ -215,34 +322,42 @@ body { margin: 0; padding-inline: 0; background: #121211; color: var(--k); font-
 
 <section class="frame bg-white" data-scene="wash" aria-label="Microfibres">
   <div class="copy tl" data-avoid="top">
-    <h2>It sheds</h2>
-    <p id="wash-p">Every wash breaks off tiny fibres. Rub the thread, or press Wash.</p>
+    <p class="kicker">Wear</p>
+    <h2>Wash it</h2>
+    <p id="wash-p">Every wash breaks off tiny fibres. Press Wash, or rub the thread.</p>
   </div>
   <div class="disp" data-avoid="wdisp" id="wash-n" aria-live="polite">0 fibres</div>
   <button class="mbtn" type="button" data-avoid="wbtn" id="wash-go">Wash</button>
+  <div class="card br reserve" data-avoid="card"><p class="cl"></p><p class="ct"></p></div>
 </section>
 
 <section class="frame bg-blue" data-scene="bottle" aria-label="Recycled polyester">
   <div class="copy tr" data-avoid="top">
+    <p class="kicker">Return · 1 of 5</p>
     <h2 id="bot-h">Recycled polyester?</h2>
-    <p id="bot-p">Most recycled polyester starts life as a plastic drinks bottle, not old clothes.</p>
-    <button class="btn" type="button" id="bot-go">Make a shirt</button>
+    <p id="bot-p">Tap the shape to see where most recycled polyester comes from.</p>
+    <button class="btn" type="button" id="bot-go">Next step</button>
   </div>
+  <div class="card br reserve" data-avoid="card"><p class="cl"></p><p class="ct"></p></div>
 </section>
 
-<section class="frame bg-white" data-scene="stretch" aria-label="Elastane blocks recycling">
+<section class="frame bg-white" data-scene="recycle" aria-label="Feed the recycler">
   <div class="copy tr" data-avoid="top">
-    <h2>Add stretch</h2>
-    <p class="say" id="st-say" hidden></p>
-    <p id="st-p">Elastane (spandex) gives clothes their stretch. It's polyurethane, not polyester.</p>
-    <p class="hint" id="st-hint">Tap the coil to add it. Tap the ring to recycle.</p>
+    <p class="kicker">Return · 2 of 5</p>
+    <h2>Feed the recycler</h2>
+    <p class="say" id="rc-say" hidden></p>
+    <p id="rc-p">Your thread is about to go round. Predict first: will it?</p>
+    <p class="hint" id="rc-hint">Tap the ring</p>
+    <button class="btn" type="button" id="rc-strip" hidden>Strip the partner fibre off</button>
   </div>
-  <button class="hit" type="button" id="st-coil" aria-label="Add or remove elastane"></button>
-  <button class="hit" type="button" id="st-ring" aria-label="Recycle the thread"></button>
+  <button class="hit" type="button" id="rc-coil" aria-label="Add elastane"></button>
+  <button class="hit" type="button" id="rc-ring" aria-label="Recycle the thread"></button>
+  <div class="card bl reserve" data-avoid="card"><p class="cl"></p><p class="ct"></p></div>
 </section>
 
 <section class="frame bg-yellow" data-scene="spot" aria-label="Spot the PET">
   <div class="copy tl" data-avoid="top">
+    <p class="kicker">Return · 3 of 5</p>
     <h2>Spot the PET</h2>
     <p class="say" id="spot-say" hidden></p>
     <p id="spot-p">Your thread forks. One strand is PET. The other is PLA, a polyester made from plants. Tap the PET.</p>
@@ -250,42 +365,36 @@ body { margin: 0; padding-inline: 0; background: #121211; color: var(--k); font-
   </div>
   <button class="hit" type="button" id="spot-a" aria-label="Choose the left strand"></button>
   <button class="hit" type="button" id="spot-b" aria-label="Choose the right strand"></button>
+  <div class="card bl reserve" data-avoid="card"><p class="cl"></p><p class="ct"></p></div>
 </section>
 
 <section class="frame bg-black" data-scene="bend" aria-label="Stretch without elastane">
   <div class="copy tl" data-avoid="top">
+    <p class="kicker">Return · 4 of 5</p>
     <h2>Stretch without elastane</h2>
-    <p>Two polyesters in one filament shrink at different rates, so it curls into a spring. The maker says it recycles with ordinary polyester: ask for independent evidence.</p>
+    <p>Two polyesters in one filament shrink differently, so it curls into a spring.</p>
     <p class="hint">Pull the spring <span class="num" id="bend-n">+0%</span></p>
     <button class="btn" type="button" id="bend-swap" hidden>Pull off the elastane</button>
   </div>
+  <div class="card bl reserve" data-avoid="card"><p class="cl"></p><p class="ct"></p></div>
 </section>
 
 <section class="frame bg-white" data-scene="heat" aria-label="PLA and heat">
   <div class="copy tl" data-avoid="top">
+    <p class="kicker">Return · 5 of 5</p>
     <h2>Turn up the heat</h2>
-    <p>Your thread is two plies: PET, and PLA made from plant sugars. Which melts first?</p>
+    <p>Two plies: PET, and PLA made from plant sugars. Which melts first?</p>
     <p class="hint">Drag the number up</p>
   </div>
-  <div class="temp" data-avoid="temp" id="heat-n" role="slider" tabindex="0" aria-label="Heat" aria-valuemin="20" aria-valuemax="260" aria-valuenow="120">120°C<small>heat</small></div>
-  <div class="copy bl" data-avoid="bottom">
-    <p class="say" id="heat-say">Both plies hold</p>
-  </div>
-</section>
-
-<section class="frame bg-blue" data-scene="rubber" aria-label="All-polyester rubber">
-  <div class="copy tl" data-avoid="top">
-    <h2>In the lab</h2>
-    <p id="rub-p">Chemists have made a rubber entirely from polyesters, and spliced it into your thread.</p>
-    <p class="hint">Pull the black block down <span class="num" id="rub-out">1.0×</span></p>
-    <label class="sr">Stretch the rubber <input type="range" id="rub-r" min="1" max="12" step="0.1" value="1"></label>
-  </div>
+  <div class="scrub" data-avoid="temp" id="heat-n" role="slider" tabindex="0" aria-label="Heat" aria-valuemin="20" aria-valuemax="260" aria-valuenow="120"><span class="sv">120°C</span><small id="heat-cap">both plies hold</small></div>
+  <div class="card bl reserve" data-avoid="card"><p class="cl"></p><p class="ct"></p></div>
 </section>
 
 <section class="frame bg-white" data-scene="knots" aria-label="Make a promise">
   <div class="copy tl" data-avoid="top">
-    <h2>Make a promise</h2>
-    <p>New EU law (2025) makes brands pay to collect and sort used textiles. Tap a promise to tie a knot in your thread.</p>
+    <p class="kicker">Promise</p>
+    <h2>Tie a knot</h2>
+    <p>New EU law (2025) makes brands pay to collect and sort used textiles. Tap a promise to knot it into your thread.</p>
   </div>
   <div class="pledges" data-avoid="pledges" role="group" aria-label="Promises">
     <button class="pledge" type="button" aria-pressed="false">Read the label</button>
@@ -299,93 +408,93 @@ body { margin: 0; padding-inline: 0; background: #121211; color: var(--k); font-
   <div class="endwrap">
     <div class="endq" data-avoid="q"><h2>What would you design if every garment had to come back?</h2></div>
     <div class="label" data-avoid="bottom">
-      <p class="lt">Your thread</p>
+      <p class="lt">Your thread · care label</p>
       <dl id="pass"></dl>
       <p class="say" id="end-say">…</p>
       <p id="end-p"></p>
-    </div>
-  </div>
-</section>
-
-<section class="frame long bg-white" data-scene="notes" aria-label="Notes and sources">
-  <div class="notes-inner">
-    <div>
-      <h2>Notes and sources</h2>
-      <p class="sig">For tutors, and anyone who wants to check the numbers.</p>
-    </div>
-    <div>
-      <h3>By the end, students can</h3>
-      <ol>
-        <li>Say what polyester is: PET, mostly from oil, melt-spun into fibre.</li>
-        <li>Weigh its pros and cons for a particular garment.</li>
-        <li>Explain why blends, especially with elastane, block recycling, and what "mono-material" means.</li>
-        <li>Describe two routes to stretch without elastane, and ask what evidence backs each claim.</li>
-      </ol>
-    </div>
-    <div>
-      <h3>How it teaches</h3>
-      <ul>
-        <li><b>The thread is the controller.</b> Students pull it to draw the fibre, drag it across the grid to guess, fork it, melt it, stretch it and knot it. The idea and the action are the same thing.</li>
-        <li><b>Predict, then test.</b> Students commit before they see: the 59% guess, spot the PET, will it recycle, which ply melts first.</li>
-        <li><b>Consequences carry forward.</b> The thread keeps what you do: how far it was drawn, the fraying, any elastane, any PLA, your knots. The care label at the end reads it back.</li>
-        <li><b>Weigh, don't rank.</b> The tug-of-war has no right answer. It depends on the garment, which is the seminar.</li>
-        <li><b>Evidence is labelled.</b> Every claim on screen has a source and a confidence rating below.</li>
-      </ul>
-    </div>
-    <div>
-      <h3>Seminar questions</h3>
-      <ol>
-        <li>Your leggings say "78% recycled polyester, 22% elastane". Where can they go at the end of their life? What would you need to find out?</li>
-        <li>Play the tug-of-war for a raincoat, a T-shirt and a swimsuit. Why does the knot move differently?</li>
-        <li>PLA composts only in industrial facilities. Is that a real benefit for a UK wardrobe?</li>
-        <li>A brand says its stretch fibre is "recyclable". What evidence would you ask for, and from whom?</li>
-        <li>Redesign one stretch garment you own as a mono-material. What do you lose? What do you gain?</li>
-      </ol>
-    </div>
-    <div>
-      <h3>How sure are we?</h3>
-      <ul>
-        <li><span class="chip s">Strong</span> Polyester was 59% of fibre in 2024; 88% fossil-based; under 1% of fibre from recycled textiles [1].</li>
-        <li><span class="chip s">Strong</span> Invented 1941 by Whinfield and Dickson [2][3].</li>
-        <li><span class="chip m">Moderate</span> Less water than cotton: the direction is agreed, the size varies by study [4].</li>
-        <li><span class="chip m">Moderate</span> 6,000,000+ microfibres from one 5 kg wash: one lab study [5].</li>
-        <li><span class="chip m">Moderate</span> Elastane in ~80% of discarded US clothes: one estimate [6].</li>
-        <li><span class="chip m">Moderate</span> 0.1% PLA spoils PET: bottle recycling, 2009 [7].</li>
-        <li><span class="chip w">Weak</span> Two-polyester stretch fibre recycles with polyester: the maker's own tests [8][9].</li>
-        <li><span class="chip s">Strong</span> PLA melts ~170°C, PET ~250°C [10]. All-polyester rubbers reach ~1,000% elongation (11× length) in the lab [11].</li>
-        <li><span class="chip s">Strong</span> EU textile producer responsibility: in force 17 October 2025 [12].</li>
-      </ul>
-    </div>
-    <div>
-      <h3>How the thread works</h3>
-      <p>Each frame's thread is a chain of points. Every step, each point keeps moving the way it was already moving, gravity and a breeze nudge it, and then the links are pulled back to their proper length ten times over. That's Verlet integration. To draw a shape, every point is pulled a little towards a target drawing. Text blocks are walls: a point that strays into one is pushed back out the way it came, and the block gets a nudge.</p>
-      <p><b>Think first:</b> what would happen if the links were corrected once per step instead of ten times?</p>
-    </div>
-    <div>
-      <h3>Sources</h3>
-      <ol>
-        <li><a href="https://textileexchange.org/knowledge-center/reports/materials-market-report-2025/">Textile Exchange, Materials Market Report 2025</a></li>
-        <li><a href="https://lancashire.gov.uk/leisure-and-culture/museums/50-objects/item-details/?irn=1062">Lancashire Museums, Terylene, the first polyester</a></li>
-        <li><a href="https://modip.ac.uk/exhibitions/polymorphia/polyester">MoDiP, Polymorphia: polyester</a></li>
-        <li><a href="https://fespa.com/en/club-fespa-online/business-advice/lifecycle-analysis-polyester-vs-cotton">FESPA, Lifecycle analysis: polyester vs cotton</a></li>
-        <li><a href="https://pubmed.ncbi.nlm.nih.gov/29107418/">De Falco et al. (2018), Environmental Pollution</a></li>
-        <li><a href="https://pubs.rsc.org/en/content/articlehtml/2025/lp/d5lp00213c">RSC Applied Polymers (2025), elastane recovery</a></li>
-        <li><a href="https://eponline.com/articles/2009/07/30/napcor-says-pla-cannot-be-recycled-with-pet.aspx">EP Online (2009), NAPCOR on PLA and PET</a></li>
-        <li><a href="https://lycra.com/en/business/search-technologies/lycra-t400-fiber">The LYCRA Company, T400® fiber</a></li>
-        <li><a href="https://www.businesswire.com/news/home/20231114770892/en/The-LYCRA-Company-launches-new-LYCRA-FiT400-fiber">Business Wire (2023), FiT400™ launch</a></li>
-        <li><a href="https://www.jessicahemmings.com/pla-fibre-in-textiles-corn-on-the-job">Hemmings, PLA fibre in textiles</a>; <a href="https://www.modip.ac.uk/projects/curators-guide-synthetic-garments/featured-fibres-and-materials/polylactide">MoDiP, polylactide</a></li>
-        <li><a href="https://pubmed.ncbi.nlm.nih.gov/28467049/">Watts et al. (2017), Biomacromolecules</a></li>
-        <li><a href="https://erp-recycling.org/news-and-events/2025/10/waste-framework-directive-parliament-adopts-new-eu-rules-on-textiles/">ERP (2025), EU rules on textiles</a></li>
-      </ol>
-      <p style="margin-top:12px">Visual style after The Dot and the Line (Chuck Jones and Maurice Noble, MGM, 1965): flat colour, geometry, and a line that bends into ideas.</p>
-    </div>
-    <div>
-      <p class="sig">Digital Practice / FN4005 · Kingston School of Art, Kingston University London<br><b>Matthew Mounsey-Wood FHEA MA (RCA) LCF Alumni</b></p>
+      <button class="btn" type="button" id="open-sheet">Tutor notes and sources</button>
     </div>
   </div>
 </section>
 
 </main>
+
+<div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-label="Tutor notes and sources" hidden>
+  <button class="btn close" type="button" id="close-sheet">Close</button>
+  <h2>Tutor notes</h2>
+  <p class="sig">Digital Practice / FN4005 · Kingston School of Art, Kingston University London · Matthew Mounsey-Wood FHEA MA (RCA) LCF Alumni</p>
+  <h3>By the end, students can</h3>
+  <ol>
+    <li>Explain how PET becomes fibre: polymerise, melt-spin, draw.</li>
+    <li>Link fibre form to performance: cross-section, filament count, filament versus staple, twist.</li>
+    <li>Compare two ways of colouring polyester and what each costs.</li>
+    <li>Explain why blends with natural fibres or elastane block recycling, and judge claims about alternatives.</li>
+  </ol>
+  <h3>How it teaches</h3>
+  <ul>
+    <li><b>The thread is the controller.</b> Students pull, cut, twist, wrap, dye, fork, melt and knot it. The idea and the action are the same thing.</li>
+    <li><b>Discovery, not display.</b> Facts arrive as numbered discovery cards when students find them. A wrong test gives a question back, not the answer.</li>
+    <li><b>Predict, then test.</b> The 59% guess, the nozzle tests, will it recycle, spot the PET, which ply melts first.</li>
+    <li><b>Consequences carry forward.</b> Shape, filament count, staple, partner fibre, colour, draw, shedding, elastane, PLA and promises all stay with the thread. The care label reads them back.</li>
+  </ul>
+  <h3>Seminar questions</h3>
+  <ol>
+    <li>Your leggings say "78% recycled polyester, 22% elastane". Where can they go at the end of their life?</li>
+    <li>You need a warm, light jacket fill and a cool running top. Which nozzle for each, and why?</li>
+    <li>Microfibre feels softest. Is that worth more shedding? For which garment?</li>
+    <li>Solution dyeing claims big water savings. What evidence would convince you, and who should provide it?</li>
+    <li>Redesign one garment you own as a mono-material. What do you lose? What do you gain?</li>
+  </ol>
+  <h3>How sure are we?</h3>
+  <ul>
+    <li><span class="chip s">Strong</span> 59% of fibre is polyester; 88% fossil-based; under 1% of fibre from recycled textiles [1].</li>
+    <li><span class="chip s">Strong</span> Invented 1941 by Whinfield and Dickson [2][3].</li>
+    <li><span class="chip s">Strong</span> Trilobal sparkles, hollow insulates, multichannel wicks [13][14].</li>
+    <li><span class="chip s">Strong</span> Microfibre: under 1 decitex per filament [15].</li>
+    <li><span class="chip m">Moderate</span> Staple often cut near cotton length, around 32–38 mm [16].</li>
+    <li><span class="chip m">Moderate</span> Core-spun thread: polyester filament core, cotton or polyester wrap [17].</li>
+    <li><span class="chip s">Strong</span> Polyester dyes with disperse dyes at around 130°C under pressure [18].</li>
+    <li><span class="chip s">Strong</span> Polyester/cotton blends usually need two dye classes, disperse and reactive, often in two baths [23].</li>
+    <li><span class="chip w">Weak</span> Solution dyeing water savings: figures come from producers [19].</li>
+    <li><span class="chip m">Moderate</span> 6,000,000+ microfibres from one 5 kg wash; fleece shed most; high-twist yarns shed less [5][20].</li>
+    <li><span class="chip m">Moderate</span> Elastane in ~80% of discarded US clothes: one estimate [6].</li>
+    <li><span class="chip m">Moderate</span> No scalable fibre-to-fibre route for polycotton yet; one plant due 2028 [21].</li>
+    <li><span class="chip m">Moderate</span> Dyes compromise recycled polyester; removal still in research [22].</li>
+    <li><span class="chip m">Moderate</span> 0.1% PLA spoils PET: bottle recycling, 2009 [7].</li>
+    <li><span class="chip w">Weak</span> Two-polyester stretch fibre recycles with polyester: the maker's own tests [8][9].</li>
+    <li><span class="chip s">Strong</span> PLA melts ~170°C, PET ~250°C [10]. All-polyester rubbers reach ~11× length in the lab [11].</li>
+    <li><span class="chip s">Strong</span> EU textile producer responsibility in force 17 October 2025 [12].</li>
+  </ul>
+  <h3>How the thread works</h3>
+  <p>Each exhibit's thread is a chain of points. Every step, each point keeps moving the way it was already moving, gravity and a breeze nudge it, and the links are pulled back to their proper length ten times over: Verlet integration. To draw a shape, each point is pulled a little towards a target drawing. Text blocks are walls.</p>
+  <h3>Sources</h3>
+  <ol>
+    <li><a href="https://textileexchange.org/knowledge-center/reports/materials-market-report-2025/">Textile Exchange, Materials Market Report 2025</a></li>
+    <li><a href="https://lancashire.gov.uk/leisure-and-culture/museums/50-objects/item-details/?irn=1062">Lancashire Museums, Terylene, the first polyester</a></li>
+    <li><a href="https://modip.ac.uk/exhibitions/polymorphia/polyester">MoDiP, Polymorphia: polyester</a></li>
+    <li><a href="https://fespa.com/en/club-fespa-online/business-advice/lifecycle-analysis-polyester-vs-cotton">FESPA, Lifecycle analysis: polyester vs cotton</a></li>
+    <li><a href="https://pubmed.ncbi.nlm.nih.gov/29107418/">De Falco et al. (2018), Environmental Pollution</a></li>
+    <li><a href="https://pubs.rsc.org/en/content/articlehtml/2025/lp/d5lp00213c">RSC Applied Polymers (2025), elastane recovery</a></li>
+    <li><a href="https://eponline.com/articles/2009/07/30/napcor-says-pla-cannot-be-recycled-with-pet.aspx">EP Online (2009), NAPCOR on PLA and PET</a></li>
+    <li><a href="https://lycra.com/en/business/search-technologies/lycra-t400-fiber">The LYCRA Company, T400® fiber</a></li>
+    <li><a href="https://www.businesswire.com/news/home/20231114770892/en/The-LYCRA-Company-launches-new-LYCRA-FiT400-fiber">Business Wire (2023), FiT400™ launch</a></li>
+    <li><a href="https://www.jessicahemmings.com/pla-fibre-in-textiles-corn-on-the-job">Hemmings, PLA fibre in textiles</a>; <a href="https://www.modip.ac.uk/projects/curators-guide-synthetic-garments/featured-fibres-and-materials/polylactide">MoDiP, polylactide</a></li>
+    <li><a href="https://pubmed.ncbi.nlm.nih.gov/28467049/">Watts et al. (2017), Biomacromolecules</a></li>
+    <li><a href="https://erp-recycling.org/news-and-events/2025/10/waste-framework-directive-parliament-adopts-new-eu-rules-on-textiles/">ERP (2025), EU rules on textiles</a></li>
+    <li><a href="https://curriculumvisions.com/academy/materialsScience/07MSFibres/files/basic-html/page36.html">Curriculum Visions, fibre cross-sections</a></li>
+    <li><a href="https://en.wikipedia.org/wiki/Coolmax">Coolmax: four-channel cross-section</a></li>
+    <li><a href="https://www.fibre2fashion.com/industry-article/4794/micro-fibres">fibre2fashion, Micro fibres</a></li>
+    <li><a href="https://www.fibre2fashion.com/fibres/polyester-staple-fibre-psf-suppliers-15106607">fibre2fashion, polyester staple fibre lengths (trade listing)</a></li>
+    <li><a href="https://www.amann.com/knowledgehub/amann-wiki/sewing-thread-construction-explained-types-properties-and-applications/core-spun-thread/">Amann, core-spun thread</a></li>
+    <li><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC10384552">Disperse dyeing of polyester (review, PMC)</a></li>
+    <li><a href="https://www.radicigroup.com/en/news-media/news/water-a-precious-resource-we-care-for-37261">RadiciGroup, solution-dyed yarn LCA (producer)</a></li>
+    <li><a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5766707/">Carney Almroth et al. (2018), shedding of synthetic fibres</a></li>
+    <li><a href="https://research.chalmers.se/en/publication/547807">Chalmers, polycotton recycling</a>; <a href="https://wwd.com/sourcing-journal/industry-news/circular-polyester-material-innovation-textile-circ-ambercycle-syre-re-up-1238837618/">Sourcing Journal, Circ plant 2028</a></li>
+    <li><a href="https://www.hb.se/en/about-ub/current/news-archive/2026/may/new-study-reveals-a-way-to-process-coloured-polyester-textile-waste-without-chemicals/">University of Borås (2026), coloured polyester waste</a></li>
+    <li><a href="https://patents.google.com/patent/US5693103">US Patent 5,693,103, Process for dyeing polyester/cotton blends</a></li>
+  </ol>
+  <p style="margin-top:14px">Visual style after The Dot and the Line (Chuck Jones and Maurice Noble, MGM, 1965).</p>
+</div>
 
 <script>
 (function () {
@@ -396,8 +505,39 @@ var FONT = 'Arial, "Liberation Sans", Helvetica, sans-serif';
 var D = Math.PI / 180;
 var RM = false; try { RM = window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) {}
 
-// What the student has done to their thread. Every later frame reads this.
-var G = { draw: 1, elastane: false, pla: false, shed: 0, bi: false, links: 0, knots: 0, melted: false };
+// What the student has done to their thread. Every later exhibit reads this.
+var G = { draw: 1, shape: 'round', fil: 1, staple: false, twist: 0, partner: null, elastane: false, colour: null, mix: null, dye: null, pla: false, stripped: null, shed: 0, bi: false, links: 0, knots: 0 };
+
+// Discoveries: found by doing, numbered like museum labels.
+var DISC = {
+  link: 'Ethylene glycol and terephthalic acid, both mostly from oil, link into the long chain called PET.',
+  y1941: 'Polyester was invented in Lancashire in 1941 by John Whinfield and James Dickson, and sold as Terylene.',
+  draw: 'Stretching lines the chains up. The fibre gets stronger and less stretchy.',
+  trilobal: 'Three lobes act like little prisms. Trilobal fibres sparkle.',
+  hollow: 'A hollow core traps air, so the fibre insulates. Used in jacket fillings.',
+  channel: 'Grooves pull sweat along by capillary action so it spreads and dries. Cooling sportswear uses four-channel fibres.',
+  mono: 'Monofilament: one thick strand. Stiff and see-through, like fishing line.',
+  multi: 'Multifilament: a bundle. A "150D/48F" yarn has 48 filaments. Smooth and drapey.',
+  micro: 'Microfibre: each filament under 1 decitex, finer than silk. Very soft.',
+  staple: 'Staple fibre is cut short, often near the length of cotton (about 32–38 mm), so it can be spun with cotton.',
+  twist: 'More twist locks the loose ends in. In one lab study, high-twist yarns shed less.',
+  cotton: 'Core-spun: a polyester core for strength, cotton outside for feel and dye. Common in sewing thread.',
+  wool: 'Wool on the outside, polyester inside: two different fibres that a recycler would have to separate.',
+  elastane: 'Elastane (spandex) is polyurethane, not polyester. One estimate finds it in about 80% of discarded clothes.',
+  bath: 'Polyester repels water. Disperse dyes only get in at about 130°C, under pressure. And dyes are hard to get back out when it is recycled.',
+  melt: 'Solution dyeing puts the colour in before spinning: no dye bath. Water-saving figures come from the makers, so ask for their data.',
+  wash: 'In one lab study, a 5 kg wash of polyester released more than 6,000,000 microfibres.',
+  fleece: 'In another study, fleece made of fine fibres shed the most, and loose low-twist yarns shed more than tight ones.',
+  bottle: 'Most recycled polyester was a plastic bottle. Under 1% of all fibre comes from recycled textiles.',
+  jam: 'Blends jam the loop. Separating polycotton is still mostly in the lab; one large plant is due in 2028.',
+  loop: 'One material can, in principle, go round again.',
+  pla: 'PLA looks like PET. In bottle recycling, just 0.1% PLA can spoil a batch of PET.',
+  spring: 'Two polyesters in one filament curl into a spring: stretch without elastane. The maker says it recycles with polyester; ask for proof.',
+  rubber: 'In the lab, all-polyester rubbers stretch to about 11 times their length. Not on sale as fibre yet.',
+  union: 'Only the polyester took the colour. Cotton and wool need other dyes, so blends are often dyed twice, once for each fibre.',
+  plamelt: 'PLA melts at around 170°C, PET at around 250°C. That is why PLA needs a cool iron.'
+};
+var FOUND = {}, NFOUND = 0, NDISC = Object.keys(DISC).length;
 
 // ---------- geometry ----------
 function pt(x, y) { return { x: x, y: y }; }
@@ -422,14 +562,21 @@ function hash(a, b) { var h = Math.sin(a * 127.1 + b * 311.7) * 43758.5453; retu
 function rnd(seed) { var s = seed >>> 0; return function () { s = (Math.imul(s, 1664525) + 1013904223) >>> 0; return s / 4294967296; }; }
 function box(def, x0, y0, w, h) { return def.map(function (a) { return pt(x0 + a[0] * w, y0 + a[1] * h); }); }
 function heap(cx, cy, rx, ry, seed, n) { var r = rnd(seed), a = []; for (var i = 0; i < (n || 30); i++) { var ang = r() * Math.PI * 2, rr = .25 + r() * .75; a.push(pt(cx + Math.cos(ang) * rx * rr, cy + Math.sin(ang) * ry * rr)); } return a; }
+function segX(a, b, c, d) { var r = (b.x - a.x) * (d.y - c.y) - (b.y - a.y) * (d.x - c.x); if (Math.abs(r) < 1e-9) return false; var t = ((c.x - a.x) * (d.y - c.y) - (c.y - a.y) * (d.x - c.x)) / r, u = ((c.x - a.x) * (b.y - a.y) - (c.y - a.y) * (b.x - a.x)) / r; return t >= 0 && t <= 1 && u >= 0 && u <= 1; }
+function hexRgb(h) { var n = parseInt(h.slice(1), 16); return [n >> 16 & 255, n >> 8 & 255, n & 255]; }
+function mix(a, b, u) { var A = hexRgb(a), B = hexRgb(b); return '#' + [0, 1, 2].map(function (i) { return Math.round(A[i] + (B[i] - A[i]) * clamp(u, 0, 1)).toString(16).padStart(2, '0'); }).join(''); }
+function lum(h) { var c = hexRgb(h).map(function (v) { v /= 255; return v <= .03928 ? v / 12.92 : Math.pow((v + .055) / 1.055, 2.4); }); return .2126 * c[0] + .7152 * c[1] + .0722 * c[2]; }
+
+// fibre cross-sections, as radius at angle
+function shapeR(shape, a) { return shape === 'trilobal' ? .68 + .32 * Math.cos(3 * a) : shape === 'channel' ? 1 - .38 * Math.pow(Math.max(0, Math.cos(4 * a + Math.PI / 4)), 8) : 1; }
+function shapePath(ctx, shape, x, y, r, rot) { ctx.beginPath(); for (var i = 0; i <= 64; i++) { var a = i / 64 * Math.PI * 2, rr = r * shapeR(shape, a + (rot || 0)); ctx[i ? 'lineTo' : 'moveTo'](x + Math.cos(a) * rr, y + Math.sin(a) * rr); } ctx.closePath(); }
+function shapeSVG(shape) {
+  var d = ''; for (var i = 0; i <= 48; i++) { var a = i / 48 * Math.PI * 2, r = 11 * shapeR(shape, a); d += (i ? 'L' : 'M') + (13 + Math.cos(a) * r).toFixed(1) + ' ' + (13 + Math.sin(a) * r).toFixed(1); }
+  return '<svg viewBox="0 0 26 26" aria-hidden="true"><path class="s" d="' + d + 'Z"/>' + (shape === 'hollow' ? '<circle class="h" cx="13" cy="13" r="4.5"/>' : '') + '</svg>';
+}
 
 var SHIRT_L = [[.182,1],[.182,.278],[.114,.378],[0,.278],[.159,.067],[.386,0],[.5,.067],[.614,0],[.841,.067],[1,.278],[.886,.378],[.818,.278],[.818,1],[.182,1]];
 var BOTTLE = [[0,1],[0,.283],[.333,.152],[.333,.043],[.5,0],[.667,.043],[.667,.152],[1,.283],[1,1],[0,1]];
-var DIG = {
-  '1': [[.3,.22],[.6,0],[.6,1]],
-  '9': [[.97,.3],[.83,.08],[.5,0],[.17,.08],[.03,.3],[.17,.52],[.5,.6],[.83,.52],[.97,.3],[.9,.7],[.67,1],[.23,.96]],
-  '4': [[.73,1],[.73,0],[0,.68],[1,.68]]
-};
 
 // ---------- Verlet chain (frame-local coordinates) ----------
 function Chain(path, n, o) {
@@ -488,8 +635,7 @@ Chain.prototype.setTarget = function (pts, k, rects) {
 };
 Chain.prototype.kick = function (dx, dy, from, to) { for (var i = from || 0; i < (to || this.n); i++) { this.p[i].px -= dx; this.p[i].py -= dy; } };
 function pushOut(pts, rects, prev) {
-  // Text blocks are solid. A point that strays inside is returned through the side it came from,
-  // and the block remembers the shove so it can wobble.
+  // Text blocks are solid. A point that strays inside is returned through the side it came from.
   for (var i = 0; i < pts.length; i++) {
     var q = pts[i];
     for (var j = 0; j < rects.length; j++) {
@@ -516,18 +662,15 @@ function smooth(ctx, p, a, b) {
   for (var i = a + 1; i < b; i++) { var mx = (p[i].x + p[i+1].x) / 2, my = (p[i].y + p[i+1].y) / 2; ctx.quadraticCurveTo(p[i].x, p[i].y, mx, my); }
   ctx.lineTo(p[b].x, p[b].y);
 }
-function offsetPts(p, d) {
-  return p.map(function (q, i) {
-    var a = p[Math.max(0, i-1)], b = p[Math.min(p.length-1, i+1)], dx = b.x - a.x, dy = b.y - a.y, L = Math.hypot(dx, dy) || 1;
-    return pt(q.x - dy / L * d, q.y + dx / L * d);
-  });
-}
-function strokeChain(ctx, c, col, w, dash, a, b) {
+function normals(p) { return p.map(function (q, i) { var a = p[Math.max(0, i-1)], b = p[Math.min(p.length-1, i+1)], dx = b.x - a.x, dy = b.y - a.y, L = Math.hypot(dx, dy) || 1; return pt(-dy / L, dx / L); }); }
+function offsetBy(p, nm, fn) { return p.map(function (q, i) { var d = fn(i); return pt(q.x + nm[i].x * d, q.y + nm[i].y * d); }); }
+function strokeP(ctx, p, col, w, dash, a, b) {
   ctx.lineCap = dash ? 'butt' : 'round'; ctx.lineJoin = 'round';
-  smooth(ctx, c.p, a, b); ctx.strokeStyle = col; ctx.lineWidth = w;
+  smooth(ctx, p, a, b); ctx.strokeStyle = col; ctx.lineWidth = w;
   if (dash) ctx.setLineDash(dash);
   ctx.stroke(); ctx.setLineDash([]);
 }
+function strokeChain(ctx, c, col, w, dash, a, b) { strokeP(ctx, c.p, col, w, dash, a, b); }
 function cased(ctx, c, ink, casing, w, dash, a, b) { strokeChain(ctx, c, casing, w + 3.2, null, a, b); strokeChain(ctx, c, ink, w, dash, a, b); }
 function drawSquiggle(ctx, c, t, col, mask) {
   var fr = Math.floor(t * 12), p = c.p, s, i;
@@ -558,50 +701,140 @@ function label(ctx, f, s, x, y, size, col, align) {
 function disc(ctx, x, y, r, col) { if (r <= 0) return; ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fillStyle = col; ctx.fill(); }
 function ring(ctx, x, y, r, w, col) { ctx.beginPath(); ctx.arc(x, y, Math.max(1, r), 0, Math.PI * 2); ctx.strokeStyle = col; ctx.lineWidth = w; ctx.stroke(); }
 function hexagon(ctx, x, y, r, col) { ctx.beginPath(); for (var i = 0; i < 6; i++) { var a = i * 60 * D; ctx[i ? 'lineTo' : 'moveTo'](x + r * Math.cos(a), y + r * Math.sin(a)); } ctx.closePath(); ctx.fillStyle = col; ctx.fill(); }
+function star(ctx, x, y, r, col) { ctx.fillStyle = col; ctx.beginPath(); for (var i = 0; i < 8; i++) { var a = i * Math.PI / 4, rr = i % 2 ? r * .28 : r; ctx[i ? 'lineTo' : 'moveTo'](x + Math.cos(a) * rr, y + Math.sin(a) * rr); } ctx.closePath(); ctx.fill(); }
 function wave(ctx, y, f, amp, col, top) { ctx.fillStyle = col; ctx.beginPath(); ctx.moveTo(0, top ? 0 : f.h + 10); for (var x = 0; x <= f.w + 8; x += 8) ctx.lineTo(x, y + Math.sin(x / 34 + f.t * 1.5) * amp + Math.sin(x / 13 - f.t * 1.1) * amp * .45); ctx.lineTo(f.w + 8, top ? 0 : f.h + 10); ctx.closePath(); ctx.fill(); }
 function inkFor(bg) { return bg === 'blue' ? KU.w : bg === 'yellow' ? KU.k : KU.b; }
-function casingFor(ink) { return ink === KU.w ? KU.k : KU.w; }
+function casingFor(ink) { return lum(ink) > .4 ? KU.k : KU.w; }
 
-// ---------- lanes: where the thread crosses from one frame into the next ----------
-var LANES = { cover: [.5, .8], oil: [.8, .13], y1941: [.13, .87], spin: [.87, .87], guess: [.87, .45], tug: [.45, .87], wash: [.87, .13], bottle: [.13, .13], stretch: [.13, .87], spot: [.87, .87], bend: [.87, .87], heat: [.87, .87], rubber: [.87, .87], knots: [.87, .87], end: [.87, .05], notes: [.05, .05] };
+// ---------- lanes: where the thread crosses from one exhibit into the next ----------
+var LANES = { cover: [.5, .87], guess: [.87, .87], colour: [.87, .45], tug: [.45, .87], wash: [.87, .13], bottle: [.13, .13], recycle: [.13, .87], end: [.87, .05] };
 
 function stage(f) {
-  var t = f.named.top ? f.named.top.b : f.h * 0.1, b = f.named.bottom ? f.named.bottom.t : f.h * 0.95;
+  var t = f.named.top ? f.named.top.b : f.h * 0.1, b = f.h * 0.96;
+  if (f.named.bottom) b = Math.min(b, f.named.bottom.t);
+  if (f.named.card) b = Math.min(b, f.named.card.t);
   return { t: t, b: b, h: Math.max(80, b - t), m: (t + b) / 2 };
 }
 function $(id) { return document.getElementById(id); }
 function say(el, text) { el.hidden = false; if (el.textContent === text) return; el.textContent = text; el.classList.remove('popin'); void el.offsetWidth; el.classList.add('popin'); }
 function setBg(f, name) { f.el.classList.remove('bg-white', 'bg-black', 'bg-blue', 'bg-yellow'); f.el.classList.add('bg-' + name); f.bg = name; }
-function place(el, x, y, w, h) { var v = [x, y, w, h].map(Math.round).join(','); if (el._pv === v) return; el._pv = v; el.style.left = Math.round(x) + 'px'; el.style.top = Math.round(y) + 'px'; el.style.width = Math.round(w) + 'px'; el.style.height = Math.round(h) + 'px'; }
+function place(el, x, y, w, h) { var v = [x, y, w, h].map(Math.round).join(','); if (el._pv === v) return; el._pv = v; el.style.left = Math.round(x) + 'px'; el.style.top = Math.round(y) + 'px'; if (w != null) el.style.width = Math.round(w) + 'px'; if (h != null) el.style.height = Math.round(h) + 'px'; }
 function countUp(el, to, ms, fmtFn) {
   if (RM) { el.textContent = fmtFn(to); return; }
   var t0 = performance.now();
   (function stepC(now) { var u = clamp((now - t0) / ms, 0, 1); el.textContent = fmtFn(Math.round(to * ease(u))); if (u < 1) requestAnimationFrame(stepC); })(t0);
 }
 
+// A discovery card: new finds are numbered; a miss gives a question back.
+function card(f, kind, text) {
+  var c = f.el.querySelector('.card'); if (!c) return;
+  var head;
+  if (kind && DISC[kind]) {
+    if (!FOUND[kind]) { FOUND[kind] = true; NFOUND++; renderLabel(); }
+    head = 'Discovery · ' + NFOUND + ' of ' + NDISC; text = DISC[kind];
+  } else head = kind || 'Try this';
+  c.querySelector('.cl').textContent = head; c.querySelector('.ct').textContent = text;
+  c.classList.remove('reserve', 'show'); void c.offsetWidth; c.classList.add('show');
+  f.measure(); if (f.sc.cardLayout) f.sc.layout(f);
+}
+
+// A number you drag up and down (or step with the arrow keys).
+function scrub(el, o) {
+  var v = o.value, on = false, sy = 0, sv = 0, sx = 0;
+  var vals = o.snap || null;
+  function show() { el.querySelector('.sv').textContent = o.fmt(v); el.setAttribute('aria-valuenow', v); el.setAttribute('aria-valuetext', o.fmt(v)); if (o.cap) el.querySelector('small').textContent = o.cap(v); }
+  function set(nv) {
+    if (vals) nv = vals[clamp(Math.round(nv), 0, vals.length - 1)]; else nv = Math.round(clamp(nv, o.min, o.max) / o.step) * o.step;
+    if (nv === v) return; v = nv; show(); o.onChange(v);
+  }
+  function idx() { return vals ? vals.indexOf(v) : v; }
+  el.addEventListener('pointerdown', function (e) { on = true; sy = e.clientY; sx = e.clientX; sv = idx(); try { el.setPointerCapture(e.pointerId); } catch (x) {} e.preventDefault(); });
+  el.addEventListener('pointermove', function (e) { if (!on) return; var d = (sy - e.clientY) + (e.clientX - sx) * .5; set(vals ? sv + d / 26 : sv + d * (o.per || 1)); });
+  el.addEventListener('pointerup', function () { on = false; }); el.addEventListener('pointercancel', function () { on = false; });
+  el.addEventListener('keydown', function (e) { var d = e.key === 'ArrowUp' || e.key === 'ArrowRight' ? 1 : e.key === 'ArrowDown' || e.key === 'ArrowLeft' ? -1 : 0; if (d) { set(vals ? idx() + d : v + d * o.step * (o.keyMul || 1)); e.preventDefault(); } });
+  show();
+  return { set: set, get: function () { return v; } };
+}
+
+// The microscope: a black lens showing the thread cut end-on.
+function lens(ctx, cx, cy, R, shape, n, ink) {
+  disc(ctx, cx, cy, R + 6, KU.w); disc(ctx, cx, cy, R, KU.k);
+  ctx.save(); ctx.beginPath(); ctx.arc(cx, cy, R - 2, 0, Math.PI * 2); ctx.clip();
+  var pts = [], r;
+  if (n <= 1) { pts = [pt(cx, cy)]; r = R * .55; }
+  else if (n <= 7) { r = R * .26; pts.push(pt(cx, cy)); for (var i = 0; i < n - 1; i++) { var a = i / (n - 1) * Math.PI * 2; pts.push(pt(cx + Math.cos(a) * r * 2.15, cy + Math.sin(a) * r * 2.15)); } }
+  else { var gold = 2.39996, area = R * R * .62; r = Math.sqrt(area / n) * .62; for (var k = 0; k < n; k++) { var rr = Math.sqrt((k + .5) / n) * R * .8; pts.push(pt(cx + Math.cos(k * gold) * rr, cy + Math.sin(k * gold) * rr)); } }
+  pts.forEach(function (q, i) { shapePath(ctx, shape, q.x, q.y, r, i * .7); ctx.fillStyle = ink; ctx.fill(); if (shape === 'hollow') disc(ctx, q.x, q.y, r * .42, KU.k); });
+  ctx.restore();
+  return { pts: pts, r: r };
+}
+
 var SCENES = {};
 
-// The thread throws a loop round the title and doesn't quite close it.
+// The thread throws a loop round the title and leaves it open.
 SCENES.cover = {
   n: 160,
   path: function (f) {
     var t = f.named.title, W = f.w; if (!t) return [];
     var cx = (t.l + t.r) / 2, cy = (t.t + t.b) / 2, rx = Math.min((t.r - t.l) / 2 + 18, .48 * W), ry = (t.b - t.t) / 2 + 22;
     var hb = f.named.bottom ? f.named.bottom.t - 18 : f.h * .85;
-    return [pt(cx, cy - ry - 26)].concat(arc(cx, cy, rx, ry, -90 * D, (232 + 5 * Math.sin(f.t * 1.2)) * D, 90)).concat([pt(cx - rx - 8, cy + ry * .25), pt(.05 * W, cy + ry + 40), pt(.05 * W, hb), pt(.8 * W, hb)]);
+    return [pt(cx, cy - ry - 26)].concat(arc(cx, cy, rx, ry, -90 * D, (232 + 5 * Math.sin(f.t * 1.2)) * D, 90)).concat([pt(cx - rx - 8, cy + ry * .25), pt(.05 * W, cy + ry + 40), pt(.05 * W, hb), pt(.87 * W, hb)]);
   },
   k: 0.06
 };
 
-// A black field of oil with a moving surface. Each tap lifts two building blocks out and links them onto the thread.
+// Drag across the grid: the thread follows your finger. Then it moves to the real figure.
+SCENES.guess = {
+  n: 280,
+  init: function (f) {
+    f.s.g = 25; f.s.on = false; f.s.rt = 0; f.s.m = -1; var self = this, r = $('guess-r');
+    r.addEventListener('input', function () { self.setGuess(f, +r.value); });
+    $('guess-go').addEventListener('click', function () {
+      if (f.s.on) return; f.s.on = true; f.s.rt = f.t;
+      var diff = 59 - f.s.g;
+      $('guess-you').textContent = 'You guessed ' + f.s.g + '%: ' + (Math.abs(diff) <= 5 ? 'close.' : diff > 0 ? diff + ' points short.' : -diff + ' points over.') + ' Now scroll down and make some.';
+      $('guess-q').hidden = true; $('guess-a').hidden = false; $('guess-a').classList.add('popin');
+    });
+  },
+  setGuess: function (f, v) { if (f.s.on) return; f.s.g = v; $('guess-r').value = v; $('guess-out').textContent = v + '%'; },
+  layout: function (f) { var st = stage(f), W = f.w, c = Math.floor(Math.min(.078 * W, (st.h - 24) / 10)); f.s.G = { c: c, x0: .06 * W, y0: st.t + (st.h - 10 * c) / 2 }; },
+  cell: function (g, k) { var r = Math.floor(k / 10), col = r % 2 === 0 ? k % 10 : 9 - k % 10; return pt(g.x0 + (col + .5) * g.c, g.y0 + (r + .5) * g.c); },
+  count: function (f) { if (!f.s.on) return f.s.g; return Math.round(f.s.g + (59 - f.s.g) * ease((f.t - f.s.rt - .4) / 1.8)); },
+  hitTest: function (f, x, y) {
+    var g = f.s.G, self = this; if (f.s.on || x < g.x0 - 6 || x > g.x0 + 10 * g.c + 6 || y < g.y0 - 6 || y > g.y0 + 10 * g.c + 6) return null;
+    return { move: function (mx, my) { var col = clamp(Math.floor((mx - g.x0) / g.c), 0, 9), row = clamp(Math.floor((my - g.y0) / g.c), 0, 9); self.setGuess(f, row * 10 + (row % 2 === 0 ? col : 9 - col) + 1); } };
+  },
+  path: function (f) {
+    var g = f.s.G, m = this.count(f), W = f.w, pts = [pt(.87 * W, g.y0 - 10)];
+    for (var k = 0; k < m; k++) pts.push(this.cell(g, k));
+    var last = m ? this.cell(g, m - 1) : pt(.87 * W, g.y0); pts.push(pt(last.x, g.y0 + 10 * g.c + 14), pt(.87 * W, g.y0 + 10 * g.c + 34));
+    return pts;
+  },
+  k: 0.13,
+  tick: function (f) { if (!f.s.on) return; var m = this.count(f); if (m !== f.s.m) { f.s.m = m; $('guess-n').textContent = m; } },
+  back: function (ctx, f) {
+    var g = f.s.G, m = this.count(f), self = this;
+    for (var k = 0; k < 100; k++) {
+      var c = self.cell(g, k), s = g.c - 4, x = c.x - s / 2, y = c.y - s / 2;
+      if (k < m) {
+        if (f.s.on) { ctx.fillStyle = KU.b; ctx.fillRect(x, y, s, s); }
+        else { ctx.save(); ctx.beginPath(); ctx.rect(x, y, s, s); ctx.clip(); ctx.strokeStyle = KU.k; ctx.lineWidth = 2; ctx.beginPath(); for (var d = -s; d < s; d += 6) { ctx.moveTo(x + d, y + s); ctx.lineTo(x + d + s, y); } ctx.stroke(); ctx.restore(); }
+      }
+      ctx.strokeStyle = KU.k; ctx.lineWidth = 1.5; ctx.strokeRect(x, y, s, s);
+    }
+    if (f.s.on && f.s.g > 0) { var gc = self.cell(g, f.s.g - 1); ctx.strokeStyle = KU.k; ctx.lineWidth = 4; ctx.strokeRect(gc.x - g.c / 2, gc.y - g.c / 2, g.c, g.c); }
+  }
+};
+
+// A black field of oil. Each tap lifts two building blocks out and links them onto the thread.
 SCENES.oil = {
   n: 130,
   init: function (f) { f.s.links = 0; f.s.fly = []; f.s.next = .5; },
   surf: function (f) { return (f.named.top ? f.named.top.b : f.h * .35) + 28; },
-  path: function (f) { var W = f.w, sy = this.surf(f); return [pt(.8 * W, sy - 24), pt(.5 * W, sy + 14), pt(.5 * W, f.h * .87), pt(.13 * W, f.h * .95)]; },
+  path: function (f) { var W = f.w, sy = this.surf(f), st = stage(f); return [pt(.87 * W, sy - 24), pt(.5 * W, sy + 14), pt(.5 * W, st.b - 30), pt(.87 * W, st.b - 6)]; },
   k: 0.08,
   slot: function (f, j) {
-    var sy = this.surf(f), y = sy + 46 + (f.h * .83 - sy - 46) * j / 19, c = f.chain, best = c.p[0], bd = 1e9;
+    var sy = this.surf(f), st = stage(f), y = sy + 46 + (st.b - 50 - sy - 46) * j / 19, c = f.chain, best = c.p[0], bd = 1e9;
     for (var i = 0; i < c.n; i++) { var d = Math.abs(c.p[i].y - y) + (c.p[i].y < sy ? 1e6 : 0); if (d < bd) { bd = d; best = c.p[i]; } }
     return best;
   },
@@ -609,8 +842,9 @@ SCENES.oil = {
     if (f.s.links >= 10) return; f.s.links++; G.links = f.s.links; f.s.fly.push({ t: f.t, i: f.s.links - 1 });
     $('oil-n').textContent = f.s.links + (f.s.links === 1 ? ' link' : ' links');
     f.chain.kick((Math.random() - .5) * 4, 0, (f.chain.n * .3) | 0, f.chain.n - 1);
+    if (f.s.links === 2) card(f, 'link'); if (f.s.links === 6) card(f, 'y1941');
   },
-  tick: function (f) { if (f.vt > f.s.next && f.s.links < 3) { this.addLink(f); f.s.next = f.vt + .7; } },
+  tick: function (f) { if (f.vt > f.s.next && f.s.links < 2) { this.addLink(f); f.s.next = f.vt + .8; } },
   tap: function (f) { this.addLink(f); },
   back: function (ctx, f) { wave(ctx, this.surf(f), f, 6, KU.k, true); },
   front: function (ctx, f) {
@@ -625,22 +859,11 @@ SCENES.oil = {
   }
 };
 
-// The thread writes the date.
-SCENES.y1941 = {
-  n: 170,
-  path: function (f) {
-    var st = stage(f), W = f.w, dw = .2 * W, gap = .02 * W, dh = Math.min(dw * 1.75, st.h * .62), x0 = .07 * W, y0 = st.t + (st.h - dh) / 2 - st.h * .04, pts = [pt(.13 * W, y0 - 10)];
-    '1941'.split('').forEach(function (ch, i) { DIG[ch].forEach(function (a) { pts.push(pt(x0 + i * (dw + gap) + a[0] * dw, y0 + a[1] * dh)); }); });
-    pts.push(pt(.87 * W, y0 + dh + st.h * .12)); return pts;
-  },
-  k: function (f) { return f.vt < 0.4 ? 0.02 : 0.15; }
-};
-
-// Pull the thread down to draw the fibre. The background is the inside of the fibre: the chains line up as you pull.
+// Pull the thread down to draw the fibre. The background is the inside of the fibre: chains line up as you pull.
 SCENES.spin = {
   n: 120,
-  init: function (f) { var r = $('spin-r'); r.addEventListener('input', function () { SCENES.spin.setDraw(+r.value); }); },
-  setDraw: function (v) { G.draw = v; $('spin-r').value = v; $('spin-out').textContent = '×' + v.toFixed(1); },
+  init: function (f) { var r = $('spin-r'); r.addEventListener('input', function () { SCENES.spin.setDraw(f, +r.value); }); },
+  setDraw: function (f, v) { G.draw = v; $('spin-r').value = v; $('spin-out').textContent = '×' + v.toFixed(1); if (v >= 3 && !f.s.told) { f.s.told = true; card(f, 'draw'); } },
   geo: function (f) {
     var st = stage(f), W = f.w, fx = .5 * W, ft = st.t + st.h * .05, fh = st.h * .12, sy = ft + fh + 2, cy = sy + st.h * .22;
     return { st: st, fx: fx, ft: ft, fh: fh, sy: sy, cy: cy, ry: cy + st.h * .05, holes: [-2, -1, 0, 1, 2].map(function (k) { return fx + k * .05 * W; }) };
@@ -649,23 +872,21 @@ SCENES.spin = {
     var g = this.geo(f);
     f.extras = g.holes.map(function (x) { var c = new Chain([pt(x, g.sy + 14), pt(g.fx, g.cy)], 16, { g: 0.04, wind: 0.02, iter: 8, slack: 1.04 }); c.grabbable = false; return c; });
   },
-  path: function (f) { var g = this.geo(f), W = f.w; return [pt(.87 * W, g.ft - 26), pt(g.fx, g.ft), pt(g.fx, g.cy), pt(g.fx, g.ry), pt(g.fx, g.ry + g.st.h * .3), pt(.87 * W, f.h - 40)]; },
+  path: function (f) { var g = this.geo(f), W = f.w; return [pt(.87 * W, g.ft - 26), pt(g.fx, g.ft), pt(g.fx, g.cy), pt(g.fx, g.ry), pt(g.fx, g.ry + g.st.h * .28), pt(.87 * W, g.st.b - 6)]; },
   k: 0.07,
   hide: function (f) { var g = this.geo(f); return [g.ft, g.cy]; },
   onDrag: function (f, d) {
     if (d.chain !== f.chain) return; var g = this.geo(f);
     if (d.chain.gy < g.ry + 10) return;
-    this.setDraw(Math.max(1, Math.min(5, 1 + (d.chain.gy - g.ry - 10) / (f.h - g.ry - 60) * 4)));
+    this.setDraw(f, Math.max(1, Math.min(5, 1 + (d.chain.gy - g.ry - 10) / (g.st.b - g.ry - 20) * 4)));
   },
   back: function (ctx, f) {
-    var g = this.geo(f), W = f.w, al = (G.draw - 1) / 4, top = g.ry + 18, h = f.h - top, i;
-    // the field of molecular chains
+    var g = this.geo(f), W = f.w, al = (G.draw - 1) / 4, top = g.ry + 18, h = g.st.b - top, i;
     ctx.strokeStyle = KU.k; ctx.lineWidth = 3; ctx.lineCap = 'round';
-    for (i = 0; i < 110; i++) {
+    for (i = 0; i < 100; i++) {
       var x = hash(i, 1) * W, y = top + hash(i, 2) * h, a0 = hash(i, 3) * Math.PI, wob = Math.sin(f.t * 1.3 + i) * .12 * (1 - al), ang = a0 + (Math.PI / 2 - a0) * al + wob, L = 9 + hash(i, 4) * 9;
       ctx.beginPath(); ctx.moveTo(x - Math.cos(ang) * L, y - Math.sin(ang) * L); ctx.lineTo(x + Math.cos(ang) * L, y + Math.sin(ang) * L); ctx.stroke();
     }
-    // the cooling chamber, with air blowing through
     var x0 = g.fx - .14 * W, w = .28 * W, ch = g.cy - 6 - (g.sy + 14);
     ctx.fillStyle = KU.k; ctx.fillRect(x0, g.sy + 14, w, ch);
     ctx.save(); ctx.beginPath(); ctx.rect(x0, g.sy + 14, w, ch); ctx.clip(); ctx.strokeStyle = 'rgba(255,255,255,.8)'; ctx.lineWidth = 2.5;
@@ -685,48 +906,154 @@ SCENES.spin = {
   }
 };
 
-// Drag across the grid: the thread follows your finger. Then it moves to the real figure.
-SCENES.guess = {
-  n: 280,
+// Pick a nozzle, then test the fibre under the microscope.
+SCENES.shape = {
+  n: 130,
   init: function (f) {
-    f.s.g = 25; f.s.on = false; f.s.rt = 0; f.s.m = -1; var self = this, r = $('guess-r');
-    r.addEventListener('input', function () { self.setGuess(f, +r.value); });
-    $('guess-go').addEventListener('click', function () {
-      if (f.s.on) return; f.s.on = true; f.s.rt = f.t;
-      var diff = 59 - f.s.g;
-      $('guess-you').textContent = 'You guessed ' + f.s.g + '%: ' + (Math.abs(diff) <= 5 ? 'close.' : diff > 0 ? diff + ' points short.' : -diff + ' points over.');
-      $('guess-q').hidden = true; $('guess-a').hidden = false; $('guess-a').classList.add('popin');
+    var self = this; f.s.test = null; f.s.tt = 0;
+    f.el.querySelectorAll('[data-shape]').forEach(function (b) {
+      b.insertAdjacentHTML('afterbegin', shapeSVG(b.dataset.shape));
+      b.addEventListener('click', function () { G.shape = b.dataset.shape; f.el.querySelectorAll('[data-shape]').forEach(function (x) { x.setAttribute('aria-pressed', x === b); }); f.s.test = null; f.chain.kick(4, 0); });
     });
+    f.el.querySelectorAll('[data-test]').forEach(function (b) { b.addEventListener('click', function () { self.run(f, b.dataset.test); }); });
   },
-  setGuess: function (f, v) { if (f.s.on) return; f.s.g = v; $('guess-r').value = v; $('guess-out').textContent = v + '%'; },
-  layout: function (f) { var st = stage(f), W = f.w, c = Math.floor(Math.min(.081 * W, (st.h - 24) / 10)); f.s.G = { c: c, x0: .06 * W, y0: st.t + (st.h - 10 * c) / 2 }; },
-  cell: function (g, k) { var r = Math.floor(k / 10), col = r % 2 === 0 ? k % 10 : 9 - k % 10; return pt(g.x0 + (col + .5) * g.c, g.y0 + (r + .5) * g.c); },
-  count: function (f) { if (!f.s.on) return f.s.g; return Math.round(f.s.g + (59 - f.s.g) * ease((f.t - f.s.rt - .4) / 1.8)); },
-  hitTest: function (f, x, y) {
-    var g = f.s.G, self = this; if (f.s.on || x < g.x0 - 6 || x > g.x0 + 10 * g.c + 6 || y < g.y0 - 6 || y > g.y0 + 10 * g.c + 6) return null;
-    return { move: function (mx, my) { var col = clamp(Math.floor((mx - g.x0) / g.c), 0, 9), row = clamp(Math.floor((my - g.y0) / g.c), 0, 9); self.setGuess(f, row * 10 + (row % 2 === 0 ? col : 9 - col) + 1); } };
+  run: function (f, t) {
+    f.s.test = t; f.s.tt = f.t; var s = G.shape, self = this;
+    setTimeout(function () {
+      if (f.s.test !== t) return;
+      var win = { light: 'trilobal', cold: 'hollow', sweat: 'channel' }[t];
+      if (s === win) card(f, win);
+      else card(f, 'Not quite', { light: 'Some shine, but no sparkle. Which shape might act like a prism?', cold: 'The cold gets straight through. Which shape could hold a pocket of air?', sweat: 'The drop just sits there. Which shape has grooves to pull it along?' }[t]);
+    }, 1500);
   },
-  path: function (f) {
-    var g = f.s.G, m = this.count(f), W = f.w, pts = [];
-    if (m < 1) return [pt(.87 * W, g.y0 - 10), pt(.45 * W, g.y0 + 10 * g.c + 30)];
-    pts.push(pt(.87 * W, g.y0 - 10));
-    for (var k = 0; k < m; k++) pts.push(this.cell(g, k));
-    var last = this.cell(g, m - 1); pts.push(pt(last.x, g.y0 + 10 * g.c + 14), pt(.45 * W, g.y0 + 10 * g.c + 34));
-    return pts;
-  },
-  k: 0.13,
-  tick: function (f) { if (!f.s.on) return; var m = this.count(f); if (m !== f.s.m) { f.s.m = m; $('guess-n').textContent = m; } },
-  back: function (ctx, f) {
-    var g = f.s.G, m = this.count(f), self = this;
-    for (var k = 0; k < 100; k++) {
-      var c = self.cell(g, k), s = g.c - 4, x = c.x - s / 2, y = c.y - s / 2;
-      if (k < m) {
-        if (f.s.on) { ctx.fillStyle = KU.b; ctx.fillRect(x, y, s, s); }
-        else { ctx.save(); ctx.beginPath(); ctx.rect(x, y, s, s); ctx.clip(); ctx.strokeStyle = KU.k; ctx.lineWidth = 2; ctx.beginPath(); for (var d = -s; d < s; d += 6) { ctx.moveTo(x + d, y + s); ctx.lineTo(x + d + s, y); } ctx.stroke(); ctx.restore(); }
-      }
-      ctx.strokeStyle = KU.k; ctx.lineWidth = 1.5; ctx.strokeRect(x, y, s, s);
+  cardLayout: true,
+  layout: function (f) { var tests = $('tests'), cd = f.named.card; tests.style.top = Math.round((cd ? cd.t + 12 : f.h * .8) - tests.offsetHeight - 18) + 'px'; f.measure(); },
+  geo: function (f) { var t = f.named.top ? f.named.top.b : f.h * .3, b = f.named.tests ? f.named.tests.t : f.h * .75, R = Math.min(.3 * f.w, (b - t) * .42); return { cx: .44 * f.w, cy: (t + b) / 2, R: R, t: t, b: b }; },
+  path: function (f) { var g = this.geo(f), W = f.w; return [pt(.87 * W, g.t + 4), pt(g.cx, g.cy - g.R - 10), pt(g.cx, g.cy + g.R + 10), pt(.87 * W, g.b - 4)]; },
+  k: 0.1,
+  front: function (ctx, f) {
+    var g = this.geo(f), u = f.s.test ? clamp((f.t - f.s.tt) / 1.4, 0, 1) : 0, ink = KU.b, s = G.shape, i;
+    var L = lens(ctx, g.cx, g.cy, g.R, s, Math.min(G.fil, 7), ink);
+    ctx.save(); ctx.beginPath(); ctx.arc(g.cx, g.cy, g.R - 2, 0, Math.PI * 2); ctx.clip();
+    if (f.s.test === 'light') {
+      var bx = g.cx - g.R + u * g.R * 1.2, by = g.cy - g.R + u * g.R * 1.2; ctx.strokeStyle = KU.y; ctx.lineWidth = 6; ctx.beginPath(); ctx.moveTo(g.cx - g.R, g.cy - g.R); ctx.lineTo(bx, by); ctx.stroke();
+      if (u > .6) for (i = 0; i < (s === 'trilobal' ? 26 : 3); i++) { var q = L.pts[i % L.pts.length], a = hash(i, 4) * Math.PI * 2, d = L.r * (1 + hash(i, 5)); star(ctx, q.x + Math.cos(a) * d, q.y + Math.sin(a) * d, (s === 'trilobal' ? 7 : 4) * (.6 + .4 * Math.sin(f.t * 9 + i)), KU.w); }
     }
-    if (f.s.on && f.s.g > 0) { var gc = self.cell(g, f.s.g - 1); ctx.strokeStyle = KU.k; ctx.lineWidth = 4; ctx.strokeRect(gc.x - g.c / 2, gc.y - g.c / 2, g.c, g.c); }
+    if (f.s.test === 'cold') {
+      for (i = 0; i < 7; i++) { var y = g.cy - g.R * .8 + i * g.R * .27, stop = s === 'hollow' ? g.cx - g.R * .55 : g.cx + g.R, x = g.cx - g.R + ((f.t * 90 + i * 40) % (g.R * 2)); if (x > stop) continue; ctx.strokeStyle = KU.w; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(x - 14, y); ctx.lineTo(x, y); ctx.lineTo(x - 5, y - 5); ctx.moveTo(x, y); ctx.lineTo(x - 5, y + 5); ctx.stroke(); }
+      if (s === 'hollow' && u > .4) L.pts.forEach(function (q) { disc(ctx, q.x, q.y, L.r * .4 * u, KU.y); });
+    }
+    if (f.s.test === 'sweat') {
+      var spread = s === 'channel' ? 1 + u * 3.2 : 1 + u * .3; ctx.fillStyle = KU.y; ctx.beginPath(); ctx.ellipse(g.cx, g.cy + L.r * 2.4, L.r * .7 * spread, L.r * .7 / Math.sqrt(spread), 0, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.restore();
+    label(ctx, f, '×1,000', g.cx - g.R * .72, g.cy + g.R + 22, 14, KU.k, 'right');
+  }
+};
+
+// Drag the number: the thread fans from one filament to hundreds.
+SCENES.count = {
+  n: 130,
+  init: function (f) {
+    scrub($('fil-n'), { value: 1, snap: [1, 2, 6, 12, 24, 48, 96, 144, 300], fmt: function (v) { return String(v); }, cap: function (v) { return v === 1 ? 'filament' : 'filaments'; },
+      onChange: function (v) { G.fil = v; f.chain.kick(3, 0); if (v >= 144) card(f, 'micro'); else if (v >= 24) card(f, 'multi'); } });
+  },
+  tick: function (f) { if (f.vt > 2 && !f.s.told && G.fil === 1) { f.s.told = true; card(f, 'mono'); } },
+  layout: function (f) { var el = $('fil-n'), st = stage(f); el.style.left = '6%'; el.style.top = Math.round(st.m - el.offsetHeight / 2) + 'px'; f.measure(); },
+  geo: function (f) { var st = stage(f), R = Math.min(.22 * f.w, st.h * .3); return { cx: .66 * f.w, cy: st.m, R: R, st: st }; },
+  path: function (f) { var g = this.geo(f), W = f.w; return [pt(.87 * W, g.st.t + 4), pt(g.cx, g.cy - g.R - 10), pt(g.cx, g.cy + g.R + 10), pt(.87 * W, g.st.b - 4)]; },
+  k: 0.1,
+  front: function (ctx, f) { var g = this.geo(f); lens(ctx, g.cx, g.cy, g.R, G.shape, G.fil, KU.b); label(ctx, f, 'cut end', g.cx, g.cy + g.R + 24, 14, KU.k, 'center'); }
+};
+
+// Swipe across the thread to cut it into staple. Then drag the twist up to spin it.
+SCENES.cut = {
+  n: 140,
+  init: function (f) {
+    f.s.cuts = 0; f.s.trail = []; f.falls = []; var self = this;
+    f.twist = scrub($('twist'), { value: 0, min: 0, max: 10, step: 1, per: .06, fmt: function (v) { return String(v); },
+      onChange: function (v) { G.twist = v; f.chain.kick(2, 0); if (v >= 7) card(f, 'twist'); } });
+    $('cut-key').addEventListener('click', function () { var c = f.chain; for (var k = 0; k < 3; k++) self.cutAt(f, ((c.n * (.35 + k * .15)) | 0)); });
+  },
+  cutAt: function (f, i) {
+    var c = f.chain, a = Math.max(1, i - 7), b = Math.min(c.n - 2, i + 7), bit = [];
+    for (var k = a; k <= b; k++) bit.push(pt(c.p[k].x, c.p[k].y));
+    if (bit.length > 2) { var fall = new Chain(bit, bit.length, { pinTop: false, pinBot: false, g: .3 }); fall.grabbable = false; fall.p.forEach(function (q) { q.px -= (Math.random() - .5) * 4; }); f.falls.push(fall); }
+    f.s.cuts++; c.kick(0, -4, a, b);
+    if (f.s.cuts === 3) { G.staple = true; $('twist').hidden = false; $('cut-hint').textContent = 'Now spin it: drag the twist up'; card(f, 'staple'); f.measure(); }
+  },
+  hitTest: function (f, x, y) {
+    var c = f.chain, self = this; for (var i = 0; i < c.n; i++) if (Math.hypot(c.p[i].x - x, c.p[i].y - y) < 26) return null;
+    var st = stage(f); if (y < st.t || y > st.b) return null;
+    var last = pt(x, y), cool = 0;
+    return { move: function (mx, my) {
+      var cur = pt(mx, my); f.s.trail.push({ x: mx, y: my, t: f.t }); if (f.s.trail.length > 30) f.s.trail.shift();
+      if (f.t > cool) for (var i = 0; i < c.n - 1; i++) if (segX(last, cur, c.p[i], c.p[i + 1])) { self.cutAt(f, i); cool = f.t + .25; break; }
+      last = cur;
+    } };
+  },
+  path: function (f) { var st = stage(f), W = f.w; return [pt(.87 * W, st.t + 6), pt(.5 * W, st.t + st.h * .12), pt(.5 * W, st.b - st.h * .12), pt(.87 * W, st.b - 6)]; },
+  k: 0.08,
+  tick: function (f) { f.falls = f.falls.filter(function (c) { c.step(f.t, [], 0); return !c.p.every(function (q) { return q.y > f.h + 30; }); }); },
+  front: function (ctx, f) {
+    f.falls.forEach(function (c) { strokeChain(ctx, c, KU.b, 5); });
+    var tr = f.s.trail.filter(function (q) { return f.t - q.t < .35; });
+    if (tr.length > 1) { ctx.strokeStyle = KU.y; ctx.lineWidth = 4; ctx.lineCap = 'round'; ctx.beginPath(); tr.forEach(function (q, i) { ctx[i ? 'lineTo' : 'moveTo'](q.x, q.y); }); ctx.stroke(); }
+  }
+};
+
+// Pick a partner fibre: it flies in and wraps the core.
+SCENES.blend = {
+  n: 130,
+  init: function (f) {
+    f.s.wt = -9;
+    f.el.querySelectorAll('[data-p]').forEach(function (b) { b.addEventListener('click', function () {
+      var p = b.dataset.p; f.el.querySelectorAll('[data-p]').forEach(function (x) { x.setAttribute('aria-pressed', x === b); });
+      G.partner = p === 'cotton' || p === 'wool' ? p : null; G.elastane = p === 'elastane'; G.stripped = null; f.s.wt = f.t; f.chain.kick(5, 0); syncUI();
+      if (p !== 'none') card(f, p);
+    }); });
+  },
+  path: function (f) { var st = stage(f), W = f.w; return [pt(.87 * W, st.t + 6), pt(.48 * W, st.t + st.h * .14), pt(.48 * W, st.b - st.h * .14), pt(.87 * W, st.b - 6)]; },
+  k: 0.08
+};
+
+// Colour it: a dye bath that only works hot, or pigment in the melt.
+SCENES.colour = {
+  n: 140,
+  init: function (f) {
+    var self = this; f.s.col = 'yellow'; f.s.m = null; f.s.u = 0; f.s.T = 60;
+    f.el.querySelectorAll('[data-c]').forEach(function (b) { b.addEventListener('click', function () { f.s.col = b.dataset.c; f.el.querySelectorAll('[data-c]').forEach(function (x) { x.setAttribute('aria-pressed', x === b); }); f.s.u = 0; f.s.done = false; }); });
+    f.el.querySelectorAll('[data-m]').forEach(function (b) { b.addEventListener('click', function () { f.s.m = b.dataset.m; f.s.u = 0; f.s.mt = f.t; f.s.done = false; $('dye-t').hidden = f.s.m !== 'bath'; self.layout(f); }); });
+    f.temp = scrub($('dye-t'), { value: 60, min: 20, max: 140, step: 5, per: .7, keyMul: 2, fmt: function (v) { return v + '°C'; }, cap: function (v) { return v >= 125 ? 'bath · under pressure' : 'bath · drag up'; }, onChange: function (v) { f.s.T = v; } });
+  },
+  target: function (f) { return f.s.col === 'black' ? KU.k : KU.y; },
+  layout: function (f) { var el = $('dye-t'), st = stage(f); if (!el.hidden) { el.style.left = '6%'; el.style.top = Math.round(st.t + 6) + 'px'; } f.measure(); },
+  geo: function (f) { var st = stage(f), W = f.w, vt = st.t + st.h * .52; if (f.named.temp) vt = Math.max(vt, f.named.temp.b); return { st: st, vat: { x: .26 * W, y: vt, w: .5 * W, h: st.b - vt - 8 }, hop: pt(.5 * W, st.t + st.h * .1) }; },
+  path: function (f) {
+    var g = this.geo(f), W = f.w, v = g.vat, end = [pt(.87 * W, f.h * .975)];
+    if (f.s.m === 'bath') return [pt(.87 * W, g.st.t + 4), pt(.46 * W, v.y - 40), pt(.46 * W, v.y + v.h - 16), pt(.56 * W, v.y + v.h - 16), pt(.56 * W, v.y - 40), pt(.87 * W, v.y - 20)].concat(end);
+    return [pt(.87 * W, g.st.t + 4), pt(g.hop.x, g.hop.y + 34), pt(g.hop.x, g.st.b - g.st.h * .1), pt(.87 * W, g.st.b - 10)].concat(end);
+  },
+  k: 0.1,
+  tick: function (f) {
+    if (f.s.m === 'bath') { var r = f.s.T >= 125 ? .5 : f.s.T >= 100 ? .04 : 0; f.s.u = clamp(f.s.u + r / 60, 0, 1); }
+    if (f.s.m === 'melt') f.s.u = clamp((f.t - f.s.mt - .6) / 1.2, 0, 1);
+    if (f.s.m && f.s.u > 0) { G.mix = mix(KU.b, this.target(f), f.s.u); }
+    if (f.s.m && f.s.u >= 1 && !f.s.done) { f.s.done = true; G.colour = this.target(f); G.dye = f.s.m; card(f, f.s.m); renderLabel(); f.s.union = G.partner ? f.t + 4 : 0; }
+    if (f.s.union && f.t > f.s.union) { f.s.union = 0; card(f, 'union'); }
+    if (f.s.m === 'bath' && f.s.T < 100 && f.vt > 1 && !f.s.hinted && f.t - f.s.mt > 3) { f.s.hinted = true; card(f, 'Nothing yet', 'The dye just sits in the water. What would make polyester open up and let it in?'); }
+  },
+  back: function (ctx, f) {
+    var g = this.geo(f), v = g.vat;
+    if (f.s.m === 'bath') { var c = mix(this.target(f), KU.w, f.s.u * .75); ctx.fillStyle = KU.k; ctx.fillRect(v.x - 8, v.y - 8, v.w + 16, v.h + 16); ctx.fillStyle = c; ctx.fillRect(v.x, v.y + 6, v.w, v.h - 6);
+      if (f.s.T >= 100) for (var i = 0; i < 8; i++) { var bx = v.x + hash(i, 1) * v.w, by = v.y + v.h - ((f.t * (20 + f.s.T / 4) + i * 30) % v.h); disc(ctx, bx, by, 3 + hash(i, 2) * 3, KU.w); } }
+  },
+  front: function (ctx, f) {
+    var g = this.geo(f), W = f.w;
+    if (f.s.m === 'melt') {
+      ctx.fillStyle = KU.k; ctx.beginPath(); ctx.moveTo(g.hop.x - .14 * W, g.hop.y - 20); ctx.lineTo(g.hop.x + .14 * W, g.hop.y - 20); ctx.lineTo(g.hop.x + .04 * W, g.hop.y + 30); ctx.lineTo(g.hop.x - .04 * W, g.hop.y + 30); ctx.closePath(); ctx.fill();
+      var tc = this.target(f); for (var i = 0; i < 6; i++) { var y = g.hop.y - 70 + ((f.t * 60 + i * 15) % 60); if (f.t - f.s.mt < 2.5) { ctx.fillStyle = tc; ctx.fillRect(g.hop.x - 22 + (i * 9) % 44, y, 10, 10); ctx.strokeStyle = casingFor(tc); ctx.lineWidth = 1.5; ctx.strokeRect(g.hop.x - 22 + (i * 9) % 44, y, 10, 10); } }
+    }
   }
 };
 
@@ -737,8 +1064,7 @@ SCENES.tug = {
     f.s.np = 0; f.s.nc = 0; f.s.u = .5; var self = this;
     f.el.querySelectorAll('.chip-btn').forEach(function (b) { b.addEventListener('click', function () {
       var on = b.getAttribute('aria-pressed') !== 'true'; b.setAttribute('aria-pressed', on);
-      var pro = !!b.closest('.pros'); self.count(f);
-      var dir = (pro ? -1 : 1) * (on ? 1 : -1); f.chain.kick(dir * 5, 0);
+      var pro = !!b.closest('.pros'); self.count(f); f.chain.kick((pro ? -1 : 1) * (on ? 1 : -1) * 5, 0);
     }); });
   },
   count: function (f) {
@@ -751,11 +1077,7 @@ SCENES.tug = {
   path: function (f) { var r = this.rope(f), W = f.w; return [pt(.45 * W, r.top + 6), pt(18, r.y - 40), pt(14, r.y), pt(W - 14, r.y), pt(W - 18, r.y + 40), pt(.87 * W, r.bot - 8)]; },
   k: 0.1,
   tick: function (f) { var tgt = clamp(.5 + (f.s.nc - f.s.np) * .075, .12, .88); f.s.u += (tgt - f.s.u) * .06; },
-  knotAt: function (f) {
-    var r = this.rope(f), x = 14 + f.s.u * (f.w - 28), c = f.chain, best = 1, bd = 1e9;
-    for (var i = 1; i < c.n - 1; i++) { var q = c.p[i]; if (Math.abs(q.y - r.y) > 60) continue; var d = Math.abs(q.x - x); if (d < bd) { bd = d; best = i; } }
-    return best;
-  },
+  knotAt: function (f) { var r = this.rope(f), x = 14 + f.s.u * (f.w - 28), c = f.chain, best = 1, bd = 1e9; for (var i = 1; i < c.n - 1; i++) { var q = c.p[i]; if (Math.abs(q.y - r.y) > 60) continue; var d = Math.abs(q.x - x); if (d < bd) { bd = d; best = i; } } return best; },
   back: function (ctx, f) {
     var r = this.rope(f);
     if (f.named.bottom) { ctx.fillStyle = KU.y; ctx.fillRect(0, f.named.bottom.t + 4, f.w, f.h); }
@@ -763,28 +1085,23 @@ SCENES.tug = {
   },
   front: function (ctx, f) {
     var c = f.chain, i = this.knotAt(f), q = c.p[i], a = c.p[i - 1], b = c.p[i + 1], ang = Math.atan2(b.y - a.y, b.x - a.x);
-    ctx.save(); ctx.translate(q.x, q.y); ctx.rotate(ang);
-    ctx.fillStyle = KU.k; ctx.fillRect(-11, -30, 22, 60); ctx.fillStyle = KU.y; ctx.fillRect(-8, -27, 16, 54);
-    ctx.restore();
+    ctx.save(); ctx.translate(q.x, q.y); ctx.rotate(ang); ctx.fillStyle = KU.k; ctx.fillRect(-11, -30, 22, 60); ctx.fillStyle = KU.y; ctx.fillRect(-8, -27, 16, 54); ctx.restore();
   }
 };
 
-// The best page: the machine is the interface.
+// The washing machine is the interface. Finer fibres and loose staple shed more.
 SCENES.wash = {
   n: 180,
-  init: function (f) {
-    f.s.rot = 0; f.s.until = 0; f.s.shown = -1; f.s.rev = false; f.parts = []; var self = this;
-    $('wash-go').addEventListener('click', function () { self.wash(f); });
-  },
+  init: function (f) { f.s.rot = 0; f.s.until = 0; f.s.shown = -1; f.parts = []; var self = this; $('wash-go').addEventListener('click', function () { self.wash(f); }); },
+  rate: function () { return (G.fil >= 144 ? 2 : 1) * (G.staple ? 1.7 - G.twist * .08 : 1); },
   wash: function (f) { f.s.until = f.t + 3.4; this.reveal(f); },
   tap: function (f, x, y) { var g = this.geo(f); if (Math.hypot(x - g.cx, y - g.cy) < g.r) this.wash(f); },
   reveal: function (f) {
-    if (f.s.rev) return; f.s.rev = true;
-    var p = $('wash-p'); p.innerHTML = 'In one lab study, a 5 kg wash released <span class="mark">more than <span id="wash-big">0</span> microfibres</span>. Some slip through water treatment.';
-    countUp($('wash-big'), 6000000, 1300, function (v) { return v.toLocaleString('en-GB'); }); f.measure();
+    if (!f.s.rev) { f.s.rev = true; card(f, 'wash'); }
+    else if (!f.s.rev2 && (G.fil >= 144 || G.staple)) { f.s.rev2 = true; card(f, 'fleece'); }
   },
   layout: function (f) { var g = this.geo(f); place($('wash-n'), g.x + 16, g.y + 12, g.w * .48, 32); place($('wash-go'), g.x + g.w - 16 - 78, g.y + 9, 78, 38); f.measure(); },
-  geo: function (f) { var st = stage(f), W = f.w, mw = .82 * W, mh = Math.min(mw * 1.02, st.h * .74), x = .5 * W - mw / 2, y = st.t + st.h * .02, r = Math.min(mw, mh - 56) * .37; return { x: x, y: y, w: mw, h: mh, cx: .5 * W, cy: y + 56 + (mh - 56) * .5, r: r, wy: y + mh + 26 }; },
+  geo: function (f) { var st = stage(f), W = f.w, mw = .82 * W, mh = Math.min(mw * 1.02, st.h * .8), x = .5 * W - mw / 2, y = st.t + st.h * .02, r = Math.min(mw, mh - 56) * .37; return { x: x, y: y, w: mw, h: mh, cx: .5 * W, cy: y + 56 + (mh - 56) * .5, r: r, wy: y + mh + 26 }; },
   water: function (f) { var g = this.geo(f); return Math.max(g.cy + g.r * .2, g.wy - Math.min(G.shed, 400) * .35); },
   path: function (f) {
     var g = this.geo(f), W = f.w, sp = [];
@@ -792,73 +1109,73 @@ SCENES.wash = {
     return [pt(.87 * W, g.y - 22), pt(.56 * W, g.y - 22), pt(.55 * W, g.y + 40), pt(g.cx, g.cy - g.r * .85)].concat(sp).concat([pt(g.cx, g.y + g.h + 10), pt(.13 * W, g.wy + 40)]);
   },
   k: 0.12,
-  shedFrom: function (f, q) { if (f.parts.length > 340) return; f.parts.push({ x: q.x, y: q.y, px: q.x - (Math.random() - .5) * 1.4, py: q.y - Math.random() * .4, a: Math.random() * Math.PI }); G.shed++; },
+  shedFrom: function (f, q) { if (f.parts.length > 360) return; f.parts.push({ x: q.x, y: q.y, px: q.x - (Math.random() - .5) * 1.4, py: q.y - Math.random() * .4, a: Math.random() * Math.PI }); G.shed++; },
   tick: function (f) {
     var washing = f.t < f.s.until; f.s.rot += (washing ? 10 : 0.5) / 60;
-    var g = this.geo(f), p = f.chain.p;
-    if (washing) for (var k = 0; k < 3; k++) { var q = p[(Math.random() * p.length) | 0]; if (Math.hypot(q.x - g.cx, q.y - g.cy) < g.r) this.shedFrom(f, q); }
+    var g = this.geo(f), p = f.chain.p, n = Math.round(3 * this.rate());
+    if (washing) for (var k = 0; k < n; k++) { var q = p[(Math.random() * p.length) | 0]; if (Math.hypot(q.x - g.cx, q.y - g.cy) < g.r) this.shedFrom(f, q); }
+    if (washing && f.t > f.s.until - 1 && (G.fil >= 144 || G.staple)) this.reveal(f);
     var H = f.h, t = f.t;
     f.parts = f.parts.filter(function (o) { var vx = (o.x - o.px) * .985, vy = (o.y - o.py) * .985 + .012; o.px = o.x; o.py = o.y; o.x += vx + Math.sin(t * 2 + o.a * 5) * .03; o.y += vy; o.a += .02; return o.y < H + 10; });
     if (G.shed !== f.s.shown) { f.s.shown = G.shed; $('wash-n').textContent = String(G.shed).padStart(3, '0') + ' fibres'; }
   },
-  onDrag: function (f, d) { if (d.chain && Math.hypot(d.vx || 0, d.vy || 0) > 5) { var i = d.chain.grab; for (var k = -2; k <= 2; k++) { var q = d.chain.p[clamp(i + k * 3, 0, d.chain.n - 1)]; if (Math.random() < .5) this.shedFrom(f, q); } this.reveal(f); } },
+  onDrag: function (f, d) { if (d.chain && Math.hypot(d.vx || 0, d.vy || 0) > 5) { var i = d.chain.grab; for (var k = -2; k <= 2; k++) { var q = d.chain.p[clamp(i + k * 3, 0, d.chain.n - 1)]; if (Math.random() < .5 * this.rate()) this.shedFrom(f, q); } this.reveal(f); } },
   back: function (ctx, f) {
     var g = this.geo(f), sh = f.t < f.s.until ? Math.sin(f.t * 52) * 2.4 : 0;
     ctx.save(); ctx.translate(sh, 0);
     ctx.fillStyle = KU.k; ctx.beginPath(); if (ctx.roundRect) ctx.roundRect(g.x, g.y, g.w, g.h, 18); else ctx.rect(g.x, g.y, g.w, g.h); ctx.fill();
     disc(ctx, g.cx, g.cy, g.r + 10, KU.g); disc(ctx, g.cx, g.cy, g.r, KU.w);
     ctx.restore();
-    place($('wash-n'), g.x + 16, g.y + 12, g.w * .48, 32);
-    place($('wash-go'), g.x + g.w - 16 - 78, g.y + 9, 78, 38);
+    place($('wash-n'), g.x + 16, g.y + 12, g.w * .48, 32); place($('wash-go'), g.x + g.w - 16 - 78, g.y + 9, 78, 38);
     wave(ctx, this.water(f), f, 5, KU.b, false);
   },
   front: function (ctx, f) {
-    var wl = this.water(f);
-    ctx.lineWidth = 2;
+    var wl = this.water(f); ctx.lineWidth = 2;
     f.parts.forEach(function (o) { ctx.strokeStyle = o.y > wl ? KU.w : KU.b; ctx.beginPath(); ctx.moveTo(o.x, o.y); ctx.lineTo(o.x + Math.cos(o.a) * 6, o.y + Math.sin(o.a) * 6); ctx.stroke(); });
   }
 };
 
-// Bottle, shirt, and then nothing. The whole frame changes colour with each step.
+// Bottle, shirt, and then nothing. The frame changes colour with each step.
 SCENES.bottle = {
   n: 170,
   T: [
-    ['Recycled polyester?', 'Most recycled polyester starts life as a plastic drinks bottle, not old clothes.', 'Make a shirt', 'blue'],
+    ['Recycled polyester?', 'Tap the shape to see where most recycled polyester comes from.', 'Next step', 'blue'],
     ['Bottle to shirt', 'The bottle is melted and spun into fibre for a new shirt.', 'Recycle the shirt', 'white'],
-    ['Then what?', 'The shirt usually stops there. Under 1% of all fibre comes from recycled clothes.', 'Start again', 'black']
+    ['Then what?', 'The shirt usually stops there.', 'Start again', 'black']
   ],
   init: function (f) { f.s.step = 0; var self = this; $('bot-go').addEventListener('click', function () { self.next(f); }); },
   next: function (f) {
     f.s.step = (f.s.step + 1) % 3; var s = this.T[f.s.step];
     $('bot-h').textContent = s[0]; $('bot-p').textContent = s[1]; $('bot-go').textContent = s[2]; setBg(f, s[3]); f.measure();
-    f.chain.kick(0, -6, 10, f.chain.n - 10);
+    f.chain.kick(0, -6, 10, f.chain.n - 10); if (f.s.step === 2) card(f, 'bottle');
   },
   tap: function (f) { this.next(f); },
   path: function (f) {
     var st = stage(f), W = f.w, cx = .56 * W, s = f.s.step;
     if (s === 0) { var bw = Math.min(.38 * W, st.h * .86 / 3.2), bh = bw * 3.2, by = st.t + (st.h - bh) / 2; return [pt(.13 * W, by + bh - 6)].concat(box(BOTTLE, cx - bw / 2, by, bw, bh)).concat([pt(.13 * W, by + bh + 24)]); }
     if (s === 1) { var sw = Math.min(.72 * W, st.h * .82), sh = sw * 1.02, sy = st.t + (st.h - sh) / 2; return [pt(.13 * W, sy + sh - 6)].concat(box(SHIRT_L, cx - sw / 2, sy, sw, sh)).concat([pt(.13 * W, sy + sh + 24)]); }
-    var r = Math.min(.33 * W, st.h * .34), cy = st.t + st.h * .4;
-    return [pt(.13 * W, cy - r - 10), pt(cx, cy - r)].concat(arc(cx, cy, r, r, -90 * D, 220 * D, 70)).concat([pt(cx - r - 16, cy + r * .3)]).concat(heap(cx - r * .2, st.b - st.h * .1, .28 * W, st.h * .06, 11, 24)).concat([pt(.13 * W, st.b - 4)]);
+    var r = Math.min(.3 * W, st.h * .32), cy = st.t + st.h * .4;
+    return [pt(.13 * W, cy - r - 10), pt(cx, cy - r)].concat(arc(cx, cy, r, r, -90 * D, 220 * D, 70)).concat([pt(cx - r - 16, cy + r * .3)]).concat(heap(cx - r * .2, st.b - st.h * .1, .26 * W, st.h * .06, 11, 24)).concat([pt(.13 * W, st.b - 4)]);
   },
   k: 0.09
 };
 
-// Tap the coil to wrap elastane round the thread. Tap the ring to recycle.
-SCENES.stretch = {
+// Feed the recycler. Anything wrapped round the polyester jams it.
+SCENES.recycle = {
   n: 180,
   init: function (f) {
     f.s.rec = false; f.s.rt = 0; f.s.done = false; var self = this;
-    $('st-coil').addEventListener('click', function () { self.toggle(f); });
-    $('st-ring').addEventListener('click', function () { self.recycle(f); });
+    $('rc-coil').addEventListener('click', function () { if (!G.elastane && !G.partner) { G.elastane = true; self.reset(f); syncUI(); } });
+    $('rc-ring').addEventListener('click', function () { self.recycle(f); });
+    $('rc-strip').addEventListener('click', function () { G.stripped = G.elastane ? 'elastane' : G.partner; G.partner = null; G.elastane = false; syncUI(); self.reset(f); });
   },
-  toggle: function (f) { G.elastane = !G.elastane; this.reset(f); syncUI(); },
-  reset: function (f) { f.s.rec = false; f.s.done = false; setBg(f, 'white'); $('st-say').hidden = true; $('st-p').textContent = G.elastane ? 'Elastane is on your thread now. It isn\'t polyester: it\'s polyurethane. Will it still recycle?' : 'Elastane (spandex) gives clothes their stretch. It\'s polyurethane, not polyester.'; f.measure(); },
+  blocked: function () { return G.elastane ? 'elastane' : G.partner; },
+  reset: function (f) { f.s.rec = false; f.s.done = false; setBg(f, 'white'); $('rc-say').hidden = true; $('rc-strip').hidden = true; $('rc-hint').textContent = 'Tap the ring'; var b = this.blocked(); $('rc-p').textContent = b ? 'Your thread has ' + b + ' wrapped round it. Predict first: will it go round?' : 'Your thread is about to go round. Predict first: will it?'; f.measure(); },
   recycle: function (f) { this.reset(f); f.s.rec = true; f.s.rt = f.t; },
-  geo: function (f) { var st = stage(f), W = f.w, r = Math.min(.31 * W, st.h * .3); return { cx: .5 * W, cy: st.t + st.h * .4, r: r, st: st, peg: pt(.8 * W, st.t + st.h * .64), cl: st.h * .28 }; },
-  tap: function (f, x, y) { var g = this.geo(f); if (Math.hypot(x - g.cx, y - g.cy) < g.r + 20) this.recycle(f); else if (!G.elastane && Math.abs(x - g.peg.x) < 40 && y > g.peg.y - 10 && y < g.peg.y + g.cl + 20) this.toggle(f); },
-  layout: function (f) { var g = this.geo(f); place($('st-ring'), g.cx - g.r, g.cy - g.r, g.r * 2, g.r * 2); place($('st-coil'), g.peg.x - 34, g.peg.y - 10, 68, g.cl + 24); f.coil = new Chain([g.peg, pt(g.peg.x, g.peg.y + g.cl)], 46, { pinBot: false, g: .05, wind: .03, iter: 8 }); },
-  sweep: function (f) { if (!f.s.rec) return 0; var u = (f.t - f.s.rt) * 220; return G.elastane ? Math.min(u, 150) : Math.min(u, 320); },
+  geo: function (f) { var st = stage(f), W = f.w, r = Math.min(.3 * W, st.h * .3); return { cx: .5 * W, cy: st.t + st.h * .42, r: r, st: st, peg: pt(.8 * W, st.t + st.h * .66), cl: st.h * .26 }; },
+  tap: function (f, x, y) { var g = this.geo(f); if (Math.hypot(x - g.cx, y - g.cy) < g.r + 20) this.recycle(f); else if (!this.blocked() && Math.abs(x - g.peg.x) < 40 && y > g.peg.y - 10 && y < g.peg.y + g.cl + 20) { G.elastane = true; this.reset(f); syncUI(); } },
+  layout: function (f) { var g = this.geo(f); place($('rc-ring'), g.cx - g.r, g.cy - g.r, g.r * 2, g.r * 2); place($('rc-coil'), g.peg.x - 34, g.peg.y - 10, 68, g.cl + 24); f.coil = new Chain([g.peg, pt(g.peg.x, g.peg.y + g.cl)], 46, { pinBot: false, g: .05, wind: .03, iter: 8 }); },
+  sweep: function (f) { if (!f.s.rec) return 0; var u = (f.t - f.s.rt) * 220; return this.blocked() ? Math.min(u, 150) : Math.min(u, 320); },
   path: function (f) {
     var g = this.geo(f), W = f.w;
     if (!f.s.rec) return [pt(.13 * W, g.st.t + 10), pt(.16 * W, g.cy + g.r + 20), pt(.62 * W, g.cy + g.r + 46), pt(.87 * W, g.st.b - 10)];
@@ -872,27 +1189,23 @@ SCENES.stretch = {
     return o;
   },
   tick: function (f) {
-    if (!G.elastane && f.coil) f.coil.step(f.t, [], 0);
+    if (!this.blocked() && f.coil) f.coil.step(f.t, [], 0);
     if (f.s.rec && !f.s.done && f.t - f.s.rt > 1.7) {
-      f.s.done = true; var bad = G.elastane;
-      setBg(f, bad ? 'black' : 'blue');
-      say($('st-say'), bad ? 'Jammed.' : 'It goes round.');
-      $('st-p').textContent = bad ? 'A little elastane spoils a polyester batch, and one estimate finds it in about 80% of discarded clothes. It stays on your thread until you pull it off.' : 'Pure polyester can loop. Now tap the coil, add elastane, and try again.';
-      f.measure();
+      f.s.done = true; var bad = this.blocked();
+      setBg(f, bad ? 'black' : 'blue'); say($('rc-say'), bad ? 'Jammed.' : 'It goes round.');
+      $('rc-p').textContent = bad ? 'The ' + bad + ' and the polyester would have to be separated first.' : 'One material. Now try it with elastane: tap the coil.';
+      $('rc-strip').hidden = !bad; if (bad) $('rc-strip').textContent = 'Strip the ' + bad + ' off'; $('rc-hint').textContent = bad ? 'Strip it, then tap the ring' : 'Tap the coil'; card(f, bad ? 'jam' : 'loop'); f.measure();
     }
   },
   back: function (ctx, f) {
-    var g = this.geo(f), u = f.t - f.s.rt, jam = f.s.rec && G.elastane && u > 0.9, sh = jam && Math.sin(f.t * 3) > .6 ? Math.sin(f.t * 45) * 4 : 0;
-    var ringCol = f.bg === 'black' ? KU.w : KU.k;
+    var g = this.geo(f), u = f.t - f.s.rt, jam = f.s.rec && this.blocked() && u > 0.9, sh = jam && Math.sin(f.t * 3) > .6 ? Math.sin(f.t * 45) * 4 : 0;
+    var ringCol = f.bg === 'black' ? KU.w : KU.k, turn = f.s.rec && !jam ? f.t * 2 : 0;
     ring(ctx, g.cx + sh, g.cy, g.r, 12, ringCol);
-    // arrow notches round the ring, turning while it runs
-    var turn = f.s.rec && !jam ? f.t * 2 : 0;
     for (var k = 0; k < 3; k++) { var a = turn + k * 2.094; ctx.save(); ctx.translate(g.cx + sh + Math.cos(a) * g.r, g.cy + Math.sin(a) * g.r); ctx.rotate(a + Math.PI / 2); ctx.fillStyle = ringCol; ctx.beginPath(); ctx.moveTo(-12, -11); ctx.lineTo(12, 0); ctx.lineTo(-12, 11); ctx.closePath(); ctx.fill(); ctx.restore(); }
-    if (!G.elastane) { ctx.fillStyle = KU.k; ctx.fillRect(g.peg.x - 22, g.peg.y - 8, 44, 8); }
-    place($('st-ring'), g.cx - g.r, g.cy - g.r, g.r * 2, g.r * 2);
-    place($('st-coil'), g.peg.x - 34, g.peg.y - 10, 68, G.elastane ? 0 : g.cl + 24);
+    if (!this.blocked()) { ctx.fillStyle = ringCol; ctx.fillRect(g.peg.x - 22, g.peg.y - 8, 44, 8); }
+    place($('rc-ring'), g.cx - g.r, g.cy - g.r, g.r * 2, g.r * 2); place($('rc-coil'), g.peg.x - 34, g.peg.y - 10, 68, this.blocked() ? 0 : g.cl + 24);
   },
-  front: function (ctx, f) { if (!G.elastane && f.coil) drawSquiggle(ctx, f.coil, f.t, KU.k); }
+  front: function (ctx, f) { if (!this.blocked() && f.coil) drawSquiggle(ctx, f.coil, f.t, f.bg === 'black' ? KU.w : KU.k); }
 };
 
 // The thread forks into two identical strands. Tap the PET; the other falls away.
@@ -927,22 +1240,21 @@ SCENES.spot = {
     }
     f.s.fallPLA = !pla; f.extras = [];
     say($('spot-say'), pla ? 'That was PLA' : 'PET. Good eye.');
-    $('spot-p').innerHTML = (pla ? 'It\'s in your thread now. ' : 'The PLA strand is cut away. ') + 'They look the same, but in bottle recycling just <span class="mark">0.1% PLA</span> can spoil a batch of PET.';
-    $('spot-again').hidden = false; f.measure(); syncUI();
+    $('spot-p').textContent = pla ? 'It\'s spliced into your thread now.' : 'The PLA strand is cut away.';
+    $('spot-again').hidden = false; card(f, 'pla'); syncUI();
   },
   tap: function (f, x, y) { var g = this.geo(f); if (f.s.ans === null && y > g.F.y && y < g.J.y) this.answer(f, x < g.F.x ? -1 : 1); },
   tick: function (f) { if (f.falling) { f.falling.step(f.t, [], 0); if (f.falling.p.every(function (q) { return q.y > f.h + 40; })) f.falling = null; } },
   back: function (ctx, f) { var g = this.geo(f); place($('spot-a'), g.F.x - g.dx - 34, g.F.y + 20, 68, g.J.y - g.F.y - 40); place($('spot-b'), g.F.x + g.dx - 34, g.F.y + 20, 68, g.J.y - g.F.y - 40); $('spot-a').hidden = $('spot-b').hidden = f.s.ans !== null; },
   front: function (ctx, f) {
-    var ink = KU.k, cas = KU.w;
-    f.extras.forEach(function (c) { cased(ctx, c, ink, cas, 6); });
-    if (f.falling) cased(ctx, f.falling, ink, cas, 6, f.s.fallPLA ? [11, 7] : null);
+    f.extras.forEach(function (c) { cased(ctx, c, KU.k, KU.w, 6); });
+    if (f.falling) cased(ctx, f.falling, KU.k, KU.w, 6, f.s.fallPLA ? [11, 7] : null);
     if (f.s.ans !== null) { var g = this.geo(f); label(ctx, f, G.pla ? 'PLA' : 'PET', g.F.x + f.s.main * g.dx + f.s.main * 30, g.F.y + (g.J.y - g.F.y) / 2, 22, KU.k, f.s.main > 0 ? 'left' : 'right'); }
   },
   splice: function (f) { var g = this.geo(f), c = f.chain, a = -1, b = -1; for (var i = 0; i < c.n; i++) { var q = c.p[i]; if (q.y > g.F.y + 16 && q.y < g.J.y - 16) { if (a < 0) a = i; b = i; } } return a >= 0 ? [a, b] : null; }
 };
 
-// The thread coils into a spring. Pull it. If elastane is still on it, drag the elastane off.
+// The thread coils into a spring. Pull it. Drag any elastane off.
 SCENES.bend = {
   n: 280, bi: true, sqGrab: true,
   init: function (f) { $('bend-swap').addEventListener('click', function () { pullOff(); }); },
@@ -958,9 +1270,10 @@ SCENES.bend = {
   },
   tick: function (f) {
     var c = f.chain, v = 0, g = this.geo(f);
-    if (c.grab >= 0 && c.target) { v = Math.hypot(c.gx - c.target[c.grab].x, c.gy - c.target[c.grab].y) / (g.b - g.t) * 100; if (!G.bi) { G.bi = true; renderLabel(); } }
+    if (c.grab >= 0 && c.target) { v = Math.hypot(c.gx - c.target[c.grab].x, c.gy - c.target[c.grab].y) / (g.b - g.t) * 100; if (!G.bi) { G.bi = true; renderLabel(); } if (!f.s.c1) { f.s.c1 = true; card(f, 'spring'); } }
     f.s.v = (f.s.v || 0) + (v - (f.s.v || 0)) * .2; var r = Math.round(f.s.v / 5) * 5;
     if (r !== f.s.r) { f.s.r = r; $('bend-n').textContent = '+' + r + '%'; }
+    if (r >= 50 && !f.s.c2) { f.s.c2 = true; card(f, 'rubber'); }
   }
 };
 function pullOff() { if (!G.elastane) return; G.elastane = false; G.bi = true; syncUI(); }
@@ -969,31 +1282,23 @@ function pullOff() { if (!G.elastane) return; G.elastane = false; G.bi = true; s
 SCENES.heat = {
   n: 130,
   init: function (f) {
-    f.s.T = 120; f.s.fl = 0; f.parts = []; var self = this, el = $('heat-n'), sy = 0, sT = 0, on = false;
-    el.addEventListener('pointerdown', function (e) { on = true; sy = e.clientY; sT = f.s.T; try { el.setPointerCapture(e.pointerId); } catch (x) {} e.preventDefault(); });
-    el.addEventListener('pointermove', function (e) { if (on) self.setT(f, sT + (sy - e.clientY) * .9); });
-    el.addEventListener('pointerup', function () { on = false; }); el.addEventListener('pointercancel', function () { on = false; });
-    el.addEventListener('keydown', function (e) { var d = e.key === 'ArrowUp' || e.key === 'ArrowRight' ? 10 : e.key === 'ArrowDown' || e.key === 'ArrowLeft' ? -10 : 0; if (d) { self.setT(f, f.s.T + d); e.preventDefault(); } });
-  },
-  setT: function (f, T) {
-    T = Math.round(clamp(T, 20, 260) / 5) * 5; if (T === f.s.T) return; f.s.T = T;
-    var el = $('heat-n'); el.firstChild.nodeValue = T + '°C'; el.setAttribute('aria-valuenow', T);
-    say($('heat-say'), T >= 250 ? 'PET goes too' : T >= 170 ? 'PLA gives way' : 'Both plies hold');
-    if (T >= 170) G.melted = true;
+    f.s.T = 120; f.s.fl = 0; f.parts = [];
+    f.temp = scrub($('heat-n'), { value: 120, min: 20, max: 260, step: 5, per: .9, keyMul: 2, fmt: function (v) { return v + '°C'; }, cap: function (v) { return v >= 250 ? 'PET goes too' : v >= 170 ? 'PLA gives way' : 'both plies hold'; },
+      onChange: function (v) { f.s.T = v; if (v >= 170 && !f.s.told) { f.s.told = true; card(f, 'plamelt'); } } });
   },
   geo: function (f) { var st = stage(f), W = f.w; return { S: pt(.71 * W, st.t + st.h * .03), J: pt(.71 * W, st.b - st.h * .04), a: pt(.61 * W, 0), b: pt(.83 * W, 0), st: st }; },
   ply: function (g, x) { return [g.S, pt(x, g.S.y + g.st.h * .16), pt(x, g.J.y - g.st.h * .16), g.J]; },
-  layout: function (f) { var tn = $('heat-n'), st0 = stage(f); tn.style.top = Math.round(st0.m - tn.offsetHeight / 2) + 'px'; f.measure(); var g = this.geo(f); f.ply = new Chain(this.ply(g, g.b.x), 60, { wind: .02, iter: 8 }); f.ply.grabbable = true; f.extras = [f.ply]; f.s.plyOK = true; },
+  layout: function (f) { var tn = $('heat-n'), st0 = stage(f); tn.style.left = '6%'; tn.style.top = Math.round(st0.m - tn.offsetHeight / 2) + 'px'; f.measure(); var g = this.geo(f); f.ply = new Chain(this.ply(g, g.b.x), 60, { wind: .02, iter: 8 }); f.extras = [f.ply]; f.s.plyOK = true; },
   path: function (f) { var g = this.geo(f), W = f.w; return [pt(.87 * W, g.S.y - 26)].concat(this.ply(g, g.a.x)).concat([pt(.87 * W, g.J.y + 22)]); },
   k: 0.09,
   tick: function (f) {
-    var T = f.s.T, g = this.geo(f), c = f.chain, p = f.ply, self = this;
+    var T = f.s.T, c = f.chain, p = f.ply;
     var tgt = T >= 250 ? 1.05 : T >= 170 ? .34 + (T - 170) / 80 * .22 : 0; f.s.fl += (tgt - f.s.fl) * .02;
     if (T >= 170 && f.s.plyOK) { f.s.plyOK = false; p.pinBot = false; p.g = .12; p.restRate = .25; }
     if (!f.s.plyOK) { p.restGoal = Math.max(.4, p.restGoal * .985); if (Math.random() < .3) { var e = p.p[p.n - 1]; f.parts.push({ x: e.x, y: e.y, vy: 1 }); } }
     if (T < 165 && !f.s.plyOK) this.layout(f);
     c.g = T >= 250 ? .18 : .02; c.restRate = .02;
-    if (T >= 250) { c.restGoal = Math.min(c.restGoal * 1.003, plen(c.target) / (c.n - 1) * 1.8); }
+    if (T >= 250) c.restGoal = Math.min(c.restGoal * 1.003, plen(c.target) / (c.n - 1) * 1.8);
     var lvl = f.h * (1 - f.s.fl);
     f.parts = f.parts.filter(function (d) { d.vy += .3; d.y += d.vy; return d.y < lvl && d.y < f.h; });
   },
@@ -1006,52 +1311,6 @@ SCENES.heat = {
     if (f.s.plyOK) label(ctx, f, 'PLA', g.b.x - 12, g.S.y + g.st.h * .56, 18, KU.k, 'right');
   },
   alpha: function (f) { return f.s.T >= 250 ? .45 : 1; }
-};
-
-// The rubber is spliced into your thread. Pull the black block down to 11×.
-SCENES.rubber = {
-  n: 120,
-  init: function (f) {
-    f.s.r = 1; f.s.v = 0; f.s.held = false; f.s.broken = 0; var self = this, rr = $('rub-r');
-    rr.addEventListener('input', function () { f.s.r = +rr.value; f.s.v = 0; self.check(f); });
-  },
-  layout: function (f) {
-    var st = stage(f), x = .4 * f.w, top = st.t + st.h * .05, L0 = (st.b - top - st.h * .04) / 11.6;
-    f.s.x = x; f.s.top = top; f.s.L0 = L0;
-    var c = new Chain([pt(x, top), pt(x, top + L0)], 24, { g: 0, wind: 0, damp: .93, iter: 6, avoid: false }); c.restRate = 1; c.grabbable = false; f.extras = [c];
-  },
-  B: function (f) { var c = f.extras[0]; return f.s.broken ? f.s.top + f.s.L0 : c.bot.y; },
-  check: function (f) {
-    if (f.s.r > 11.2 && !f.s.broken) { f.s.broken = f.t; f.extras[0].pinBot = false; f.chain.kick(0, 14, (f.chain.n * .5) | 0, f.chain.n - 2); say($('rub-out'), 'Snap'); }
-    else if (!f.s.broken) $('rub-out').textContent = f.s.r.toFixed(1) + '×';
-    if (f.s.r > 8 && !f.s.told) { f.s.told = true; $('rub-p').innerHTML = 'They stretch <span class="mark">more than ten times</span> their length before breaking. You can\'t buy them as fibre yet.'; f.measure(); }
-  },
-  hitTest: function (f, x, y) {
-    var c = f.extras[0], by = c.bot.y, self = this;
-    if (f.s.broken || Math.abs(x - f.s.x) > 46 || Math.abs(y - by - 9) > 40) return null;
-    return { move: function (mx, my) { f.s.held = true; f.s.r = clamp((my - f.s.top) / f.s.L0, 1, 12); f.s.v = 0; $('rub-r').value = f.s.r; self.check(f); }, end: function () { f.s.held = false; } };
-  },
-  tick: function (f) {
-    var s = f.s, c = f.extras[0];
-    if (s.broken) { if (f.t - s.broken > 1.6) { s.broken = 0; s.r = 1; c.pinBot = true; $('rub-r').value = 1; $('rub-out').textContent = '1.0×'; } }
-    else if (!s.held && document.activeElement !== $('rub-r')) { s.v += (1 - s.r) * .02; s.v *= .9; s.r = Math.max(1, s.r + s.v); if (Math.abs(s.r - 1) > .01 || Math.abs(s.v) > .001) { $('rub-r').value = s.r; $('rub-out').textContent = s.r.toFixed(1) + '×'; } }
-    var L = s.L0 * (s.broken ? 1 : s.r); c.top.x = s.x; c.top.y = s.top; c.bot.x = s.x; c.bot.y = s.top + L; c.restGoal = L / (c.n - 1);
-  },
-  path: function (f) { var s = f.s, W = f.w, by = this.B(f); return [pt(.87 * W, s.top - 30), pt(s.x, s.top - 8), pt(s.x, by + 18), pt(s.x, by + 60), pt(.87 * W, f.h - 30)]; },
-  k: 0.12,
-  hide: function (f) { return [f.s.top - 2, this.B(f) + 16]; },
-  back: function (ctx, f) {
-    var s = f.s, rx = .64 * f.w;
-    ctx.strokeStyle = KU.k; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(rx, s.top); ctx.lineTo(rx, s.top + s.L0 * 11);
-    for (var k = 0; k <= 11; k++) { ctx.moveTo(rx - 8, s.top + s.L0 * k); ctx.lineTo(rx + (k % 2 ? 8 : 14), s.top + s.L0 * k); } ctx.stroke();
-    [1, 3, 5, 7, 9, 11].forEach(function (k) { label(ctx, f, k + '×', rx + 20, s.top + s.L0 * k + 7, k === 11 ? 22 : 17, KU.k, 'left'); });
-  },
-  front: function (ctx, f) {
-    var s = f.s, c = f.extras[0], p = c.p, A = 14 / Math.sqrt(s.broken ? 1 : s.r);
-    ctx.strokeStyle = KU.w; ctx.lineWidth = 4; ctx.lineJoin = 'round'; ctx.beginPath();
-    p.forEach(function (q, i) { var x = q.x + (i === 0 || i === p.length - 1 ? 0 : (i % 2 ? A : -A)); i ? ctx.lineTo(x, q.y) : ctx.moveTo(x, q.y); }); ctx.stroke();
-    ctx.fillStyle = KU.k; ctx.fillRect(s.x - 24, s.top - 16, 48, 16); var by = c.bot.y; ctx.fillRect(s.x - 24, by, 48, 18);
-  }
 };
 
 // Each promise ties a knot in the thread.
@@ -1077,16 +1336,15 @@ SCENES.knots = {
 // The thread reads itself back. One material closes the loop.
 SCENES.end = {
   n: 170,
-  clean: function () { return !G.elastane && !G.pla; },
+  clean: function () { return !G.elastane && !G.pla && !G.partner; },
   geo: function (f) {
     var q = f.named.q, W = f.w; if (!q) return { cx: .5 * W, cy: .3 * f.h, r: .38 * W };
-    var cx = (q.l + q.r) / 2, cy = (q.t + q.b) / 2, hw = (q.r - q.l) / 2 - 12, hh = (q.b - q.t) / 2 - 12, need = Math.hypot(hw, hh) + 20, r = clamp(need, .34 * W, .46 * W);
+    var cx = (q.l + q.r) / 2, cy = (q.t + q.b) / 2, hw = (q.r - q.l) / 2 - 12, hh = (q.b - q.t) / 2 - 12, need = Math.hypot(hw, hh) + 18, r = clamp(need, .32 * W, .44 * W);
     if (f.named.bottom) r = Math.max(need, Math.min(r, f.named.bottom.t - cy - 10, cy - 10));
     return { cx: cx, cy: cy, r: r };
   },
   path: function (f) {
-    var g = this.geo(f), W = f.w, lt = f.named.bottom ? f.named.bottom.t : f.h * .6;
-    var end = this.clean() ? 270 : 236 + 4 * Math.sin(f.t * 1.4);
+    var g = this.geo(f), W = f.w, lt = f.named.bottom ? f.named.bottom.t : f.h * .6, end = this.clean() ? 270 : 236 + 4 * Math.sin(f.t * 1.4);
     var pre = [pt(g.cx + g.r * .4, g.cy - g.r - 30), pt(g.cx, g.cy - g.r)].concat(arc(g.cx, g.cy, g.r, g.r, -90 * D, end * D, 90));
     var out = this.clean() ? [pt(g.cx - g.r * .7, g.cy - g.r - 24), pt(g.cx - g.r - 22, g.cy)] : [pt(g.cx - g.r - 18, g.cy)];
     return pre.concat(out).concat([pt(.05 * W, lt - 10)]);
@@ -1097,25 +1355,30 @@ SCENES.end = {
   onSeen: function () { renderLabel(); }
 };
 
-SCENES.notes = { n: 260, path: function () { return []; }, k: 0.02 };
-
 // ---------- shared state → words ----------
 function syncUI() { $('bend-swap').hidden = !G.elastane; renderLabel(); }
+var SHAPES = { round: 'round', trilobal: 'trilobal (sparkles)', hollow: 'hollow (insulates)', channel: 'channelled (wicks)' };
 function renderLabel() {
   var rows = [
-    ['Fibre', G.pla ? 'PET, with PLA spliced in' : 'PET'],
+    ['Fibre', G.pla ? 'PET + PLA splice' : 'PET'],
+    ['Shape', SHAPES[G.shape]],
+    ['Filaments', G.fil === 1 ? 'one (monofilament)' : G.fil >= 144 ? G.fil + ' (microfibre)' : G.fil],
+    ['Form', G.staple ? 'staple, twist ' + G.twist + '/10' : 'continuous filament'],
+    ['Wrapped in', G.elastane ? 'elastane' : G.partner || (G.stripped ? 'nothing (' + G.stripped + ' stripped off)' : G.bi ? 'nothing: built-in spring' : 'nothing')],
+    ['Colour', G.colour ? (G.colour === KU.k ? 'black' : 'yellow') + (G.dye === 'melt' ? ', in the melt' : ', dye bath') : 'undyed'],
     ['Drawn', G.draw > 1.05 ? '×' + G.draw.toFixed(1) : 'not stretched'],
     ['Shed', G.shed + ' fibres'],
-    ['Stretch', G.elastane ? 'elastane wrapped round it' : G.bi ? 'two-polyester spring' : 'none'],
-    ['Promises', G.knots ? G.knots + (G.knots === 1 ? ' knot' : ' knots') : 'none yet']
+    ['Promises', G.knots ? G.knots + (G.knots === 1 ? ' knot' : ' knots') : 'none yet'],
+    ['Discoveries', NFOUND + ' of ' + NDISC]
   ];
   var dl = $('pass'); dl.innerHTML = '';
   rows.forEach(function (r) { var dt = document.createElement('dt'), dd = document.createElement('dd'); dt.textContent = r[0]; dd.textContent = r[1]; dl.appendChild(dt); dl.appendChild(dd); });
-  var clean = !G.elastane && !G.pla;
+  var clean = !G.elastane && !G.pla && !G.partner;
   say($('end-say'), clean ? 'Can come back.' : 'Can\'t come back.');
   $('end-p').textContent = clean
-    ? 'One material, so in principle it can go round again. In practice, under 1% of fibre does today. That gap is a design brief.'
+    ? 'One material, so in principle it can go round again. In practice, under 1% of fibre does today.' + (G.colour ? ' Your dye will still have to come out.' : '')
     : G.elastane ? 'The elastane wrapped round it jams the loop. Scroll up to the spring and pull it off.'
+    : G.partner ? 'The ' + G.partner + ' wrapped round it has to be separated first. Scroll up to the recycler and strip it.'
     : 'PLA in a PET batch spoils it. Scroll up to Spot the PET and try again.';
 }
 
@@ -1127,6 +1390,8 @@ var frames = Array.prototype.slice.call(document.querySelectorAll('.frame')).map
     var fr = el.getBoundingClientRect(), out = [], named = {};
     el.querySelectorAll('[data-avoid]').forEach(function (e) {
       if (e.offsetParent === null) return; var r = e.getBoundingClientRect(); if (!r.width || !r.height) return;
+      // Cards animate in with a transform, so measure their resting box instead.
+      if (e.classList.contains('card') && e.offsetParent === el) r = { left: fr.left + e.offsetLeft, top: fr.top + e.offsetTop, right: fr.left + e.offsetLeft + e.offsetWidth, bottom: fr.top + e.offsetTop + e.offsetHeight };
       var o = { l: r.left - fr.left - 12, r: r.right - fr.left + 12, t: r.top - fr.top - 12, b: r.bottom - fr.top + 12, el: e, hx: 0, hy: 0 };
       out.push(o); if (e.dataset.avoid) named[e.dataset.avoid] = o;
     });
@@ -1136,9 +1401,7 @@ var frames = Array.prototype.slice.call(document.querySelectorAll('.frame')).map
 });
 var IDX = {}; frames.forEach(function (f) { IDX[f.name] = f.i; });
 
-// split headings into words for kinetic type
 frames.forEach(function (f) {
-  if (f.name === 'notes') return;
   f.el.querySelectorAll('h1, h2').forEach(function (h) {
     var n = 0;
     (function walk(node) {
@@ -1164,12 +1427,12 @@ function layout() {
   cv.style.left = colLeft + 'px'; cv.style.width = W0 + 'px'; cv.style.height = VH + 'px';
   cv.width = Math.round(W0 * DPR); cv.height = Math.round(VH * DPR);
   bar.style.left = colLeft + 'px';
+  var sh = $('sheet'); sh.style.left = colLeft + 'px'; sh.style.width = W0 + 'px';
   frames.forEach(function (f) {
     var b = f.el.getBoundingClientRect(); f.top = b.top + window.scrollY; f.w = b.width; f.h = b.height;
     f.measure();
     if (f.sc.layout) f.sc.layout(f);
     var path = fullPath(f), n = f.sc.n || 110;
-    if (f.name === 'notes') n = clamp(Math.round(f.h / 12), 60, 600);
     f.chain = new Chain(path, n, {});
     f.chain.setTarget(path, kOf(f), f.rects);
     f.chain.p.forEach(function (q, i) { q.x = q.px = f.chain.target[i].x; q.y = q.py = f.chain.target[i].y; });
@@ -1189,6 +1452,12 @@ if ('IntersectionObserver' in window) {
   frames.forEach(function (f) { io.observe(f.el); });
 } else frames.forEach(function (f) { f.el.classList.add('seen'); });
 
+// tutor sheet
+$('open-sheet').addEventListener('click', function () { $('sheet').hidden = false; $('close-sheet').focus(); });
+function closeSheet() { $('sheet').hidden = true; $('open-sheet').focus(); }
+$('close-sheet').addEventListener('click', closeSheet);
+document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !$('sheet').hidden) closeSheet(); });
+
 // ---------- elastane that follows the thread ----------
 function wrapPts(f, from, to, amp) {
   var c = f.chain.p, n = f.chain.n, a = (n * from) | 0, b = (n * to) | 0, o = [];
@@ -1196,7 +1465,7 @@ function wrapPts(f, from, to, amp) {
   return o;
 }
 function elastaneStep(f) {
-  if (f.i < IDX.stretch || f.name === 'notes') return;
+  if (f.i < IDX.blend) return;
   var want = G.elastane;
   if (want && (!f.sq || f.sq.falling)) { var start = wrapPts(f, .35, .65, 0).map(function (q) { return pt(q.x + 30, q.y); }); f.sq = new Chain(start, 64, { pinTop: false, pinBot: false, g: 0, wind: .03, iter: 8 }); f.sq.grabbable = !!f.sc.sqGrab; }
   if (!want && f.sq && !f.sq.falling) { f.sq.falling = true; f.sq.target = null; f.sq.kGoal = 0; f.sq.k = 0; f.sq.g = .3; f.sq.avoid = false; f.sq.grabbable = false; f.sq.p.forEach(function (q) { q.px -= (Math.random() - .5) * 4; }); }
@@ -1234,7 +1503,6 @@ function loop(now) {
   var max = document.documentElement.scrollHeight - VH; bar.style.width = (max > 0 ? sy / max * W0 : 0) + 'px';
   requestAnimationFrame(loop);
 }
-// text blocks jolt when the thread is shoved into them
 function bumpText(now) {
   frames.forEach(function (f) {
     if (!f.near) return;
@@ -1249,23 +1517,64 @@ function bumpText(now) {
     });
   });
 }
+
+// What the thread looks like in this exhibit: everything done to it so far.
+function look(f) {
+  var i = f.i;
+  return {
+    shape: i >= IDX.shape ? G.shape : 'round',
+    fil: i >= IDX.count ? G.fil : 1,
+    staple: i >= IDX.cut && G.staple,
+    twist: G.twist,
+    partner: i >= IDX.blend ? G.partner : null,
+    colour: i > IDX.colour ? G.colour : i === IDX.colour ? G.mix : null,
+    fresh: i === IDX.blend ? ease((f.t - f.s.wt) / 1) : 1
+  };
+}
 function drawMain(ctx, f, cum, flow) {
-  var c = f.chain, ink = inkFor(f.bg), casing = casingFor(ink), p = c.p;
-  var w = f.i > IDX.spin ? clamp(7 - .6 * (G.draw - 1), 4.4, 7) : 6.6;
+  var c = f.chain, p = c.p, L = look(f), ink = L.colour || inkFor(f.bg), casing = casingFor(ink), n = c.n, i, k;
+  var w = f.i > IDX.spin ? clamp(7.4 - .6 * (G.draw - 1), 4.8, 7.4) : 7;
+  if (L.fil > 1) w += Math.min(4, Math.log(L.fil) * .7);
   if (f.sc.alpha) ctx.globalAlpha = f.sc.alpha(f);
-  cased(ctx, c, ink, casing, w);
-  var bi = f.sc.bi || (G.bi && f.i >= IDX.bend && f.name !== 'notes');
-  if (bi) { smooth(ctx, offsetPts(p, w * .28)); ctx.strokeStyle = casing; ctx.lineWidth = 1.6; ctx.stroke(); }
-  else { ctx.lineCap = 'butt'; smooth(ctx, p); ctx.setLineDash([3, 14]); ctx.lineDashOffset = cum - flow; ctx.strokeStyle = casing; ctx.lineWidth = 2; ctx.stroke(); ctx.setLineDash([]); }
-  // a splice of PLA, if one got into the thread
+  var nm = normals(p);
+  // natural-fibre sheath, under everything
+  if (L.partner) {
+    var sheath = f.bg === 'white' ? '#e8e1cf' : 'rgba(255,255,255,0.92)', u = L.fresh;
+    strokeP(ctx, p, sheath, (w + 14) * u + 0.1);
+    ctx.strokeStyle = sheath; ctx.lineWidth = 1.4; ctx.beginPath();
+    for (i = 1; i < n - 1; i += 1) { if (hash(i, 7) > .75 * u) continue; var side = hash(i, 8) > .5 ? 1 : -1, len = (w / 2 + 7 + hash(i, 9) * 9) * u, q = p[i]; ctx.moveTo(q.x + nm[i].x * side * (w / 2 + 4), q.y + nm[i].y * side * (w / 2 + 4)); if (L.partner === 'wool') { ctx.lineTo(q.x + nm[i].x * side * len * .6 + 3, q.y + nm[i].y * side * len * .6 - 3); ctx.lineTo(q.x + nm[i].x * side * len, q.y + nm[i].y * side * len); } else ctx.lineTo(q.x + nm[i].x * side * len + (hash(i, 10) - .5) * 6, q.y + nm[i].y * side * len + (hash(i, 11) - .5) * 6); }
+    ctx.stroke();
+  }
+  strokeP(ctx, p, casing, w + 3.4);
+  if (L.fil <= 1) {
+    strokeP(ctx, p, ink, w);
+    if (L.shape === 'hollow') strokeP(ctx, p, casing, w * .34);
+    if (L.shape === 'channel') { strokeP(ctx, offsetBy(p, nm, function () { return w * .22; }), casing, 1.2); strokeP(ctx, offsetBy(p, nm, function () { return -w * .22; }), casing, 1.2); }
+  } else {
+    var ns = L.fil >= 144 ? 9 : L.fil >= 24 ? 6 : L.fil >= 6 ? 4 : 2, sw = w / ns * 1.15;
+    for (k = 0; k < ns; k++) { (function (k) { var base = (k - (ns - 1) / 2) / ns * w * .92; strokeP(ctx, offsetBy(p, nm, function (j) { return base + Math.sin(j * .33 + k * 1.7) * w * .1; }), ink, sw); })(k); }
+  }
+  // spun staple: fibre ends stick out; more twist tucks them in
+  if (L.staple) {
+    var loose = clamp(1 - L.twist / 11, .12, 1); ctx.strokeStyle = ink; ctx.lineWidth = 1.3; ctx.beginPath();
+    for (i = 1; i < n - 1; i++) { if (hash(i, 21) > loose * .9) continue; var sd = hash(i, 22) > .5 ? 1 : -1, ln = 5 + hash(i, 23) * 9 * loose, q2 = p[i]; ctx.moveTo(q2.x + nm[i].x * sd * w * .45, q2.y + nm[i].y * sd * w * .45); ctx.lineTo(q2.x + nm[i].x * sd * (w * .45 + ln) + (hash(i, 24) - .5) * 8, q2.y + nm[i].y * sd * (w * .45 + ln) + (hash(i, 25) - .5) * 8); }
+    ctx.stroke();
+    if (L.twist > 0) { ctx.strokeStyle = casing; ctx.lineWidth = 1.2; ctx.beginPath(); var step = Math.max(2, Math.round(9 - L.twist * .7)); for (i = 2; i < n - 2; i += step) { var a = p[i], na = nm[i]; ctx.moveTo(a.x - na.x * w * .45 - (p[i+1].x - a.x) * .8, a.y - na.y * w * .45 - (p[i+1].y - a.y) * .8); ctx.lineTo(a.x + na.x * w * .45 + (p[i+1].x - a.x) * .8, a.y + na.y * w * .45 + (p[i+1].y - a.y) * .8); } ctx.stroke(); }
+  }
+  // the natural fibre wraps round the core
+  if (L.partner) { var su = L.fresh; ctx.strokeStyle = f.bg === 'white' ? '#bfb6a0' : 'rgba(255,255,255,.95)'; ctx.lineWidth = 2; ctx.beginPath(); for (i = 2; i < n - 2; i += 3) { if (hash(i, 31) > su) continue; var b0 = p[i], nb = nm[i]; ctx.moveTo(b0.x - nb.x * (w / 2 + 5), b0.y - nb.y * (w / 2 + 5)); ctx.lineTo(p[i + 2].x + nm[i + 2].x * (w / 2 + 5), p[i + 2].y + nm[i + 2].y * (w / 2 + 5)); } ctx.stroke(); }
+  // trilobal fibres sparkle
+  if (L.shape === 'trilobal') { var fr = Math.floor(f.t * 3); for (i = 3; i < n - 3; i += 5) { if (hash(i, fr) < .78) continue; var tw = .6 + .4 * Math.sin(f.t * 10 + i); star(ctx, p[i].x + nm[i].x * w * .3, p[i].y + nm[i].y * w * .3, 6 * tw, KU.w); star(ctx, p[i].x + nm[i].x * w * .3, p[i].y + nm[i].y * w * .3, 3 * tw, KU.y); } }
+  var bi = f.sc.bi || (G.bi && f.i >= IDX.bend);
+  if (bi) { strokeP(ctx, offsetBy(p, nm, function () { return w * .28; }), casing, 1.6); }
+  else if (L.fil <= 1 && !L.staple) { ctx.lineCap = 'butt'; smooth(ctx, p); ctx.setLineDash([3, 14]); ctx.lineDashOffset = cum - flow; ctx.strokeStyle = casing; ctx.lineWidth = 2; ctx.stroke(); ctx.setLineDash([]); }
   var sp = null;
   if (G.pla && f.name === 'spot' && f.s.ans !== null) sp = SCENES.spot.splice(f);
-  else if (G.pla && f.i > IDX.spot && f.name !== 'notes') sp = [(c.n * .44) | 0, (c.n * .56) | 0];
-  if (sp) { cased(ctx, c, ink, casing, w, [11, 7], sp[0], sp[1]); }
-  // fraying left by the wash
-  if (G.shed > 0 && f.i > IDX.wash && f.name !== 'notes') {
+  else if (G.pla && f.i > IDX.spot) sp = [(n * .44) | 0, (n * .56) | 0];
+  if (sp) cased(ctx, c, ink, casing, w, [11, 7], sp[0], sp[1]);
+  if (G.shed > 0 && f.i > IDX.wash) {
     var fray = clamp(G.shed / 300, 0, 1); ctx.strokeStyle = ink; ctx.lineWidth = 1.4; ctx.beginPath();
-    for (var i = 2; i < c.n - 2; i += 3) { if (hash(i, 1) > fray) continue; var q = p[i], ang = hash(i, 2) * Math.PI * 2, L = w * .6 + hash(i, 3) * 6; ctx.moveTo(q.x, q.y); ctx.lineTo(q.x + Math.cos(ang) * L, q.y + Math.sin(ang) * L); }
+    for (i = 2; i < n - 2; i += 3) { if (hash(i, 1) > fray) continue; var q3 = p[i], ang = hash(i, 2) * Math.PI * 2, ll = w * .6 + hash(i, 3) * 6; ctx.moveTo(q3.x, q3.y); ctx.lineTo(q3.x + Math.cos(ang) * ll, q3.y + Math.sin(ang) * ll); }
     ctx.stroke();
   }
   ctx.globalAlpha = 1;
@@ -1307,7 +1616,7 @@ function hit(cx, cy, touch) {
   return best;
 }
 function start(cx, cy, touch, target) {
-  if (target && target.closest && target.closest('button,input,a,label,select,[role="slider"]')) return false;
+  if (target && target.closest && target.closest('button,input,a,label,select,[role="slider"],.sheet')) return false;
   var h = hit(cx, cy, touch); if (!h) return false;
   drag = h; drag.sx = cx; drag.sy = cy; drag.moved = 0; drag.lx = h.x; drag.ly = h.y; drag.vx = 0; drag.vy = 0;
   if (h.custom) h.custom.move(h.x, h.y); else { h.chain.grab = h.i; h.chain.gx = h.x; h.chain.gy = h.y; }

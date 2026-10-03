@@ -73,6 +73,7 @@ body { margin: 0; padding-inline: 0; background: #121211; color: var(--k); font-
 .btn:focus-visible, .opt:focus-visible, .chip-btn:focus-visible, .pledge:focus-visible, .hit:focus-visible, .scrub:focus-visible, .mbtn:focus-visible { outline: 3px solid var(--y); outline-offset: 3px; }
 .bg-yellow .btn:focus-visible, .bg-yellow .opt:focus-visible { outline-color: var(--k); }
 .hit { position: absolute; z-index: 3; background: transparent; border: 0; padding: 0; cursor: pointer; border-radius: 24px; }
+.hit.kb { pointer-events: none; }
 .hit.hold { touch-action: none; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
 .dial { position: absolute; z-index: 3; border-radius: 50%; touch-action: none; cursor: grab; }
 .dial:focus-visible { outline: 3px solid var(--y); outline-offset: 3px; }
@@ -185,16 +186,17 @@ body { margin: 0; padding-inline: 0; background: #121211; color: var(--k); font-
   <div class="copy tl" data-avoid="top">
     <p class="kicker">Warm-up</p>
     <div id="guess-q">
-      <h2>Guess first</h2>
-      <p>Of all the fibre the world makes, how much is polyester?</p>
+      <h2 id="guess-h">Guess first</h2>
+      <p id="guess-qt">Of all the fibre the world makes, how much is polyester?</p>
       <p class="hint">Drag across the squares <span class="num" id="guess-out">25%</span></p>
       <label class="sr">My guess <input type="range" id="guess-r" min="0" max="100" step="1" value="25"></label>
       <button class="btn" type="button" id="guess-go">Show me</button>
     </div>
     <div id="guess-a" hidden>
       <div class="big"><span id="guess-n">0</span>%</div>
-      <p>of all fibre made in 2024 was polyester. <span class="mark">88% of it came from fossil fuels.</span></p>
+      <p id="guess-at">of all fibre made in 2024 was polyester. <span class="mark">88% of it came from fossil fuels.</span></p>
       <p id="guess-you"></p>
+      <button class="btn" type="button" id="guess-next">One more guess</button>
     </div>
   </div>
 </section>
@@ -203,7 +205,7 @@ body { margin: 0; padding-inline: 0; background: #121211; color: var(--k); font-
   <div class="copy tl on-dark" data-avoid="top" style="max-width:64%">
     <p class="kicker">Make · 1 of 2</p>
     <h2>Link the chain</h2>
-    <p>Two chemicals from oil link up, again and again, into one long chain: <b>PET</b>.</p>
+    <p>Two chemicals from oil and gas link up, again and again, into one long chain: <b>PET</b>.</p>
     <p class="hint">Tap to link them · <span id="oil-n">0</span></p>
   </div>
   <div class="card bl reserve" data-avoid="card"><p class="cl"></p><p class="ct"></p></div>
@@ -224,7 +226,7 @@ body { margin: 0; padding-inline: 0; background: #121211; color: var(--k); font-
   <div class="copy tl" data-avoid="top">
     <p class="kicker">Fibre · 1 of 2</p>
     <h2>Pick a nozzle</h2>
-    <p>The spinneret's holes set the fibre's cross-section. Pick one, then test it.</p>
+    <p>The spinneret's holes set the fibre's cross-section. Pick one, then drag a test onto the lens.</p>
     <div class="row" role="group" aria-label="Nozzle shapes" id="nozzles">
       <button class="opt" type="button" data-shape="round" aria-pressed="true">Round</button>
       <button class="opt" type="button" data-shape="trilobal" aria-pressed="false">Trilobal</button>
@@ -232,13 +234,9 @@ body { margin: 0; padding-inline: 0; background: #121211; color: var(--k); font-
       <button class="opt" type="button" data-shape="channel" aria-pressed="false">Channelled</button>
     </div>
   </div>
-  <div class="copy" data-avoid="tests" id="tests" style="left:6%">
-    <div class="row" role="group" aria-label="Tests">
-      <button class="btn" type="button" data-test="light">Shine</button>
-      <button class="btn" type="button" data-test="cold">Chill</button>
-      <button class="btn" type="button" data-test="sweat">Sweat</button>
-    </div>
-  </div>
+  <button class="hit kb" type="button" data-test="light" aria-label="Test it: shine a light"></button>
+  <button class="hit kb" type="button" data-test="cold" aria-label="Test it: chill it"></button>
+  <button class="hit kb" type="button" data-test="sweat" aria-label="Test it: add sweat"></button>
   <div class="card bl reserve" data-avoid="card"><p class="cl"></p><p class="ct"></p></div>
 </section>
 
@@ -295,14 +293,13 @@ body { margin: 0; padding-inline: 0; background: #121211; color: var(--k); font-
   <div class="copy tl" data-avoid="top">
     <p class="kicker">Combine · 1 of 2</p>
     <h2>Wrap it</h2>
-    <p>Pick a partner fibre to wrap round your polyester core.</p>
-    <div class="row" role="group" aria-label="Partner fibre" id="partners">
-      <button class="opt" type="button" data-p="cotton" aria-pressed="false">Cotton</button>
-      <button class="opt" type="button" data-p="wool" aria-pressed="false">Wool</button>
-      <button class="opt" type="button" data-p="elastane" aria-pressed="false">Elastane</button>
-      <button class="opt" type="button" data-p="none" aria-pressed="true">None</button>
-    </div>
+    <p>Grab a yarn off the rail and drop it on your polyester core.</p>
+    <p class="hint" id="bl-hint">Drag a yarn onto the thread</p>
+    <button class="btn" type="button" id="bl-off" hidden>Unwrap it</button>
   </div>
+  <button class="hit kb" type="button" data-p="cotton" aria-label="Wrap the thread in cotton"></button>
+  <button class="hit kb" type="button" data-p="wool" aria-label="Wrap the thread in wool"></button>
+  <button class="hit kb" type="button" data-p="elastane" aria-label="Wrap the thread in elastane"></button>
   <div class="card bl reserve" data-avoid="card"><p class="cl"></p><p class="ct"></p></div>
 </section>
 
@@ -389,12 +386,12 @@ body { margin: 0; padding-inline: 0; background: #121211; color: var(--k); font-
     <p class="kicker">Return · 3 of 6</p>
     <h2>Unzip the chain</h2>
     <p class="say" id="uz-say" hidden></p>
-    <p id="uz-p">Melting breaks links at random. Can you undo them in order instead? Think back: what did each link give off?</p>
+    <p id="uz-p">Melting breaks links at random. Can you undo them in order instead? Think back: what did each link give off? Tip a flask into the tank.</p>
     <button class="btn" type="button" id="uz-go" hidden>Link it back up</button>
   </div>
-  <button class="hit" type="button" data-r="water" aria-label="Pour in hot water"></button>
-  <button class="hit" type="button" data-r="glycol" aria-label="Pour in glycol"></button>
-  <button class="hit" type="button" data-r="enzyme" aria-label="Pour in enzymes"></button>
+  <button class="hit kb" type="button" data-r="water" aria-label="Pour in hot water"></button>
+  <button class="hit kb" type="button" data-r="glycol" aria-label="Pour in glycol"></button>
+  <button class="hit kb" type="button" data-r="enzyme" aria-label="Pour in enzymes"></button>
   <div class="card bl reserve" data-avoid="card"><p class="cl"></p><p class="ct"></p></div>
 </section>
 
@@ -477,9 +474,9 @@ body { margin: 0; padding-inline: 0; background: #121211; color: var(--k); font-
   </ol>
   <h3>How it teaches</h3>
   <ul>
-    <li><b>The thread is the controller.</b> Students pull, blow, cut, twist, ply, wrap, dye, recycle, unzip, fork, melt and knot it. The idea and the action are the same thing.</li>
+    <li><b>The thread is the controller.</b> Students pull, blow, cut, twist, ply, wrap, dye, recycle, unzip, fork, melt and knot it. Tests, yarns and flasks are objects to pick up and drop, not buttons. The idea and the action are the same thing.</li>
     <li><b>Discovery, not display.</b> Facts arrive as numbered discovery cards when students find them. A wrong test gives a question back, not the answer.</li>
-    <li><b>Predict, then test.</b> The 59% guess, the nozzle tests, will it recycle, spot the PET, which ply melts first.</li>
+    <li><b>Predict, then test.</b> The 59% and 1.35% guesses, the nozzle tests, will it recycle, spot the PET, which ply melts first.</li>
     <li><b>Consequences carry forward.</b> Shape, filament count, texture, staple, plies, partner fibre, colour, draw, shedding, melt rounds, elastane, PLA and promises all stay with the thread. The care label reads them back.</li>
   </ul>
   <h3>Seminar questions</h3>
@@ -489,11 +486,15 @@ body { margin: 0; padding-inline: 0; background: #121211; color: var(--k); font-
     <li>Microfibre feels softest. Is that worth more shedding? For which garment?</li>
     <li>Solution dyeing claims big water savings. What evidence would convince you, and who should provide it?</li>
     <li>Redesign one garment you own as a mono-material. What do you lose? What do you gain?</li>
+    <li>Synthetic fibre uses about 1.35% of the world's oil. Small or large? What else would you need to know: tonnes, growth, the energy used to make it?</li>
     <li>Chemical recycling can separate blends. Does that make blends acceptable again? What would you need to know first?</li>
   </ol>
   <h3>How sure are we?</h3>
   <ul>
     <li><span class="chip s">Strong</span> 59% of fibre is polyester; 88% fossil-based; under 1% of fibre from recycled textiles [1].</li>
+    <li><span class="chip s">Strong</span> 78 million tonnes of polyester fibre in 2024; 12% recycled [1].</li>
+    <li><span class="chip m">Moderate</span> Synthetic fibres use about 1.35% of global oil consumption: one NGO estimate (Changing Markets, 2021) [33]. A refinery sends roughly 10–20% of a barrel to all petrochemicals [35]. These measure different things, so never multiply them.</li>
+    <li><span class="chip s">Strong</span> Terephthalic acid comes from oil (paraxylene); ethylene glycol comes from ethylene, made from oil naphtha or natural-gas ethane [34].</li>
     <li><span class="chip s">Strong</span> Invented 1941 by Whinfield and Dickson [2][3].</li>
     <li><span class="chip s">Strong</span> Trilobal sparkles, hollow insulates, multichannel wicks [13][14].</li>
     <li><span class="chip s">Strong</span> Microfibre: under 1 decitex per filament [15].</li>
@@ -556,6 +557,9 @@ body { margin: 0; padding-inline: 0; background: #121211; color: var(--k); font-
     <li><a href="https://www.globenewswire.com/news-release/2026/08/03/3337758/0/en/carbios-provides-an-update-on-the-financing-of-its-longlaville-plant-project.html">Carbios (2026), Longlaville financing update</a>; <a href="https://www.carbios.com/en/carbios-reaches-milestone-of-100-batches-at-its-industrial-demonstration-plant-and-expands-its-licensing-offering-to-the-textile-market/">Carbios (2026), textile milestone</a></li>
     <li><a href="https://www.chemistryworld.com/news/glycolysis-method-breaks-down-mixed-textiles-for-recycling/4019783.article">Chemistry World, glycolysis of mixed textiles</a>; <a href="https://www.ri.se/en/expertise-areas/expertises/recyclability-of-polyester">RISE, recyclability of polyester</a></li>
     <li><a href="https://textileexchange.org/app/uploads/2026/06/Polyester-LCA_Summary.pdf">Textile Exchange (2026), Polyester LCA summary</a></li>
+    <li><a href="https://meta.eeb.org/2021/02/11/time-to-free-fashion-from-fossil-fuel-addiction/">EEB META (2021), on Changing Markets' Fossil Fashion report</a></li>
+    <li><a href="https://cpmaindia.com/knowledge-centre/product-group/-fibre-intermediates/meg">CPMA, monoethylene glycol (MEG)</a></li>
+    <li><a href="https://www.mckinsey.com/industries/chemicals/our-insights/from-crude-oil-to-chemicals-how-refineries-can-adapt-to-shifting-demand">McKinsey, From crude oil to chemicals</a></li>
   </ol>
   <p style="margin-top:14px">Visual style after The Dot and the Line (Chuck Jones and Maurice Noble, MGM, 1965).</p>
 </div>
@@ -574,7 +578,7 @@ var G = { draw: 1, shape: 'round', fil: 1, tex: null, loops: 0, crimp: 0, staple
 
 // Discoveries: found by doing, numbered like museum labels.
 var DISC = {
-  link: 'Ethylene glycol and terephthalic acid, both mostly from oil, link into the long chain called PET. Linking them gives off water.',
+  link: 'Terephthalic acid (from oil) and ethylene glycol (from oil or gas) link into the long chain called PET. Linking them gives off water.',
   y1941: 'Polyester was invented in Lancashire in 1941 by John Whinfield and James Dickson, and sold as Terylene.',
   draw: 'Stretching lines the chains up. The fibre gets stronger and less stretchy.',
   trilobal: 'Three lobes act like little prisms. Trilobal fibres sparkle.',
@@ -872,20 +876,31 @@ SCENES.cover = {
 // Drag across the grid: the thread follows your finger. Then it moves to the real figure.
 SCENES.guess = {
   n: 280,
+  A: [59, 1.35],
   init: function (f) {
-    f.s.g = 25; f.s.on = false; f.s.rt = 0; f.s.m = -1; var self = this, r = $('guess-r');
+    f.s.g = 25; f.s.on = false; f.s.rt = 0; f.s.m = -1; f.s.round = 0; var self = this, r = $('guess-r');
     r.addEventListener('input', function () { self.setGuess(f, +r.value); });
     $('guess-go').addEventListener('click', function () {
       if (f.s.on) return; f.s.on = true; f.s.rt = f.t;
-      var diff = 59 - f.s.g;
-      $('guess-you').textContent = 'You guessed ' + f.s.g + '%: ' + (Math.abs(diff) <= 5 ? 'close.' : diff > 0 ? diff + ' points short.' : -diff + ' points over.') + ' Now scroll down and make some.';
-      $('guess-q').hidden = true; $('guess-a').hidden = false; $('guess-a').classList.add('popin');
+      var A = self.A[f.s.round], diff = A - f.s.g, near = Math.abs(diff) <= (f.s.round ? 2 : 5);
+      if (f.s.round === 0) $('guess-you').textContent = 'You guessed ' + f.s.g + '%: ' + (near ? 'close.' : diff > 0 ? Math.round(diff) + ' points short.' : Math.round(-diff) + ' points over.') + ' One more?';
+      else $('guess-you').textContent = 'You guessed ' + f.s.g + '%. If it is such a small share, why might it still matter?';
+      $('guess-next').hidden = f.s.round > 0;
+      $('guess-q').hidden = true; $('guess-a').hidden = false; $('guess-a').classList.remove('popin'); void $('guess-a').offsetWidth; $('guess-a').classList.add('popin');
+    });
+    $('guess-next').addEventListener('click', function () {
+      f.s.round = 1; f.s.on = false; f.s.m = -1; self.setGuess(f, 10);
+      $('guess-h').textContent = 'Guess again'; $('guess-qt').textContent = 'Polyester is made from oil and gas. How much of the world\'s oil goes into making synthetic fibre?';
+      $('guess-at').innerHTML = 'of the world\'s oil goes into synthetic fibre, mostly polyester, by one estimate. <span class="mark">A small share, but it made 78 million tonnes of polyester in 2024.</span>';
+      $('guess-a').hidden = true; $('guess-q').hidden = false; f.measure();
     });
   },
   setGuess: function (f, v) { if (f.s.on) return; f.s.g = v; $('guess-r').value = v; $('guess-out').textContent = v + '%'; },
+  final: function (f) { return Math.floor(this.A[f.s.round]); },
   layout: function (f) { var st = stage(f), W = f.w, c = Math.floor(Math.min(.078 * W, (st.h - 24) / 10)); f.s.G = { c: c, x0: .06 * W, y0: st.t + (st.h - 10 * c) / 2 }; },
   cell: function (g, k) { var r = Math.floor(k / 10), col = r % 2 === 0 ? k % 10 : 9 - k % 10; return pt(g.x0 + (col + .5) * g.c, g.y0 + (r + .5) * g.c); },
-  count: function (f) { if (!f.s.on) return f.s.g; return Math.round(f.s.g + (59 - f.s.g) * ease((f.t - f.s.rt - .4) / 1.8)); },
+  count: function (f) { if (!f.s.on) return f.s.g; var A = this.final(f); return Math.round(f.s.g + (A - f.s.g) * ease((f.t - f.s.rt - .4) / 1.8)); },
+  done: function (f) { return f.s.on && f.t - f.s.rt > 2.3; },
   hitTest: function (f, x, y) {
     var g = f.s.G, self = this; if (f.s.on || x < g.x0 - 6 || x > g.x0 + 10 * g.c + 6 || y < g.y0 - 6 || y > g.y0 + 10 * g.c + 6) return null;
     return { move: function (mx, my) { var col = clamp(Math.floor((mx - g.x0) / g.c), 0, 9), row = clamp(Math.floor((my - g.y0) / g.c), 0, 9); self.setGuess(f, row * 10 + (row % 2 === 0 ? col : 9 - col) + 1); } };
@@ -897,17 +912,18 @@ SCENES.guess = {
     return pts;
   },
   k: 0.13,
-  tick: function (f) { if (!f.s.on) return; var m = this.count(f); if (m !== f.s.m) { f.s.m = m; $('guess-n').textContent = m; } },
+  tick: function (f) { if (!f.s.on) return; var m = this.count(f), d = f.s.round && this.done(f); if (m !== f.s.m || (d && !f.s.shown)) { f.s.m = m; f.s.shown = d; $('guess-n').textContent = d ? '1.35' : m; } },
   back: function (ctx, f) {
     var g = f.s.G, m = this.count(f), self = this;
     for (var k = 0; k < 100; k++) {
       var c = self.cell(g, k), s = g.c - 4, x = c.x - s / 2, y = c.y - s / 2;
       if (k < m) {
-        if (f.s.on) { ctx.fillStyle = KU.b; ctx.fillRect(x, y, s, s); }
+        if (f.s.on) { ctx.fillStyle = f.s.round ? KU.k : KU.b; ctx.fillRect(x, y, s, s); }
         else { ctx.save(); ctx.beginPath(); ctx.rect(x, y, s, s); ctx.clip(); ctx.strokeStyle = KU.k; ctx.lineWidth = 2; ctx.beginPath(); for (var d = -s; d < s; d += 6) { ctx.moveTo(x + d, y + s); ctx.lineTo(x + d + s, y); } ctx.stroke(); ctx.restore(); }
       }
       ctx.strokeStyle = KU.k; ctx.lineWidth = 1.5; ctx.strokeRect(x, y, s, s);
     }
+    if (f.s.round && this.done(f)) { var pc = self.cell(g, 1), ps = g.c - 4, fr = (this.A[1] % 1) * ease((f.t - f.s.rt - 2.3) / .6); ctx.fillStyle = KU.k; ctx.fillRect(pc.x - ps / 2, pc.y - ps / 2, ps * fr, ps); }
     if (f.s.on && f.s.g > 0) { var gc = self.cell(g, f.s.g - 1); ctx.strokeStyle = KU.k; ctx.lineWidth = 4; ctx.strokeRect(gc.x - g.c / 2, gc.y - g.c / 2, g.c, g.c); }
   }
 };
@@ -999,7 +1015,7 @@ SCENES.spin = {
 SCENES.shape = {
   n: 130,
   init: function (f) {
-    var self = this; f.s.test = null; f.s.tt = 0;
+    var self = this; f.s.test = null; f.s.tt = 0; f.s.tl = [];
     f.el.querySelectorAll('[data-shape]').forEach(function (b) {
       b.insertAdjacentHTML('afterbegin', shapeSVG(b.dataset.shape));
       b.addEventListener('click', function () { G.shape = b.dataset.shape; f.el.querySelectorAll('[data-shape]').forEach(function (x) { x.setAttribute('aria-pressed', x === b); }); f.s.test = null; f.chain.kick(4, 0); });
@@ -1015,9 +1031,23 @@ SCENES.shape = {
       else card(f, 'Not quite', { light: 'Some shine, but no sparkle. Which shape might act like a prism?', cold: 'The cold gets straight through. Which shape could hold a pocket of air?', sweat: 'The drop just sits there. Which shape has grooves to pull it along?' }[t]);
     }, 1500);
   },
-  cardLayout: true,
-  layout: function (f) { var tests = $('tests'), cd = f.named.card; tests.style.top = Math.round((cd ? cd.t + 12 : f.h * .8) - tests.offsetHeight - 18) + 'px'; f.measure(); },
-  geo: function (f) { var t = f.named.top ? f.named.top.b : f.h * .3, b = f.named.tests ? f.named.tests.t : f.h * .75, R = Math.min(.3 * f.w, (b - t) * .42); return { cx: .44 * f.w, cy: (t + b) / 2, R: R, t: t, b: b }; },
+  T: ['light', 'cold', 'sweat'],
+  geo: function (f) { var st = stage(f), W = f.w, ty = st.b - 40, t = st.t, b = ty - 40, R = Math.min(.3 * W, (b - t) * .42); return { cx: .44 * W, cy: (t + b) / 2, R: R, t: t, b: b, ty: ty, tx: [.16 * W, .38 * W, .6 * W] }; },
+  tool: function (f, k) {
+    var g = this.geo(f), o = f.s.tl[k] || (f.s.tl[k] = {}), home = pt(g.tx[k], g.ty);
+    if (o.held) return pt(o.x, o.y);
+    if (o.back != null) { var u = ease((f.t - o.back) / .35); if (u >= 1) o.back = null; else return pt(o.x + (home.x - o.x) * u, o.y + (home.y - o.y) * u); }
+    return home;
+  },
+  // pick a test up and drop it on the lens; a tap works too
+  hitTest: function (f, x, y) {
+    var self = this, g = this.geo(f);
+    for (var k = 0; k < 3; k++) { var q = this.tool(f, k); if (Math.hypot(q.x - x, q.y - y) < 30) { (function (k) { var o = f.s.tl[k]; o.held = true; o.x = q.x; o.y = q.y; self.grabbed = k; })(k);
+      return { move: function (mx, my) { var o = f.s.tl[self.grabbed]; o.x = mx; o.y = my; }, end: function () { var o = f.s.tl[self.grabbed]; o.held = false; o.back = f.t; if (Math.hypot(o.x - g.cx, o.y - g.cy) < g.R + 14) self.run(f, self.T[self.grabbed]); } }; } }
+    return null;
+  },
+  tap: function (f, x, y) { var g = this.geo(f); for (var k = 0; k < 3; k++) if (Math.hypot(g.tx[k] - x, g.ty - y) < 30) this.run(f, this.T[k]); },
+  back: function (ctx, f) { var g = this.geo(f), self = this; this.T.forEach(function (t, k) { place(f.el.querySelector('[data-test="' + t + '"]'), g.tx[k] - 28, g.ty - 28, 56, 56); }); },
   path: function (f) { var g = this.geo(f), W = f.w; return [pt(.87 * W, g.t + 4), pt(g.cx, g.cy - g.R - 10), pt(g.cx, g.cy + g.R + 10), pt(.87 * W, g.b - 4)]; },
   k: 0.1,
   front: function (ctx, f) {
@@ -1037,6 +1067,16 @@ SCENES.shape = {
     }
     ctx.restore();
     label(ctx, f, '×1,000', g.cx - g.R * .72, g.cy + g.R + 22, 14, KU.k, 'right');
+    var self = this;
+    this.T.forEach(function (t, k) {
+      var q = self.tool(f, k), on = f.s.test === t && u < 1;
+      ctx.save(); ctx.translate(q.x, q.y);
+      if (t === 'light') { ctx.rotate(-.6); ctx.fillStyle = KU.k; ctx.fillRect(-18, -7, 24, 14); ctx.beginPath(); ctx.moveTo(6, -7); ctx.lineTo(16, -12); ctx.lineTo(16, 12); ctx.lineTo(6, 7); ctx.closePath(); ctx.fill(); ctx.fillStyle = KU.y; ctx.fillRect(15, -10, 4, 20); }
+      else if (t === 'cold') { ctx.rotate(.15); ctx.fillStyle = KU.w; ctx.fillRect(-13, -13, 26, 26); ctx.strokeStyle = KU.b; ctx.lineWidth = 3; ctx.strokeRect(-13, -13, 26, 26); ctx.beginPath(); ctx.moveTo(-7, -6); ctx.lineTo(-1, -9); ctx.stroke(); }
+      else drop(ctx, 0, 4, 10, KU.b);
+      ctx.restore();
+      if (!f.s.tl[k] || !f.s.tl[k].held) label(ctx, f, t === 'light' ? 'LIGHT' : t === 'cold' ? 'COLD' : 'SWEAT', f.s.tl[k] && f.s.tl[k].back != null ? q.x : g.tx[k], g.ty + 34, 11, KU.k, 'center');
+    });
   }
 };
 
@@ -1224,16 +1264,63 @@ SCENES.ply = {
 // Pick a partner fibre: it flies in and wraps the core.
 SCENES.blend = {
   n: 130,
+  Y: ['cotton', 'wool', 'elastane'],
   init: function (f) {
-    f.s.wt = -9;
-    f.el.querySelectorAll('[data-p]').forEach(function (b) { b.addEventListener('click', function () {
-      var p = b.dataset.p; f.el.querySelectorAll('[data-p]').forEach(function (x) { x.setAttribute('aria-pressed', x === b); });
-      G.partner = p === 'cotton' || p === 'wool' ? p : null; G.elastane = p === 'elastane'; G.stripped = null; f.s.wt = f.t; f.chain.kick(5, 0); syncUI();
-      if (p !== 'none') card(f, p);
-    }); });
+    var self = this; f.s.wt = -9;
+    f.el.querySelectorAll('[data-p]').forEach(function (b) { b.addEventListener('click', function () { var k = self.Y.indexOf(b.dataset.p); self.absorb(f, f.extras[k]); }); });
+    $('bl-off').addEventListener('click', function () { self.wrap(f, 'none'); });
   },
-  path: function (f) { var st = stage(f), W = f.w; return [pt(.87 * W, st.t + 6), pt(.48 * W, st.t + st.h * .14), pt(.48 * W, st.b - st.h * .14), pt(.87 * W, st.b - 6)]; },
-  k: 0.08
+  wrap: function (f, p) {
+    G.partner = p === 'cotton' || p === 'wool' ? p : null; G.elastane = p === 'elastane'; G.stripped = null; f.s.wt = f.t; f.chain.kick(5, 0); syncUI();
+    $('bl-off').hidden = p === 'none'; $('bl-hint').textContent = p === 'none' ? 'Drag a yarn onto the thread' : 'Try another, or unwrap it';
+    if (p !== 'none') card(f, p); f.measure();
+  },
+  geo: function (f) { var st = stage(f), W = f.w; return { st: st, ry: st.t + 30, xs: [.1 * W, .26 * W, .42 * W], L: clamp(st.h * .4, 90, 200), x0: .03 * W, x1: .5 * W }; },
+  yarn: function (f, k) { var g = this.geo(f), x = g.xs[k], c = new Chain([pt(x, g.ry), pt(x + 1, g.ry + g.L)], 26, { pinBot: false, g: .1, wind: .025, iter: 10 }); c.kind = this.Y[k]; c.home = k; c.born = f.t; return c; },
+  layout: function (f) { var self = this; f.extras = this.Y.map(function (y, k) { return self.yarn(f, k); }); },
+  // a yarn dropped on the thread zips onto it, and a fresh one hangs back on the rail
+  absorb: function (f, c, at) {
+    if (!c || c.zip) return; var m = f.chain.p[(f.chain.n * .5) | 0];
+    c.zip = f.t; c.at = at || pt(m.x, m.y); c.pinTop = false; c.grab = -1; c.grabbable = false; c.g = 0;
+    this.wrap(f, c.kind);
+  },
+  onDrag: function (f, d) {
+    var c = d.chain; if (!c || !c.kind) return;
+    var q = c.p[c.grab]; if (!q) return;
+    for (var i = 2; i < f.chain.n - 2; i += 2) { var m = f.chain.p[i]; if (Math.hypot(m.x - q.x, m.y - q.y) < 24) { drag = null; this.absorb(f, c, pt(m.x, m.y)); return; } }
+  },
+  tap: function (f, x, y) { var self = this; f.extras.forEach(function (c) { if (c.zip) return; for (var i = 0; i < c.n; i += 2) if (Math.hypot(c.p[i].x - x, c.p[i].y - y) < 24) { self.absorb(f, c); return; } }); },
+  tick: function (f) {
+    var g = this.geo(f), self = this, slide = 1 - ease((f.vt - .2) / .9);
+    f.extras = f.extras.map(function (c) {
+      if (c.zip) { var u = (f.t - c.zip) / .5; c.p.forEach(function (q) { q.x += (c.at.x - q.x) * .22; q.y += (c.at.y - q.y) * .22; }); return u > 1 ? self.yarn(f, c.home) : c; }
+      c.top.x = g.xs[c.home] - slide * .6 * f.w; c.top.y = g.ry; return c;
+    });
+  },
+  path: function (f) { var st = stage(f), W = f.w; return [pt(.87 * W, st.t + 6), pt(.68 * W, st.t + st.h * .12), pt(.68 * W, st.b - st.h * .12), pt(.87 * W, st.b - 6)]; },
+  k: 0.08,
+  back: function (ctx, f) {
+    var g = this.geo(f), self = this, slide = 1 - ease((f.vt - .2) / .9);
+    ctx.fillStyle = KU.k; ctx.fillRect(g.x0 - slide * .6 * f.w, g.ry - 7, g.x1 - g.x0, 7);
+    f.extras.forEach(function (c) { var q = c.p[(c.n * .6) | 0]; place(f.el.querySelector('[data-p="' + c.kind + '"]'), q.x - 22, c.p[0].y, 44, Math.max(40, q.y - c.p[0].y + 40)); });
+  },
+  front: function (ctx, f) {
+    var g = this.geo(f), slide = 1 - ease((f.vt - .2) / .9);
+    f.extras.forEach(function (c) {
+      var a = c.zip ? clamp(1 - (f.t - c.zip) / .5, 0, 1) : clamp((f.t - c.born) / .4, 0, 1), p = c.p, nm = normals(p), i;
+      ctx.globalAlpha = a;
+      if (c.kind === 'elastane') drawSquiggle(ctx, c, f.t, KU.k);
+      else {
+        var wool = c.kind === 'wool', col = wool ? KU.w : '#f3ecd9', pts = wool ? offsetBy(p, nm, function (j) { return Math.sin(j * 1.6) * 2.4; }) : p;
+        strokeP(ctx, pts, KU.k, wool ? 10 : 9); strokeP(ctx, pts, col, wool ? 7 : 6);
+        ctx.strokeStyle = col; ctx.lineWidth = 1.3; ctx.beginPath();
+        for (i = 1; i < c.n; i++) { var sd = hash(i, 51) > .5 ? 1 : -1, ln = (wool ? 7 : 4) + hash(i, 52) * (wool ? 6 : 5), q = p[i]; ctx.moveTo(q.x + nm[i].x * sd * 3.5, q.y + nm[i].y * sd * 3.5); if (wool) ctx.lineTo(q.x + nm[i].x * sd * ln * .6 + 3, q.y + nm[i].y * sd * ln * .6 - 3); ctx.lineTo(q.x + nm[i].x * sd * ln, q.y + nm[i].y * sd * ln); }
+        ctx.stroke();
+      }
+      ctx.globalAlpha = 1;
+    });
+    this.Y.forEach(function (y, k) { label(ctx, f, y.toUpperCase(), g.xs[k] - slide * .6 * f.w, g.ry - 14, 11, KU.k, 'center'); });
+  }
 };
 
 // Colour it: a dye bath that only works hot, or pigment in the melt.
@@ -1436,16 +1523,17 @@ SCENES.unzip = {
        glycol: ['GLYCOL', 'Glycolysis.', 'Glycol breaks each link. The building blocks are filtered and cleaned, ready to link again.', KU.w],
        enzyme: ['ENZYME', 'Enzymes.', 'An engineered enzyme snips the links one by one, in warm water.', KU.y] },
   init: function (f) {
-    var self = this; this.clear(f); f.s.r = null;
+    var self = this; this.clear(f); f.s.r = null; f.s.fk = [];
     f.el.querySelectorAll('[data-r]').forEach(function (b) { b.addEventListener('click', function () { self.pour(f, b.dataset.r); }); });
     $('uz-go').addEventListener('click', function () { self.rebuild(f); });
   },
   clear: function (f) { f.s.u = 0; f.s.rb = 0; f.s.surf = null; f.s.mono = []; f.s.sp = []; f.s.q = []; f.s.done = false; },
   pour: function (f, r) {
-    if (f.s.r && f.t - f.s.pt < 3.6 && !f.s.done) return;
+    if (f.s.r && f.t - f.s.pt < 3.6 && !f.s.done) return false;
+    var k = ['water', 'glycol', 'enzyme'].indexOf(r), g = this.geo(f), o = f.s.fk[k] || {}; f.s.from = o.held ? pt(o.x, o.y) : pt(g.fl[k].x, g.fl[k].y + g.fh / 2); o.held = false; f.s.fk[k] = o;
     this.clear(f); f.s.r = r; f.s.pt = f.t;
     f.s.old = look(f); f.s.hadP = G.reborn ? null : G.partner; f.s.hadE = G.elastane; f.s.hadC = G.reborn ? null : G.colour;
-    $('uz-go').hidden = true; $('uz-say').hidden = true; f.measure();
+    $('uz-go').hidden = true; $('uz-say').hidden = true; f.measure(); return true;
   },
   rebuild: function (f) {
     f.s.rb = f.t; G.reborn = f.s.r; G.rounds = 0; G.elastane = false; syncUI();
@@ -1464,6 +1552,24 @@ SCENES.unzip = {
     var fill = ease((f.t - f.s.pt - .3) / 1.1), drain = f.s.rb ? ease((f.t - f.s.rb - 1.4) / 1) : 0;
     return g.vb - (g.vb - g.vy - 14) * .8 * fill * (1 - drain);
   },
+  // where each flask is: on the shelf, in your hand, or tipped over the vessel
+  flask: function (f, k) {
+    var g = this.geo(f), home = pt(g.fl[k].x, g.fl[k].y + g.fh / 2), o = f.s.fk[k] || {}, r = ['water', 'glycol', 'enzyme'][k];
+    if (o.held) return { p: pt(o.x, o.y), tilt: 0 };
+    if (f.s.r === r) { var age = f.t - f.s.pt, at = pt(g.vx + g.fw * .55, g.vy - g.fh * .25), fr = f.s.from || home;
+      if (age < 1.7) { var u = ease(age / .25); return { p: pt(fr.x + (at.x - fr.x) * u, fr.y + (at.y - fr.y) * u), tilt: ease((age - .1) / .3) * (1 - ease((age - 1.4) / .3)) }; }
+      if (age < 2.2) { var v = ease((age - 1.7) / .5); return { p: pt(at.x + (home.x - at.x) * v, at.y + (home.y - at.y) * v), tilt: 0 }; } }
+    if (o.back != null) { var w = ease((f.t - o.back) / .35); if (w < 1) return { p: pt(o.x + (home.x - o.x) * w, o.y + (home.y - o.y) * w), tilt: 0 }; }
+    return { p: home, tilt: 0 };
+  },
+  hitTest: function (f, x, y) {
+    var self = this, g = this.geo(f);
+    for (var k = 0; k < 3; k++) { var q = this.flask(f, k).p; if (Math.hypot(q.x - x, q.y - y) < g.fw * .7) { (function (k) { var o = f.s.fk[k] || (f.s.fk[k] = {}); o.held = true; o.x = q.x; o.y = q.y; o.back = null; self.grabbed = k; })(k);
+      return { move: function (mx, my) { var o = f.s.fk[self.grabbed]; o.x = mx; o.y = my; if (mx > g.vx + 6 && my > g.vy - g.fh && my < g.vb && self.pour(f, ['water', 'glycol', 'enzyme'][self.grabbed])) drag = null; },
+        end: function () { var o = f.s.fk[self.grabbed]; if (o.held) { o.held = false; o.back = f.t; } } }; } }
+    return null;
+  },
+  tap: function (f, x, y) { var g = this.geo(f); for (var k = 0; k < 3; k++) if (Math.hypot(g.fl[k].x - x, g.fl[k].y + g.fh / 2 - y) < g.fw * .7) this.pour(f, ['water', 'glycol', 'enzyme'][k]); },
   liquid: function (f) { var c = this.R[f.s.r][3]; return f.s.hadC ? mix(c, f.s.hadC, .55 * f.s.u) : c; },
   path: function (f) { var g = this.geo(f), W = f.w; return [pt(.87 * W, g.st.t - 16), pt(g.tx, g.vy - 4), pt(g.tx, g.vb + 4), pt(g.tx + 10, g.vb + 26)]; },
   k: 0.1,
@@ -1501,20 +1607,19 @@ SCENES.unzip = {
     var g = this.geo(f), self = this, lv = this.level(f);
     if (lv < g.vb - 1) { ctx.fillStyle = this.liquid(f); ctx.fillRect(g.vx, lv, g.vw, g.vb - lv); }
     ctx.strokeStyle = KU.w; ctx.lineWidth = 4; ctx.lineJoin = 'round'; ctx.beginPath(); ctx.moveTo(g.vx, g.vy); ctx.lineTo(g.vx, g.vb); ctx.lineTo(g.tx - 12, g.vb); ctx.moveTo(g.tx + 12, g.vb); ctx.lineTo(g.vx + g.vw, g.vb); ctx.lineTo(g.vx + g.vw, g.vy); ctx.stroke();
-    ['water', 'glycol', 'enzyme'].forEach(function (r, k) {
-      var x = g.fl[k].x, cy = g.fl[k].y + g.fh / 2, R = self.R[r], act = f.s.r === r, age = f.t - f.s.pt, tilt = act ? ease(age / .3) * (1 - ease((age - 1.5) / .4)) : 0;
-      ctx.save(); ctx.translate(x, cy); ctx.rotate(tilt * .85);
-      var w = g.fw, h = g.fh;
-      ctx.beginPath(); ctx.moveTo(-w * .15, -h / 2); ctx.lineTo(w * .15, -h / 2); ctx.lineTo(w * .15, -h * .12); ctx.lineTo(w / 2, h / 2); ctx.lineTo(-w / 2, h / 2); ctx.lineTo(-w * .15, -h * .12); ctx.closePath();
-      ctx.save(); ctx.clip(); ctx.fillStyle = R[3]; ctx.fillRect(-w, h * .05 - (act ? 0 : 0), w * 2, h); ctx.restore();
-      ctx.strokeStyle = KU.w; ctx.lineWidth = 3; ctx.stroke(); ctx.restore();
-      if (act && tilt > .4) { var mx = x + g.fw * .42, my = cy - g.fh * .2; ctx.strokeStyle = R[3]; ctx.lineWidth = 5; ctx.setLineDash([8, 7]); ctx.lineDashOffset = -f.t * 120; ctx.beginPath(); ctx.moveTo(mx, my); ctx.quadraticCurveTo(g.vx + 26, my - 6, g.vx + 30, Math.max(lv, my + 20)); ctx.stroke(); ctx.setLineDash([]); }
-      place(f.el.querySelector('[data-r="' + r + '"]'), x - g.fw / 2 - 8, g.fl[k].y - 6, g.fw + 16, g.fh + 26);
-    });
+    ['water', 'glycol', 'enzyme'].forEach(function (r, k) { place(f.el.querySelector('[data-r="' + r + '"]'), g.fl[k].x - g.fw / 2 - 8, g.fl[k].y - 6, g.fw + 16, g.fh + 26); });
   },
   front: function (ctx, f) {
     var g = this.geo(f), self = this, lv = this.level(f);
-    ['water', 'glycol', 'enzyme'].forEach(function (r, k) { label(ctx, f, self.R[r][0], g.fl[k].x, g.fl[k].y + g.fh + 16, 12, KU.w, 'center'); });
+    ['water', 'glycol', 'enzyme'].forEach(function (r, k) {
+      var F = self.flask(f, k), x = F.p.x, cy = F.p.y, R = self.R[r], w = g.fw, h = g.fh;
+      label(ctx, f, R[0], g.fl[k].x, g.fl[k].y + g.fh + 16, 12, KU.w, 'center');
+      ctx.save(); ctx.translate(x, cy); ctx.rotate(F.tilt * 1.1);
+      ctx.beginPath(); ctx.moveTo(-w * .15, -h / 2); ctx.lineTo(w * .15, -h / 2); ctx.lineTo(w * .15, -h * .12); ctx.lineTo(w / 2, h / 2); ctx.lineTo(-w / 2, h / 2); ctx.lineTo(-w * .15, -h * .12); ctx.closePath();
+      ctx.fillStyle = KU.k; ctx.fill(); ctx.save(); ctx.clip(); ctx.fillStyle = R[3]; ctx.fillRect(-w, h * .05, w * 2, h); ctx.restore();
+      ctx.strokeStyle = KU.w; ctx.lineWidth = 3; ctx.stroke(); ctx.restore();
+      if (F.tilt > .5) { var mx = x + Math.sin(F.tilt * 1.1) * h * .5, my = cy - Math.cos(F.tilt * 1.1) * h * .5; ctx.strokeStyle = R[3]; ctx.lineWidth = 5; ctx.setLineDash([8, 7]); ctx.lineDashOffset = -f.t * 120; ctx.beginPath(); ctx.moveTo(mx, my); ctx.lineTo(mx + 4, Math.max(lv, my + 20)); ctx.stroke(); ctx.setLineDash([]); }
+    });
     f.s.mono.forEach(function (m) { if (m.k) { hexagon(ctx, m.x, m.y, 8, KU.w); hexagon(ctx, m.x, m.y, 6, KU.k); } else { ctx.fillStyle = KU.w; ctx.fillRect(m.x - 7, m.y - 7, 14, 14); ctx.fillStyle = KU.k; ctx.fillRect(m.x - 5, m.y - 5, 10, 10); } });
     if (f.s.hadP && f.s.u > .4 && !f.s.rb) {
       // the cotton result is from a lab study; for wool we found no data, and say so
@@ -1972,7 +2077,7 @@ function move(cx, cy) {
   drag.moved = Math.max(drag.moved, Math.hypot(cx - drag.sx, cy - drag.sy));
   drag.vx = x - drag.lx; drag.vy = y - drag.ly; drag.lx = x; drag.ly = y;
   if (drag.custom) drag.custom.move(x, y); else { drag.chain.gx = x; drag.chain.gy = y; }
-  if (drag.f.sc.onDrag) drag.f.sc.onDrag(drag.f, drag);
+  if (drag && drag.f.sc.onDrag) drag.f.sc.onDrag(drag.f, drag);
 }
 function end() {
   if (!drag) return; var d = drag; drag = null; suppress = performance.now();

@@ -932,18 +932,6 @@ function drawStamps(c, f) {
     c.restore();
   });
 }
-// fingerprints where you touched the thread, fading like breath on glass
-function touchPrint(f, x, y) { if (!f.prints) f.prints = []; if (f.prints.length > 5) f.prints.shift(); f.prints.push({ x: x, y: y, t: f.t, a: Math.random() * Math.PI }); }
-function drawPrints(c, f) {
-  if (!f.prints || !f.prints.length) return;
-  f.prints = f.prints.filter(function (o) { return f.t - o.t < 5; });
-  var p = weave(f.bg === 'black' ? KU.w : KU.k, 3); if (!p) return;
-  f.prints.forEach(function (o) {
-    c.save(); c.globalAlpha = clamp(1 - (f.t - o.t) / 5, 0, 1) * .6; c.translate(o.x, o.y); c.rotate(o.a); c.strokeStyle = p; c.lineWidth = 1.8;
-    for (var k = 0; k < 6; k++) { c.beginPath(); c.ellipse(0, k * .7, 3 + k * 2.4, 5 + k * 2.9, 0, .25, Math.PI * 2 - .25); c.stroke(); }
-    c.restore();
-  });
-}
 // the discovery card sits on the page like a taped specimen label, with a woven shadow
 function cardShadow(c, f) {
   var el = f.cardEl; if (!el || !el.classList.contains('show')) return;
@@ -2298,7 +2286,7 @@ function draw(sy) {
       ctx.beginPath(); ctx.rect(0, 0, f.w, f.h); ctx.clip();
       f.dyn = [];
       if (f.sc.back) f.sc.back(ctx, f);
-      dissolve(ctx, f); cardShadow(ctx, f); drawPrints(ctx, f);
+      dissolve(ctx, f); cardShadow(ctx, f);
       var sqCol = f.bg === 'black' ? KU.w : KU.k;
       if (f.sq) drawSquiggle(ctx, f.sq, f.t, sqCol);
       ctx.save();
@@ -2336,7 +2324,7 @@ function start(cx, cy, touch, target) {
   var h = hit(cx, cy, touch); if (!h) return false;
   drag = h; drag.sx = cx; drag.sy = cy; drag.moved = 0; drag.lx = h.x; drag.ly = h.y; drag.vx = 0; drag.vy = 0;
   h.f.touched = true; h.f.demo = null;
-  if (h.custom) h.custom.move(h.x, h.y); else { h.chain.grab = h.i; h.chain.gx = h.x; h.chain.gy = h.y; touchPrint(h.f, h.x, h.y); }
+  if (h.custom) h.custom.move(h.x, h.y); else { h.chain.grab = h.i; h.chain.gx = h.x; h.chain.gy = h.y; }
   return true;
 }
 function move(cx, cy) {

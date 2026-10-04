@@ -17,6 +17,7 @@ html { scroll-snap-type: y mandatory; background: #121211; }
 body { margin: 0; padding-inline: 0; background: #121211; color: var(--k); font-family: var(--font); -webkit-text-size-adjust: 100%; }
 #feed { position: relative; width: min(100%, 480px); margin-inline: auto; }
 #ink { position: fixed; top: 0; left: 0; width: 100px; height: 100vh; pointer-events: none; z-index: 1; }
+#fx { position: fixed; top: 0; left: 0; width: 100px; height: 100vh; pointer-events: none; z-index: 4; }
 #bar { position: fixed; top: 0; height: 4px; background: var(--y); z-index: 5; width: 0; pointer-events: none; }
 .sr { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
@@ -52,6 +53,9 @@ body { margin: 0; padding-inline: 0; background: #121211; color: var(--k); font-
 .card .cl { font-size: 12px !important; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; margin: 0 0 6px !important; }
 .card .ct { font-size: 17px !important; line-height: 1.3 !important; margin: 0 !important; }
 .card.reserve { visibility: hidden; }
+/* each card is taped on like a specimen label */
+.card::before { content: ""; position: absolute; top: -10px; left: calc(50% - 34px); width: 68px; height: 20px; background: rgba(255, 255, 255, .62); box-shadow: 0 0 0 1px rgba(29, 29, 27, .14); rotate: -4deg; pointer-events: none; }
+.bg-yellow .card::before { background: rgba(255, 255, 255, .45); }
 .card.show { animation: cardin .55s cubic-bezier(.2, 1.4, .4, 1) both; }
 @keyframes cardin { from { opacity: 0; transform: translateY(22px) scale(.92); } to { opacity: 1; transform: none; } }
 
@@ -117,6 +121,7 @@ body { margin: 0; padding-inline: 0; background: #121211; color: var(--k); font-
 .label .say { font-size: clamp(24px, 7vw, 30px) !important; }
 .label p { font-size: 15px !important; }
 .label .btn { font-size: 14px; padding: 10px 14px; min-height: 42px; }
+.bg-black .label .btn { background: var(--k); color: var(--w); }
 
 /* Tutor sheet */
 .sheet { position: fixed; z-index: 20; top: 0; bottom: 0; overflow-y: auto; background: var(--w); color: var(--k); padding: 24px 24px 64px; overscroll-behavior: contain; }
@@ -126,6 +131,7 @@ body { margin: 0; padding-inline: 0; background: #121211; color: var(--k); font-
 .sheet ul, .sheet ol { margin: 0; padding-left: 1.15em; display: grid; gap: 7px; }
 .sheet a { color: inherit; text-decoration-color: var(--b); text-decoration-thickness: 2px; text-underline-offset: 3px; overflow-wrap: anywhere; }
 .sheet .close { position: sticky; top: 0; float: right; }
+.sheet .note { background: var(--y); padding: 10px 12px; }
 .chip { display: inline-block; font-size: 12px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; padding: 1px 7px; border-radius: 999px; border: 2px solid currentColor; }
 .chip.s { color: #2d6a36; } .chip.m { color: #7a5600; } .chip.w { color: #a22a1c; }
 .sig { font-size: 15px; color: var(--g); }
@@ -151,6 +157,23 @@ body { margin: 0; padding-inline: 0; background: #121211; color: var(--k); font-
   .scrub { font-size: clamp(44px, 13vw, 58px); }
 }
 
+/* The tally rides the end of the progress bar; tap it to open your collection */
+.tally { position: fixed; top: 7px; left: 0; z-index: 6; height: 26px; padding: 0 10px 0 24px; border-radius: 13px; border: 2px solid var(--k); background: var(--y); color: var(--k); font: 700 12px/22px var(--font); letter-spacing: .04em; cursor: pointer; font-variant-numeric: tabular-nums; }
+.tally::before { content: ""; position: absolute; left: 7px; top: 6px; width: 10px; height: 10px; background: repeating-conic-gradient(var(--k) 0 25%, transparent 0 50%) 0 0 / 4px 4px; }
+.tally::after { content: ""; position: absolute; inset: -10px -6px; }
+.tally:focus-visible { outline: 3px solid var(--b); outline-offset: 2px; }
+.tally.bump { animation: bump .6s cubic-bezier(.2, 1.6, .4, 1); }
+@keyframes bump { 0% { scale: 1; } 35% { scale: 1.45; } 100% { scale: 1; } }
+.coll { list-style: none; padding: 0 !important; display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px !important; }
+.coll li { border: 2px solid var(--k); padding: 10px 11px; display: flex; flex-direction: column; gap: 5px; font-size: 14px !important; line-height: 1.32 !important; min-width: 0; }
+.coll li b { font-size: 12px; letter-spacing: .1em; text-transform: uppercase; }
+.coll li.found { background: var(--y); }
+.coll li.locked { color: var(--g); background: var(--w) repeating-conic-gradient(rgba(29, 29, 27, .16) 0 25%, transparent 0 50%) 0 0 / 4px 4px; }
+.coll li.locked b { color: var(--k); }
+.coll li button { margin-top: auto; align-self: flex-start; font: 700 13px var(--font); border: 0; border-radius: 999px; background: var(--k); color: var(--w); padding: 8px 12px; min-height: 36px; cursor: pointer; }
+.coll li button:focus-visible { outline: 3px solid var(--b); outline-offset: 2px; }
+.label .acts { display: flex; flex-wrap: wrap; gap: 8px; }
+
 /* Desktop surround */
 .aside { display: none; }
 @media (min-width: 900px) {
@@ -164,10 +187,12 @@ body { margin: 0; padding-inline: 0; background: #121211; color: var(--k); font-
   <b>The Thread and the Loop</b>
   <p>Made for phones. Open it on yours, or scroll here.</p>
   <p>Twenty-one exhibits. One thread. Shape it, puff it, cut it, ply it, wrap it, dye it, unzip it. It keeps what you do.</p>
+  <p>Every shade is woven: spot, twill and plain weave.</p>
 </div>
 
 <div id="bar" aria-hidden="true"></div>
 <canvas id="ink" aria-hidden="true"></canvas>
+<canvas id="fx" aria-hidden="true"></canvas>
 
 <main id="feed">
 
@@ -180,6 +205,8 @@ body { margin: 0; padding-inline: 0; background: #121211; color: var(--k); font-
   <div class="copy bl" data-avoid="bottom" style="max-width:50%">
     <p class="hint">Scroll down.<br>Pull the thread.<br>It remembers.</p>
   </div>
+  <button class="hit kb" type="button" id="spool" aria-label="Spin the spool"></button>
+  <div class="card bl reserve" data-avoid="card"><p class="cl"></p><p class="ct"></p></div>
 </section>
 
 <section class="frame bg-yellow" data-scene="guess" aria-label="How much fibre is polyester">
@@ -452,12 +479,20 @@ body { margin: 0; padding-inline: 0; background: #121211; color: var(--k); font-
       <dl id="pass"></dl>
       <p class="say" id="end-say">…</p>
       <p id="end-p"></p>
-      <button class="btn" type="button" id="open-sheet">Tutor notes and sources</button>
+      <div class="acts"><button class="btn" type="button" id="open-coll">Your discoveries</button><button class="btn" type="button" id="open-sheet">Tutor notes</button></div>
     </div>
   </div>
 </section>
 
 </main>
+
+<button class="tally" id="tally" type="button" aria-label="Discoveries: 0 found. Open your collection.">0/35</button>
+<div class="sheet" id="coll" role="dialog" aria-modal="true" aria-label="Your discoveries" hidden>
+  <button class="btn close" type="button" id="close-coll">Close</button>
+  <h2>Discoveries</h2>
+  <p id="coll-sum"></p>
+  <div id="coll-list"></div>
+</div>
 
 <div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-label="Tutor notes and sources" hidden>
   <button class="btn close" type="button" id="close-sheet">Close</button>
@@ -477,8 +512,12 @@ body { margin: 0; padding-inline: 0; background: #121211; color: var(--k); font-
     <li><b>The thread is the controller.</b> Students pull, blow, cut, twist, ply, wrap, dye, recycle, unzip, fork, melt and knot it. Tests, yarns and flasks are objects to pick up and drop, not buttons. The idea and the action are the same thing.</li>
     <li><b>Discovery, not display.</b> Facts arrive as numbered discovery cards when students find them. A wrong test gives a question back, not the answer.</li>
     <li><b>Predict, then test.</b> The 59% and 1.35% guesses, the nozzle tests, will it recycle, spot the PET, which ply melts first.</li>
+    <li><b>Collect the set.</b> The tally on the progress bar opens a drawer of discoveries. Gaps say which exhibit still hides one, so students go back, retry and retrieve.</li>
+    <li><b>Show, then step back.</b> When an exhibit sits untouched, a pixel hand demonstrates the gesture, at most twice, then leaves students to it.</li>
     <li><b>Consequences carry forward.</b> Shape, filament count, texture, staple, plies, partner fibre, colour, draw, shedding, melt rounds, elastane, PLA and promises all stay with the thread. The care label reads them back.</li>
   </ul>
+  <h3>Why it looks like this</h3>
+  <p class="note">Every shade is woven. The dithered tones are point-paper weave structures: spot, twill and plain weave. It nods to Jacquard's punched cards (1804), which taught looms, and later computers, to follow a pattern [36]. Students who tap the spool on the first page find this as a hidden discovery.</p>
   <h3>Seminar questions</h3>
   <ol>
     <li>Your leggings say "78% recycled polyester, 22% elastane". Where can they go at the end of their life?</li>
@@ -496,6 +535,7 @@ body { margin: 0; padding-inline: 0; background: #121211; color: var(--k); font-
     <li><span class="chip m">Moderate</span> Synthetic fibres use about 1.35% of global oil consumption: one NGO estimate (Changing Markets, 2021) [33]. A refinery sends roughly 10–20% of a barrel to all petrochemicals [35]. These measure different things, so never multiply them.</li>
     <li><span class="chip s">Strong</span> Terephthalic acid comes from oil (paraxylene); ethylene glycol comes from ethylene, made from oil naphtha or natural-gas ethane [34].</li>
     <li><span class="chip s">Strong</span> Invented 1941 by Whinfield and Dickson [2][3].</li>
+    <li><span class="chip s">Strong</span> Jacquard's punched-card loom, 1804–05; Babbage adopted punched cards about 1830; Lovelace's "weaves algebraical patterns" [36].</li>
     <li><span class="chip s">Strong</span> Trilobal sparkles, hollow insulates, multichannel wicks [13][14].</li>
     <li><span class="chip s">Strong</span> Microfibre: under 1 decitex per filament [15].</li>
     <li><span class="chip s">Strong</span> Linking terephthalic acid and ethylene glycol gives off water [27].</li>
@@ -560,6 +600,7 @@ body { margin: 0; padding-inline: 0; background: #121211; color: var(--k); font-
     <li><a href="https://meta.eeb.org/2021/02/11/time-to-free-fashion-from-fossil-fuel-addiction/">EEB META (2021), on Changing Markets' Fossil Fashion report</a></li>
     <li><a href="https://cpmaindia.com/knowledge-centre/product-group/-fibre-intermediates/meg">CPMA, monoethylene glycol (MEG)</a></li>
     <li><a href="https://www.mckinsey.com/industries/chemicals/our-insights/from-crude-oil-to-chemicals-how-refineries-can-adapt-to-shifting-demand">McKinsey, From crude oil to chemicals</a></li>
+    <li><a href="https://www.columbia.edu/cu/computinghistory/jacquard.html">Columbia University Computing History, the Jacquard loom</a></li>
   </ol>
   <p style="margin-top:14px">Visual style after The Dot and the Line (Chuck Jones and Maurice Noble, MGM, 1965).</p>
 </div>
@@ -611,8 +652,11 @@ var DISC = {
   spring: 'Two polyesters in one filament curl into a spring: stretch without elastane. The maker says it recycles with polyester; ask for proof.',
   rubber: 'In the lab, all-polyester rubbers stretch to about 11 times their length. Not on sale as fibre yet.',
   union: 'Only the polyester took the colour. Cotton and wool need other dyes, so blends are often dyed twice, once for each fibre.',
-  plamelt: 'PLA melts at around 170°C, PET at around 250°C. That is why PLA needs a cool iron.'
+  plamelt: 'PLA melts at around 170°C, PET at around 250°C. That is why PLA needs a cool iron.',
+  jacquard: 'In 1804 Jacquard\'s loom read punched cards to choose which threads to lift. Babbage borrowed the cards for his computing engine. Ada Lovelace wrote that it "weaves algebraical patterns".'
 };
+// short names and where each one hides, for the collection drawer
+var DMETA = { link: ['The chain', 'oil'], y1941: ['Terylene', 'oil'], draw: ['Drawing', 'spin'], trilobal: ['Sparkle', 'shape'], hollow: ['Warmth', 'shape'], channel: ['Wicking', 'shape'], mono: ['Monofilament', 'count'], multi: ['Multifilament', 'count'], micro: ['Microfibre', 'count'], aty: ['Air loops', 'texture'], dty: ['Crimp', 'texture'], staple: ['Staple', 'cut'], twist: ['Twist', 'cut'], snarl: ['Snarl', 'ply'], ply: ['Balance', 'ply'], cotton: ['Core-spun', 'blend'], wool: ['Wool wrap', 'blend'], elastane: ['Elastane', 'blend'], bath: ['Dye bath', 'colour'], melt: ['Dope dyeing', 'colour'], union: ['Dyed twice', 'colour'], wash: ['Shedding', 'wash'], fleece: ['Fleece', 'wash'], bottle: ['Bottles', 'bottle'], jam: ['Jam', 'recycle'], loop: ['The loop', 'recycle'], downcycle: ['Weaker', 'recycle'], unzip: ['Unzip', 'unzip'], enzyme: ['Enzymes', 'unzip'], separate: ['Separating', 'unzip'], pla: ['PLA', 'spot'], spring: ['Spring', 'bend'], rubber: ['Rubber', 'bend'], plamelt: ['Melting point', 'heat'], jacquard: ['Punched cards', 'cover'] };
 var FOUND = {}, NFOUND = 0, NDISC = Object.keys(DISC).length;
 
 // ---------- geometry ----------
@@ -633,6 +677,7 @@ function resample(p, n) {
 }
 function arc(cx, cy, rx, ry, a0, a1, steps) { steps = steps || 60; var o = []; for (var i = 0; i <= steps; i++) { var a = a0 + (a1 - a0) * i / steps; o.push(pt(cx + rx * Math.cos(a), cy + ry * Math.sin(a))); } return o; }
 function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
+function catmull(P, k) { var o = []; for (var i = 0; i < P.length - 1; i++) { var a = P[Math.max(0, i - 1)], b = P[i], c = P[i + 1], d = P[Math.min(P.length - 1, i + 2)]; for (var j = 0; j < k; j++) { var t = j / k, t2 = t * t, t3 = t2 * t; o.push(pt(.5 * (2 * b.x + (c.x - a.x) * t + (2 * a.x - 5 * b.x + 4 * c.x - d.x) * t2 + (3 * b.x - a.x - 3 * c.x + d.x) * t3), .5 * (2 * b.y + (c.y - a.y) * t + (2 * a.y - 5 * b.y + 4 * c.y - d.y) * t2 + (3 * b.y - a.y - 3 * c.y + d.y) * t3))); } } o.push(P[P.length - 1]); return o; }
 function ease(u) { u = clamp(u, 0, 1); return u * u * (3 - 2 * u); }
 function hash(a, b) { var h = Math.sin(a * 127.1 + b * 311.7) * 43758.5453; return h - Math.floor(h); }
 function rnd(seed) { var s = seed >>> 0; return function () { s = (Math.imul(s, 1664525) + 1013904223) >>> 0; return s / 4294967296; }; }
@@ -806,11 +851,11 @@ function card(f, kind, text) {
   var c = f.el.querySelector('.card'); if (!c) return;
   var head;
   if (kind && DISC[kind]) {
-    if (!FOUND[kind]) { FOUND[kind] = true; NFOUND++; renderLabel(); }
+    if (!FOUND[kind]) { FOUND[kind] = true; NFOUND++; renderLabel(); tallyUp(); }
     head = 'Discovery · ' + NFOUND + ' of ' + NDISC; text = DISC[kind];
   } else head = kind || 'Try this';
   c.querySelector('.cl').textContent = head; c.querySelector('.ct').textContent = text;
-  c.classList.remove('reserve', 'show'); void c.offsetWidth; c.classList.add('show');
+  c.classList.remove('reserve', 'show'); void c.offsetWidth; c.classList.add('show'); f.cardT = performance.now();
   f.measure(); if (f.sc.cardLayout) f.sc.layout(f);
 }
 
@@ -846,15 +891,121 @@ function dial(el, o) {
 }
 function drop(ctx, x, y, r, col) { ctx.fillStyle = col; ctx.beginPath(); ctx.moveTo(x, y - r * 2); ctx.quadraticCurveTo(x + r * .9, y - r * .6, x + r, y); ctx.arc(x, y, r, 0, Math.PI); ctx.quadraticCurveTo(x - r * .9, y - r * .6, x, y - r * 2); ctx.fill(); }
 
+// ---------- woven dither: every shade in this piece is a weave ----------
+// Point-paper structures stand in for grey: spot, twill, plain weave, reversed twill, reversed spot.
+var WEAVE = [null,
+  function (x, y) { return (x === 0 && y === 0) || (x === 2 && y === 2); },
+  function (x, y) { return (x + 4 - y) % 4 === 0; },
+  function (x, y) { return (x + y) % 2 === 0; },
+  function (x, y) { return (x + 4 - y) % 4 !== 0; },
+  function (x, y) { return !((x === 0 && y === 0) || (x === 2 && y === 2)); }];
+var PATS = {}, CELL = 2, BGC = { white: '#ffffff', black: '#1d1d1b', blue: '#009cde', yellow: '#ffb500' };
+function weave(col, lvl) {
+  lvl = Math.round(lvl); if (lvl <= 0) return null; if (lvl >= 6) return col;
+  var key = col + lvl + '@' + DPR; if (PATS[key]) return PATS[key];
+  var px = Math.max(1, Math.round(CELL * DPR)), c = document.createElement('canvas'); c.width = c.height = px * 4;
+  var g = c.getContext('2d'); g.fillStyle = col;
+  for (var y = 0; y < 4; y++) for (var x = 0; x < 4; x++) if (WEAVE[lvl](x, y)) g.fillRect(x * px, y * px, px, px);
+  var pat = ctx.createPattern(c, 'repeat');
+  try { pat.setTransform(new DOMMatrix().scale(1 / DPR)); } catch (e) {}
+  return (PATS[key] = pat);
+}
+function wRect(c, col, lvl, x, y, w, h) { var p = weave(col, lvl); if (!p || w <= 0 || h <= 0) return; c.fillStyle = p; c.fillRect(x, y, w, h); }
+function wDisc(c, col, lvl, x, y, r) { var p = weave(col, lvl); if (!p || r <= 0) return; c.fillStyle = p; c.beginPath(); c.arc(x, y, r, 0, Math.PI * 2); c.fill(); }
+function wPath(c, col, lvl, build) { var p = weave(col, lvl); if (!p) return; c.fillStyle = p; c.beginPath(); build(); c.fill(); }
+// a dithered gradient from level a (top) to level b (bottom)
+function wFade(c, col, x, y, w, h, a, b) { var n = Math.abs(b - a) + 1, bh = h / n; for (var i = 0; i < n; i++) wRect(c, col, a + (b > a ? i : -i), x, y + i * bh, w, bh + .5); }
+function shadeOf(f) { return f.bg === 'black' ? null : KU.k; }
+
+// comic sound words pop where things happen
+function stamp(f, s, x, y) { if (!f.stamps) f.stamps = []; if (f.stamps.length > 3) f.stamps.shift(); f.stamps.push({ s: s, x: clamp(x, 70, f.w - 70), y: clamp(y, 40, f.h - 40), t: f.t, r: (Math.random() - .5) * .34 }); }
+function drawStamps(c, f) {
+  if (!f.stamps || !f.stamps.length) return;
+  f.stamps = f.stamps.filter(function (o) { return f.t - o.t < 1.25; });
+  f.stamps.forEach(function (o) {
+    var age = f.t - o.t, sc = RM ? 1 : age < .16 ? .45 + age / .16 * .8 : age < .3 ? 1.25 - (age - .16) / .14 * .25 : 1, a = age > .9 ? 1 - (age - .9) / .35 : 1;
+    c.save(); c.globalAlpha = clamp(a, 0, 1); c.translate(o.x, o.y); c.rotate(o.r); c.scale(sc, sc);
+    c.font = '900 26px ' + FONT; c.textAlign = 'center'; c.textBaseline = 'middle'; c.lineJoin = 'round';
+    var sh = weave(KU.k, 3); if (sh && f.bg !== 'black') { c.fillStyle = sh; c.fillText(o.s, 4, 4); }
+    c.lineWidth = 5; c.strokeStyle = KU.k; c.strokeText(o.s, 0, 0);
+    c.fillStyle = f.bg === 'yellow' ? KU.w : KU.y; c.fillText(o.s, 0, 0);
+    c.restore();
+  });
+}
+// fingerprints where you touched the thread, fading like breath on glass
+function touchPrint(f, x, y) { if (!f.prints) f.prints = []; if (f.prints.length > 5) f.prints.shift(); f.prints.push({ x: x, y: y, t: f.t, a: Math.random() * Math.PI }); }
+function drawPrints(c, f) {
+  if (!f.prints || !f.prints.length) return;
+  f.prints = f.prints.filter(function (o) { return f.t - o.t < 5; });
+  var p = weave(f.bg === 'black' ? KU.w : KU.k, 3); if (!p) return;
+  f.prints.forEach(function (o) {
+    c.save(); c.globalAlpha = clamp(1 - (f.t - o.t) / 5, 0, 1) * .6; c.translate(o.x, o.y); c.rotate(o.a); c.strokeStyle = p; c.lineWidth = 1.8;
+    for (var k = 0; k < 6; k++) { c.beginPath(); c.ellipse(0, k * .7, 3 + k * 2.4, 5 + k * 2.9, 0, .25, Math.PI * 2 - .25); c.stroke(); }
+    c.restore();
+  });
+}
+// the discovery card sits on the page like a taped specimen label, with a woven shadow
+function cardShadow(c, f) {
+  var el = f.cardEl; if (!el || !el.classList.contains('show')) return;
+  var u = RM ? 1 : ease((performance.now() - (f.cardT || 0)) / 450), o = 7 * u, x = el.offsetLeft, y = el.offsetTop, w = el.offsetWidth, h = el.offsetHeight;
+  var p = weave(f.bg === 'black' ? KU.w : KU.k, f.bg === 'black' ? 1 : 2); if (!p) return;
+  c.save(); c.translate(x + w / 2 + o, y + h / 2 + o); c.rotate((f.tilt || 0) * D); c.fillStyle = p; c.fillRect(-w / 2, -h / 2, w, h); c.restore();
+}
+// the bottom of each exhibit frays into the colour of the next one
+function dissolve(c, f) {
+  var nx = frames[f.i + 1]; if (!nx) return;
+  var to = nx.sc.topBg ? nx.sc.topBg(nx) : nx.bg, from = f.sc.bottomBg ? f.sc.bottomBg(f) : f.bg, H = 30, y = f.h - H;
+  if (to === 'split') { if (from !== 'white') wFade(c, BGC.white, 0, y, f.w * .45, H, 1, 5); if (from !== 'black') wFade(c, BGC.black, f.w * .45, y, f.w * .55, H, 1, 5); return; }
+  if (to !== from) wFade(c, BGC[to], 0, y, f.w, H, 1, 5);
+}
+
+// An original 1-bit hand that shows the gesture when an exhibit sits untouched.
+var HAND = ['.....##.........', '....#oo#........', '....#oo#........', '....#oo#........', '....#oo#........', '....#oo###......', '....#oo#oo###...', '....#oo#oo#oo##.', '.##.#oo#oo#oo#o#', '#oo##oooooooo#o#', '#ooo#oooooooooo#', '.#oo#oooooooooo#', '..#ooooooooooo#.', '..#ooooooooooo#.', '...#oooooooooo#.', '...#ooooooooo#..', '....#oooooooo#..', '....#oooooooo#..', '....##########..'];
+var HANDC = null, HPX = 3;
+function handSprite() {
+  if (HANDC && HANDC.dpr === DPR) return HANDC;
+  var u = Math.max(1, Math.round(DPR)), px = HPX * u, w = 16 * px, h = HAND.length * px, img = document.createElement('canvas'), sh = document.createElement('canvas');
+  img.width = sh.width = w; img.height = sh.height = h; var g = img.getContext('2d'), s2 = sh.getContext('2d');
+  HAND.forEach(function (row, y) { for (var x = 0; x < 16; x++) { var ch = row[x]; if (ch === '.') continue; g.fillStyle = ch === '#' ? KU.k : KU.w; g.fillRect(x * px, y * px, px, px); s2.fillStyle = KU.k; for (var a = 0; a < HPX; a++) for (var b = 0; b < HPX; b++) if ((a + b + x + y) % 2 === 0) s2.fillRect(x * px + a * u, y * px + b * u, u, u); } });
+  HANDC = { img: img, sh: sh, dpr: DPR, w: 16 * HPX, h: HAND.length * HPX };
+  return HANDC;
+}
+function along(d, u) {
+  if (d.kind === 'circle') { var a = -u * Math.PI * 2 * (d.turns || 1) - Math.PI / 2; return pt(d.pts[0].x + Math.cos(a) * d.r, d.pts[0].y + Math.sin(a) * d.r); }
+  var P = d.pts; if (P.length < 2) return P[0];
+  var L = plen(P), s = L * u, acc = 0;
+  for (var i = 1; i < P.length; i++) { var seg = Math.hypot(P[i].x - P[i - 1].x, P[i].y - P[i - 1].y); if (acc + seg >= s) { var k = seg ? (s - acc) / seg : 0; return pt(P[i - 1].x + (P[i].x - P[i - 1].x) * k, P[i - 1].y + (P[i].y - P[i - 1].y) * k); } acc += seg; }
+  return P[P.length - 1];
+}
+function drawDemo(c, f) {
+  var d = f.demo; if (!d) return;
+  var age = f.t - d.t, T = d.dur, H = handSprite(), pos, down = false, fade = 1, start = along(d, 0);
+  if (age > T) { f.demo = null; return; }
+  if (RM) { pos = start; down = true; }
+  else if (age < .4) { var u = ease(age / .4); pos = pt(start.x + 36 * (1 - u), start.y + 46 * (1 - u)); fade = u; }
+  else if (age < T - .55) { var v = d.kind === 'tap' || d.kind === 'hold' ? 0 : ease((age - .6) / (T - 1.25)); pos = along(d, v); down = d.kind === 'tap' ? age > .5 && age < .85 : age > .5; }
+  else { var w = (age - (T - .55)) / .55; pos = along(d, d.kind === 'tap' || d.kind === 'hold' ? 0 : 1); pos = pt(pos.x + 22 * w, pos.y + 28 * w); fade = 1 - w; }
+  c.save(); c.globalAlpha = clamp(fade, 0, 1);
+  if (down) { c.strokeStyle = f.bg === 'black' ? KU.w : KU.k; c.lineWidth = 2; c.setLineDash([2, 3]); var rr = 9 + ((age * 26) % 14); c.beginPath(); c.arc(pos.x, pos.y, rr, 0, Math.PI * 2); c.stroke(); c.setLineDash([]); }
+  var hx = pos.x - 5.5 * HPX, hy = pos.y + (down ? 2 : 0);
+  c.imageSmoothingEnabled = false;
+  if (f.bg !== 'black') c.drawImage(H.sh, hx + 4, hy + 5, H.w, H.h);
+  c.drawImage(H.img, hx, hy, H.w, H.h);
+  c.restore();
+}
+function domPt(f, el, dx, dy) { var r = el.getBoundingClientRect(), fr = f.el.getBoundingClientRect(); return pt(r.left - fr.left + r.width / 2 + (dx || 0), r.top - fr.top + r.height / 2 + (dy || 0)); }
+
 // The microscope: a black lens showing the thread cut end-on.
 function lens(ctx, cx, cy, R, shape, n, ink) {
+  wDisc(ctx, KU.k, 2, cx + 8, cy + 8, R + 6);
   disc(ctx, cx, cy, R + 6, KU.w); disc(ctx, cx, cy, R, KU.k);
   ctx.save(); ctx.beginPath(); ctx.arc(cx, cy, R - 2, 0, Math.PI * 2); ctx.clip();
   var pts = [], r;
   if (n <= 1) { pts = [pt(cx, cy)]; r = R * .55; }
   else if (n <= 7) { r = R * .26; pts.push(pt(cx, cy)); for (var i = 0; i < n - 1; i++) { var a = i / (n - 1) * Math.PI * 2; pts.push(pt(cx + Math.cos(a) * r * 2.15, cy + Math.sin(a) * r * 2.15)); } }
   else { var gold = 2.39996, area = R * R * .62; r = Math.sqrt(area / n) * .62; for (var k = 0; k < n; k++) { var rr = Math.sqrt((k + .5) / n) * R * .8; pts.push(pt(cx + Math.cos(k * gold) * rr, cy + Math.sin(k * gold) * rr)); } }
-  pts.forEach(function (q, i) { shapePath(ctx, shape, q.x, q.y, r, i * .7); ctx.fillStyle = ink; ctx.fill(); if (shape === 'hollow') disc(ctx, q.x, q.y, r * .42, KU.k); });
+  pts.forEach(function (q, i) { shapePath(ctx, shape, q.x, q.y, r, i * .7); ctx.fillStyle = ink; ctx.fill(); if (n <= 24) { ctx.save(); ctx.clip(); wDisc(ctx, KU.k, 3, q.x + r * .55, q.y + r * .55, r * .95); ctx.restore(); } if (shape === 'hollow') disc(ctx, q.x, q.y, r * .42, KU.k); });
+  wDisc(ctx, KU.w, 1, cx - R * .42, cy - R * .46, R * .42);
   ctx.restore();
   return { pts: pts, r: r };
 }
@@ -863,14 +1014,53 @@ var SCENES = {};
 
 // The thread throws a loop round the title and leaves it open.
 SCENES.cover = {
-  n: 160,
-  path: function (f) {
-    var t = f.named.title, W = f.w; if (!t) return [];
-    var cx = (t.l + t.r) / 2, cy = (t.t + t.b) / 2, rx = Math.min((t.r - t.l) / 2 + 18, .48 * W), ry = (t.b - t.t) / 2 + 22;
-    var hb = f.named.bottom ? f.named.bottom.t - 18 : f.h * .85;
-    return [pt(cx, cy - ry - 26)].concat(arc(cx, cy, rx, ry, -90 * D, (232 + 5 * Math.sin(f.t * 1.2)) * D, 90)).concat([pt(cx - rx - 8, cy + ry * .25), pt(.05 * W, cy + ry + 40), pt(.05 * W, hb), pt(.87 * W, hb)]);
+  n: 400,
+  init: function (f) { var self = this; f.s.spin = 0; f.s.whirl = -9; f.s.hop = -9; $('spool').addEventListener('click', function () { self.whirl(f); }); },
+  // the spool the whole thread unwinds from
+  spool: function (f) { var W = f.w, r = clamp(.07 * W, 22, 32); return { x: .8 * W, y: clamp(f.h * .08, 46, 72), w: r * 1.8, h: r * 2.3 }; },
+  pinTop: function (f) { var s = this.spool(f); return pt(s.x - s.w / 2 - 1, s.y + s.h * .12); },
+  whirl: function (f) { var s = this.spool(f); f.s.whirl = f.t; stamp(f, 'WHIRR', s.x - s.w - 56, s.y + 4); card(f, 'jacquard'); var h = f.el.querySelector('.copy.bl'); if (h) h.hidden = true; f.measure(); },
+  tap: function (f, x, y) {
+    var s = this.spool(f), d = f.s.dot;
+    if (Math.abs(x - s.x) < s.w * .9 && Math.abs(y - s.y) < s.h * .75) this.whirl(f);
+    else if (d && Math.hypot(x - d.x, y - d.y) < 24) { f.s.hop = f.t; stamp(f, 'BOOP', d.x, d.y - 46); }
   },
-  k: 0.06
+  // joined-up "hi", written by the thread; u lifts it from a straight line into the word
+  hi: function (x0, y0, H, u) {
+    var P = [[-.7, 0], [0, -.12], [.3, -.9], [.48, -1.65], [.42, -2.12], [.24, -2.02], [.16, -1.45], [.11, -.6], [.09, 0], [.22, -.62], [.46, -.98], [.68, -.72], [.73, -.22], [.86, .02], [1.06, -.2], [1.2, -.68], [1.28, -.98], [1.3, -.52], [1.36, -.06], [1.56, -.08], [1.8, -.36]];
+    return catmull(P.map(function (q) { return pt(x0 + q[0] * H, y0 + q[1] * H * u); }), 6);
+  },
+  path: function (f) {
+    var t = f.named.title, W = f.w, bt = f.named.bottom; if (!t) return [];
+    var cx = (t.l + t.r) / 2, cy = (t.t + t.b) / 2, rx = Math.min((t.r - t.l) / 2 + 18, .48 * W), ry = (t.b - t.t) / 2 + 22;
+    var shown = f.cardEl && f.cardEl.classList.contains('show'), hb = Math.min(bt ? bt.t : f.h * .85, shown && f.named.card ? f.named.card.t : f.h) - 18;
+    var o = [pt(cx, cy - ry - 26)].concat(arc(cx, cy, rx, ry, -90 * D, (232 + 5 * Math.sin(f.t * 1.2)) * D, 90)).concat([pt(cx - rx - 8, cy + ry * .25), pt(.05 * W, cy + ry + 40), pt(.05 * W, hb)]);
+    // beside the bottom hint, the thread writes "hi"; the dot on the i is The Dot
+    if (!bt || shown) { f.s.dot = null; return o.concat([pt(.87 * W, hb)]); }
+    var H = clamp(W * .08, 24, 32), x0 = .68 * W, yb = bt.b - 16, u = RM ? 1 : ease((f.t - .6) / 1.4);
+    f.s.dot = pt(x0 + 1.32 * H, yb - 1.62 * H); f.s.dotU = u;
+    return o.concat([pt(.5 * W, hb), pt(x0 - 1.1 * H, yb)]).concat(this.hi(x0, yb, H, u)).concat([pt(.87 * W, yb + 8)]);
+  },
+  k: 0.07,
+  tick: function (f) { var a = f.t - f.s.whirl; f.s.spin += a < 1.6 ? 26 * (1 - a / 1.6) : 0; },
+  demo: function (f) { var c = f.chain, q = c.p[(c.n * .62) | 0]; return { kind: 'drag', pts: [pt(q.x, q.y), pt(q.x + 26, q.y + 80)], dur: 2.6 }; },
+  back: function (ctx, f) {
+    var s = this.spool(f), x = s.x, y = s.y, w = s.w, h = s.h, i, off = (window.scrollY * .3 + f.s.spin) % 5;
+    // barrel wound with thread
+    ctx.fillStyle = KU.b; ctx.fillRect(x - w / 2, y - h / 2 + 7, w, h - 14);
+    ctx.save(); ctx.beginPath(); ctx.rect(x - w / 2, y - h / 2 + 7, w, h - 14); ctx.clip(); ctx.strokeStyle = KU.w; ctx.lineWidth = 1.2; ctx.beginPath();
+    for (i = -1; i < h / 5 + 1; i++) { var yy = y - h / 2 + 7 + i * 5 + off; ctx.moveTo(x - w / 2, yy); ctx.quadraticCurveTo(x, yy + 2.5, x + w / 2, yy); } ctx.stroke();
+    wRect(ctx, KU.w, 1, x - w / 2, y - h / 2, w * .22, h); wRect(ctx, KU.k, 3, x + w * .18, y - h / 2, w * .32, h); wRect(ctx, KU.k, 5, x + w * .4, y - h / 2, w * .1, h);
+    ctx.restore();
+    // flanges
+    [y - h / 2, y + h / 2 - 8].forEach(function (fy) { ctx.fillStyle = KU.w; ctx.fillRect(x - w / 2 - 9, fy, w + 18, 8); wRect(ctx, KU.k, 3, x + w * .25, fy, w * .25 + 9, 8); });
+    place($('spool'), x - w / 2 - 12, y - h / 2 - 8, w + 24, h + 16);
+  },
+  front: function (ctx, f) {
+    var d = f.s.dot; if (!d || f.s.dotU < .98) return;
+    var a = f.t - f.s.hop, hop = a < .6 ? -Math.sin(a / .6 * Math.PI) * 26 : 0, r = 8 * (RM ? 1 : ease((f.t - 2) / .35)), bob = RM ? 0 : Math.sin(f.t * 2.1) * 2;
+    disc(ctx, d.x, d.y + bob + hop, r, KU.y);
+  }
 };
 
 // Drag across the grid: the thread follows your finger. Then it moves to the real figure.
@@ -901,6 +1091,7 @@ SCENES.guess = {
   cell: function (g, k) { var r = Math.floor(k / 10), col = r % 2 === 0 ? k % 10 : 9 - k % 10; return pt(g.x0 + (col + .5) * g.c, g.y0 + (r + .5) * g.c); },
   count: function (f) { if (!f.s.on) return f.s.g; var A = this.final(f); return Math.round(f.s.g + (A - f.s.g) * ease((f.t - f.s.rt - .4) / 1.8)); },
   done: function (f) { return f.s.on && f.t - f.s.rt > 2.3; },
+  demo: function (f) { if (f.s.on) return null; var g = f.s.G; return { kind: 'drag', pts: [pt(g.x0 + .5 * g.c, g.y0 + .5 * g.c), pt(g.x0 + 9.5 * g.c, g.y0 + .5 * g.c), pt(g.x0 + 9.5 * g.c, g.y0 + 3.5 * g.c)], dur: 3 }; },
   hitTest: function (f, x, y) {
     var g = f.s.G, self = this; if (f.s.on || x < g.x0 - 6 || x > g.x0 + 10 * g.c + 6 || y < g.y0 - 6 || y > g.y0 + 10 * g.c + 6) return null;
     return { move: function (mx, my) { var col = clamp(Math.floor((mx - g.x0) / g.c), 0, 9), row = clamp(Math.floor((my - g.y0) / g.c), 0, 9); self.setGuess(f, row * 10 + (row % 2 === 0 ? col : 9 - col) + 1); } };
@@ -918,12 +1109,12 @@ SCENES.guess = {
     for (var k = 0; k < 100; k++) {
       var c = self.cell(g, k), s = g.c - 4, x = c.x - s / 2, y = c.y - s / 2;
       if (k < m) {
-        if (f.s.on) { ctx.fillStyle = f.s.round ? KU.k : KU.b; ctx.fillRect(x, y, s, s); }
-        else { ctx.save(); ctx.beginPath(); ctx.rect(x, y, s, s); ctx.clip(); ctx.strokeStyle = KU.k; ctx.lineWidth = 2; ctx.beginPath(); for (var d = -s; d < s; d += 6) { ctx.moveTo(x + d, y + s); ctx.lineTo(x + d + s, y); } ctx.stroke(); ctx.restore(); }
+        if (f.s.on) wRect(ctx, f.s.round ? KU.k : KU.b, 5, x, y, s, s);
+        else wRect(ctx, KU.k, 2, x, y, s, s);
       }
       ctx.strokeStyle = KU.k; ctx.lineWidth = 1.5; ctx.strokeRect(x, y, s, s);
     }
-    if (f.s.round && this.done(f)) { var pc = self.cell(g, 1), ps = g.c - 4, fr = (this.A[1] % 1) * ease((f.t - f.s.rt - 2.3) / .6); ctx.fillStyle = KU.k; ctx.fillRect(pc.x - ps / 2, pc.y - ps / 2, ps * fr, ps); }
+    if (f.s.round && this.done(f)) { var pc = self.cell(g, 1), ps = g.c - 4, fr = (this.A[1] % 1) * ease((f.t - f.s.rt - 2.3) / .6); wRect(ctx, KU.k, 5, pc.x - ps / 2, pc.y - ps / 2, ps * fr, ps); }
     if (f.s.on && f.s.g > 0) { var gc = self.cell(g, f.s.g - 1); ctx.strokeStyle = KU.k; ctx.lineWidth = 4; ctx.strokeRect(gc.x - g.c / 2, gc.y - g.c / 2, g.c, g.c); }
   }
 };
@@ -947,8 +1138,10 @@ SCENES.oil = {
     if (f.s.links === 2) card(f, 'link'); if (f.s.links === 6) card(f, 'y1941');
   },
   tick: function (f) { if (f.vt > f.s.next && f.s.links < 2) { this.addLink(f); f.s.next = f.vt + .8; } },
-  tap: function (f) { this.addLink(f); },
-  back: function (ctx, f) { wave(ctx, this.surf(f), f, 6, KU.k, true); },
+  tap: function (f) { var n0 = f.s.links; this.addLink(f); if (f.s.links > n0) { var q = this.slot(f, f.s.links * 2 - 1); stamp(f, 'CLICK', q.x - 70, q.y - 6); } },
+  topBg: function () { return 'black'; },
+  demo: function (f) { return { kind: 'tap', pts: [pt(.3 * f.w, this.surf(f) - 46)], dur: 1.9 }; },
+  back: function (ctx, f) { var sy = this.surf(f); wave(ctx, sy, f, 6, KU.k, true); wFade(ctx, KU.k, 0, sy + 5, f.w, 30, 4, 1); },
   front: function (ctx, f) {
     var sy = this.surf(f), W = f.w, self = this;
     for (var i = 0; i < f.s.links; i++) {
@@ -967,8 +1160,9 @@ SCENES.oil = {
 // Pull the thread down to draw the fibre. The background is the inside of the fibre: chains line up as you pull.
 SCENES.spin = {
   n: 120,
+  demo: function (f) { var g = this.geo(f); return { kind: 'drag', pts: [pt(g.fx, g.ry + 34), pt(g.fx, g.ry + 34 + Math.min(150, g.st.b - g.ry - 70))], dur: 2.8 }; },
   init: function (f) { var r = $('spin-r'); r.addEventListener('input', function () { SCENES.spin.setDraw(f, +r.value); }); },
-  setDraw: function (f, v) { G.draw = v; $('spin-r').value = v; $('spin-out').textContent = '×' + v.toFixed(1); if (v >= 3 && !f.s.told) { f.s.told = true; card(f, 'draw'); } },
+  setDraw: function (f, v) { G.draw = v; $('spin-r').value = v; $('spin-out').textContent = '×' + v.toFixed(1); if (v >= 3 && !f.s.told) { f.s.told = true; card(f, 'draw'); var g = this.geo(f); stamp(f, 'STRETCH', g.fx - 80, g.ry + 80); } },
   geo: function (f) {
     var st = stage(f), W = f.w, fx = .5 * W, ft = st.t + st.h * .05, fh = st.h * .12, sy = ft + fh + 2, cy = sy + st.h * .22;
     return { st: st, fx: fx, ft: ft, fh: fh, sy: sy, cy: cy, ry: cy + st.h * .05, holes: [-2, -1, 0, 1, 2].map(function (k) { return fx + k * .05 * W; }) };
@@ -993,7 +1187,7 @@ SCENES.spin = {
       ctx.beginPath(); ctx.moveTo(x - Math.cos(ang) * L, y - Math.sin(ang) * L); ctx.lineTo(x + Math.cos(ang) * L, y + Math.sin(ang) * L); ctx.stroke();
     }
     var x0 = g.fx - .14 * W, w = .28 * W, ch = g.cy - 6 - (g.sy + 14);
-    ctx.fillStyle = KU.k; ctx.fillRect(x0, g.sy + 14, w, ch);
+    wRect(ctx, KU.k, 2, x0 + 8, g.sy + 22, w, ch); ctx.fillStyle = KU.k; ctx.fillRect(x0, g.sy + 14, w, ch);
     ctx.save(); ctx.beginPath(); ctx.rect(x0, g.sy + 14, w, ch); ctx.clip(); ctx.strokeStyle = 'rgba(255,255,255,.8)'; ctx.lineWidth = 2.5;
     for (i = 0; i < 6; i++) { var yy = g.sy + 26 + i * (ch - 20) / 6, xx = x0 - 24 + ((f.t * 80 + i * 41) % (w + 48)); ctx.beginPath(); ctx.moveTo(xx, yy); ctx.lineTo(xx + 16, yy); ctx.stroke(); }
     ctx.restore();
@@ -1023,7 +1217,8 @@ SCENES.shape = {
     f.el.querySelectorAll('[data-test]').forEach(function (b) { b.addEventListener('click', function () { self.run(f, b.dataset.test); }); });
   },
   run: function (f, t) {
-    f.s.test = t; f.s.tt = f.t; var s = G.shape, self = this;
+    f.s.test = t; f.s.tt = f.t; var s = G.shape, self = this, g0 = this.geo(f);
+    stamp(f, { light: 'GLINT', cold: 'BRRR', sweat: 'PLIP' }[t], g0.cx + g0.R * .75, g0.cy - g0.R * .9);
     setTimeout(function () {
       if (f.s.test !== t) return;
       var win = { light: 'trilobal', cold: 'hollow', sweat: 'channel' }[t];
@@ -1032,6 +1227,7 @@ SCENES.shape = {
     }, 1500);
   },
   T: ['light', 'cold', 'sweat'],
+  demo: function (f) { var g = this.geo(f); return { kind: 'drag', pts: [pt(g.tx[0], g.ty), pt(g.cx, g.cy)], dur: 2.6 }; },
   geo: function (f) { var st = stage(f), W = f.w, ty = st.b - 40, t = st.t, b = ty - 40, R = Math.min(.3 * W, (b - t) * .42); return { cx: .44 * W, cy: (t + b) / 2, R: R, t: t, b: b, ty: ty, tx: [.16 * W, .38 * W, .6 * W] }; },
   tool: function (f, k) {
     var g = this.geo(f), o = f.s.tl[k] || (f.s.tl[k] = {}), home = pt(g.tx[k], g.ty);
@@ -1083,6 +1279,7 @@ SCENES.shape = {
 // Drag the number: the thread fans from one filament to hundreds.
 SCENES.count = {
   n: 130,
+  demo: function (f) { var a = domPt(f, $('fil-n')); return { kind: 'drag', pts: [a, pt(a.x, a.y - 110)], dur: 2.6 }; },
   init: function (f) {
     scrub($('fil-n'), { value: 1, snap: [1, 2, 6, 12, 24, 48, 96, 144, 300], fmt: function (v) { return String(v); }, cap: function (v) { return v === 1 ? 'filament' : 'filaments'; },
       onChange: function (v) { G.fil = v; f.chain.kick(3, 0); if (v >= 144) card(f, 'micro'); else if (v >= 24) card(f, 'multi'); } });
@@ -1106,9 +1303,10 @@ SCENES.texture = {
     $('tx-heat').addEventListener('click', function () { self.heat(f); });
   },
   multi: function () { return G.fil >= 6; },
+  demo: function (f) { var g = this.geo(f); return { kind: 'hold', pts: [pt((g.j0 + g.jt) / 2, g.jy)], dur: 3 }; },
   few: function (f, how) { if (f.s.toldM) return; f.s.toldM = true; card(f, 'One filament', how === 'air' ? 'One thick filament just bends in the wind. Loops need lots of fine filaments. Scroll up and add some?' : 'One thick filament just kinks. Bulk needs lots of fine filaments. Scroll up and add some?'); },
   heat: function (f) {
-    f.s.ht = f.t; f.chain.kick(0, 3);
+    f.s.ht = f.t; f.chain.kick(0, 3); var g = this.geo(f); stamp(f, 'HISSS', g.hx + g.hw / 2, g.hy - 26);
     if (!this.multi()) { this.few(f, 'heat'); return; }
     if (G.tex !== 'crimp') { G.tex = 'crimp'; G.crimp = 0; G.loops = 0; renderLabel(); }
   },
@@ -1120,6 +1318,7 @@ SCENES.texture = {
   k: 0.1,
   tick: function (f) {
     var g = this.geo(f), blowing = f.s.blow || f.t < f.s.until, c = f.chain, i;
+    if (blowing && !f.s.was) stamp(f, 'FWOOSH', g.jt + 70, g.jy - 46); f.s.was = blowing;
     if (blowing) {
       f.s.held += 1 / 60;
       for (i = 0; i < c.n; i++) { var q = c.p[i], d = Math.abs(q.y - g.jy); if (d < 50 && q.x > g.jt) q.x += 2.6 * (1 - d / 50); }
@@ -1136,6 +1335,7 @@ SCENES.texture = {
   back: function (ctx, f) {
     var g = this.geo(f), on = f.t - f.s.ht < 2.2, i;
     // the heater plate
+    wRect(ctx, KU.k, 2, g.hx + 8, g.hy + 8, g.hw, g.hh); if (on) wFade(ctx, KU.y, g.hx, g.hy - 46, g.hw, 46, 1, 3);
     ctx.fillStyle = KU.k; ctx.fillRect(g.hx, g.hy, g.hw, g.hh);
     ctx.fillStyle = on ? KU.y : KU.g; ctx.fillRect(g.hx + 6, g.hy + 6, g.hw - 12, g.hh - 12);
     if (on) { ctx.strokeStyle = KU.k; ctx.lineWidth = 2; for (i = 0; i < 3; i++) { var hx = g.hx + g.hw * (.3 + i * .2), o = Math.sin(f.t * 8 + i) * 3; ctx.beginPath(); ctx.moveTo(hx, g.hy + g.hh - 14); ctx.quadraticCurveTo(hx + 6 + o, g.hy + g.hh / 2, hx, g.hy + 14); ctx.stroke(); } }
@@ -1144,6 +1344,7 @@ SCENES.texture = {
     place($('tx-heat'), g.hx - 4, g.hy - 8, g.hw + 12, g.hh + 16);
     // the air jet
     var bl = f.s.blow || f.t < f.s.until, kick = bl ? Math.sin(f.t * 60) * 1.2 : 0;
+    wRect(ctx, KU.k, 2, g.j0 + 6, g.jy - 14, g.jt - g.j0 - 6, 42);
     ctx.fillStyle = KU.k; ctx.beginPath(); ctx.moveTo(g.j0, g.jy - 22 + kick); ctx.lineTo(g.jt - 14, g.jy - 22 + kick); ctx.lineTo(g.jt, g.jy - 7); ctx.lineTo(g.jt, g.jy + 7); ctx.lineTo(g.jt - 14, g.jy + 22 - kick); ctx.lineTo(g.j0, g.jy + 22 - kick); ctx.closePath(); ctx.fill();
     ctx.fillStyle = bl ? KU.y : KU.w; ctx.fillRect(g.j0 + 10, g.jy - 7, 26, 14);
     place($('tx-jet'), g.j0 - 6, g.jy - 34, g.jt - g.j0 + 12, 68);
@@ -1159,6 +1360,7 @@ SCENES.texture = {
 // Swipe across the thread to cut it into staple. Then drag the twist up to spin it.
 SCENES.cut = {
   n: 140,
+  demo: function (f) { if (G.staple) return null; var st = stage(f), y = st.t + st.h * .5; return { kind: 'drag', pts: [pt(.06 * f.w, y + 30), pt(.94 * f.w, y - 30)], dur: 2.4 }; },
   init: function (f) {
     f.s.cuts = 0; f.s.trail = []; f.falls = []; var self = this;
     f.twist = scrub($('twist'), { value: 0, min: 0, max: 10, step: 1, per: .06, fmt: function (v) { return String(v); },
@@ -1169,6 +1371,7 @@ SCENES.cut = {
     var c = f.chain, a = Math.max(1, i - 7), b = Math.min(c.n - 2, i + 7), bit = [];
     for (var k = a; k <= b; k++) bit.push(pt(c.p[k].x, c.p[k].y));
     if (bit.length > 2) { var fall = new Chain(bit, bit.length, { pinTop: false, pinBot: false, g: .3 }); fall.grabbable = false; fall.p.forEach(function (q) { q.px -= (Math.random() - .5) * 4; }); f.falls.push(fall); }
+    var cq = c.p[i]; if (cq) stamp(f, 'SNIP!', cq.x - 64, cq.y - 24);
     f.s.cuts++; c.kick(0, -4, a, b);
     if (f.s.cuts === 3) { G.staple = true; $('twist').hidden = false; $('cut-hint').textContent = 'Now spin it: drag the twist up'; card(f, 'staple'); f.measure(); }
   },
@@ -1202,6 +1405,7 @@ SCENES.ply = {
       onTurn: function (d) { f.s.rot += d; }, onChange: function (v) { G.plyTwist = v; self.check(f); } });
   },
   singles: function () { return G.staple ? Math.max(3, G.twist) : 4; },
+  demo: function (f) { var g = this.geo(f); if (G.ply < 2) return { kind: 'tap', pts: [pt(g.bx[1], g.by)], dur: 1.9 }; return { kind: 'circle', pts: [pt(g.cx, g.cy)], r: g.R * .72, dur: 3 }; },
   net: function () { return G.ply >= 2 ? this.singles() + G.plyTwist : this.singles(); },
   setPly: function (f, n) { G.ply = n; f.el.querySelectorAll('[data-bob]').forEach(function (b) { b.setAttribute('aria-pressed', +b.dataset.bob <= n); }); this.strands(f); this.check(f); f.chain.kick(3, 0); },
   check: function (f) {
@@ -1211,6 +1415,7 @@ SCENES.ply = {
     else if (G.plyBal) { h.textContent = 'Balanced: the loop hangs calm'; $('ply-p').textContent = 'The ply twist cancels the twist in each strand.'; }
     else {
       h.textContent = 'Turn the dial. Which way calms the loop?';
+      if (net > s + 1 && !f.s.h2) { var gk = this.geo(f); stamp(f, 'KINK!', gk.cx - 80, (gk.top + gk.bot) / 2); }
       if (net > s + 1 && !f.s.h2) { f.s.h2 = true; card(f, 'Worse', 'It snarls more. Twisting the same way stores more energy. Which way would undo it?'); }
       if (net < -2 && !f.s.h3) { f.s.h3 = true; card(f, 'Too far', 'Now it snarls the other way. Ease the dial back.'); }
     }
@@ -1237,18 +1442,19 @@ SCENES.ply = {
     f.s.sn += (tgt - f.s.sn) * .03;
     if (G.ply === 1 && f.vt > 2.2 && !f.s.told) { f.s.told = true; card(f, 'snarl'); }
     f.s.calm = G.plyBal ? f.s.calm + 1 / 60 : 0;
-    if (f.s.calm > .8 && !f.s.toldP) { f.s.toldP = true; card(f, 'ply'); }
+    if (f.s.calm > .8 && !f.s.toldP) { f.s.toldP = true; card(f, 'ply'); var g = this.geo(f); stamp(f, 'PHEW', g.cx - 80, (g.top + g.bot) / 2); }
   },
   back: function (ctx, f) {
     var g = this.geo(f), ink = inkFor(f.bg), cs = casingFor(ink);
     g.bx.forEach(function (x, k) {
       var on = k < G.ply, y = g.by, r = g.rb;
-      if (on) { ctx.fillStyle = ink; ctx.fillRect(x - r, y - r + 2, 2 * r, 2 * r - 4); ctx.strokeStyle = cs; ctx.lineWidth = 1.2; ctx.beginPath(); for (var j = -r + 5; j < r - 2; j += 4) { ctx.moveTo(x - r, y + j); ctx.lineTo(x + r, y + j + 2); } ctx.stroke(); }
+      wRect(ctx, KU.k, 2, x - r + 6, y - r + 6, 2 * r + 4, 2 * r);
+      if (on) { ctx.fillStyle = ink; ctx.fillRect(x - r, y - r + 2, 2 * r, 2 * r - 4); ctx.strokeStyle = cs; ctx.lineWidth = 1.2; ctx.beginPath(); for (var j = -r + 5; j < r - 2; j += 4) { ctx.moveTo(x - r, y + j); ctx.lineTo(x + r, y + j + 2); } ctx.stroke(); wRect(ctx, KU.k, 3, x + r * .3, y - r + 2, r * .7, 2 * r - 4); }
       else { ctx.fillStyle = KU.k; ctx.fillRect(x - 4, y - r, 8, 2 * r); }
       ctx.fillStyle = KU.k; ctx.fillRect(x - r - 5, y - r - 4, 2 * r + 10, 6); ctx.fillRect(x - r - 5, y + r - 2, 2 * r + 10, 6);
       place(f.el.querySelector('[data-bob="' + (k + 1) + '"]'), x - r - 12, y - r - 12, 2 * r + 24, 2 * r + 24);
     });
-    disc(ctx, g.cx, g.cy, g.R, KU.k); ring(ctx, g.cx, g.cy, g.R - 9, 2, KU.g);
+    wDisc(ctx, KU.k, 2, g.cx + 7, g.cy + 7, g.R); disc(ctx, g.cx, g.cy, g.R, KU.k); ring(ctx, g.cx, g.cy, g.R - 9, 2, KU.g);
     for (var a = 0; a < 3; a++) { var an = f.s.rot + a * 2.094; ctx.strokeStyle = KU.w; ctx.lineWidth = 4; ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(g.cx + Math.cos(an) * 10, g.cy + Math.sin(an) * 10); ctx.lineTo(g.cx + Math.cos(an) * (g.R - 6), g.cy + Math.sin(an) * (g.R - 6)); ctx.stroke(); }
     place($('ply-dial'), g.cx - g.R - 8, g.cy - g.R - 8, 2 * g.R + 16, 2 * g.R + 16);
   },
@@ -1265,6 +1471,7 @@ SCENES.ply = {
 SCENES.blend = {
   n: 130,
   Y: ['cotton', 'wool', 'elastane'],
+  demo: function (f) { var c = f.extras[0], m = f.chain.p[(f.chain.n * .5) | 0]; if (!c || c.zip) return null; var a = c.p[(c.n * .6) | 0]; return { kind: 'drag', pts: [pt(a.x, a.y), pt(m.x - 8, m.y)], dur: 2.8 }; },
   init: function (f) {
     var self = this; f.s.wt = -9;
     f.el.querySelectorAll('[data-p]').forEach(function (b) { b.addEventListener('click', function () { var k = self.Y.indexOf(b.dataset.p); self.absorb(f, f.extras[k]); }); });
@@ -1281,7 +1488,7 @@ SCENES.blend = {
   // a yarn dropped on the thread zips onto it, and a fresh one hangs back on the rail
   absorb: function (f, c, at) {
     if (!c || c.zip) return; var m = f.chain.p[(f.chain.n * .5) | 0];
-    c.zip = f.t; c.at = at || pt(m.x, m.y); c.pinTop = false; c.grab = -1; c.grabbable = false; c.g = 0;
+    c.zip = f.t; c.at = at || pt(m.x, m.y); c.pinTop = false; c.grab = -1; c.grabbable = false; c.g = 0; stamp(f, 'ZIP!', c.at.x - 70, c.at.y - 30);
     this.wrap(f, c.kind);
   },
   onDrag: function (f, d) {
@@ -1333,6 +1540,7 @@ SCENES.colour = {
     f.temp = scrub($('dye-t'), { value: 60, min: 20, max: 140, step: 5, per: .7, keyMul: 2, fmt: function (v) { return v + '°C'; }, cap: function (v) { return v >= 125 ? 'bath · under pressure' : 'bath · drag up'; }, onChange: function (v) { f.s.T = v; } });
   },
   target: function (f) { return f.s.col === 'black' ? KU.k : KU.y; },
+  demo: function (f) { if (f.s.m) return null; var b = f.el.querySelector('[data-m="bath"]'); return b ? { kind: 'tap', pts: [domPt(f, b, 0, 4)], dur: 1.9 } : null; },
   layout: function (f) { var el = $('dye-t'), st = stage(f); if (!el.hidden) { el.style.left = '6%'; el.style.top = Math.round(st.t + 6) + 'px'; } f.measure(); },
   geo: function (f) { var st = stage(f), W = f.w, vt = st.t + st.h * .52; if (f.named.temp) vt = Math.max(vt, f.named.temp.b); return { st: st, vat: { x: .26 * W, y: vt, w: .5 * W, h: st.b - vt - 8 }, hop: pt(.5 * W, st.t + st.h * .1) }; },
   path: function (f) {
@@ -1345,13 +1553,13 @@ SCENES.colour = {
     if (f.s.m === 'bath') { var r = f.s.T >= 125 ? .5 : f.s.T >= 100 ? .04 : 0; f.s.u = clamp(f.s.u + r / 60, 0, 1); }
     if (f.s.m === 'melt') f.s.u = clamp((f.t - f.s.mt - .6) / 1.2, 0, 1);
     if (f.s.m && f.s.u > 0) { G.mix = mix(KU.b, this.target(f), f.s.u); }
-    if (f.s.m && f.s.u >= 1 && !f.s.done) { f.s.done = true; G.colour = this.target(f); G.dye = f.s.m; card(f, f.s.m); renderLabel(); f.s.union = G.partner ? f.t + 4 : 0; }
+    if (f.s.m && f.s.u >= 1 && !f.s.done) { f.s.done = true; G.colour = this.target(f); G.dye = f.s.m; card(f, f.s.m); renderLabel(); var gs = this.geo(f); stamp(f, f.s.m === 'bath' ? 'BLOOP' : 'GLOOP', .4 * f.w, gs.st.t + gs.st.h * .5); f.s.union = G.partner ? f.t + 4 : 0; }
     if (f.s.union && f.t > f.s.union) { f.s.union = 0; card(f, 'union'); }
     if (f.s.m === 'bath' && f.s.T < 100 && f.vt > 1 && !f.s.hinted && f.t - f.s.mt > 3) { f.s.hinted = true; card(f, 'Nothing yet', 'The dye just sits in the water. What would make polyester open up and let it in?'); }
   },
   back: function (ctx, f) {
     var g = this.geo(f), v = g.vat;
-    if (f.s.m === 'bath') { var c = mix(this.target(f), KU.w, f.s.u * .75); ctx.fillStyle = KU.k; ctx.fillRect(v.x - 8, v.y - 8, v.w + 16, v.h + 16); ctx.fillStyle = c; ctx.fillRect(v.x, v.y + 6, v.w, v.h - 6);
+    if (f.s.m === 'bath') { var c = mix(this.target(f), KU.w, f.s.u * .75); wRect(ctx, KU.k, 2, v.x, v.y, v.w + 16, v.h + 16); ctx.fillStyle = KU.k; ctx.fillRect(v.x - 8, v.y - 8, v.w + 16, v.h + 16); ctx.fillStyle = c; ctx.fillRect(v.x, v.y + 6, v.w, v.h - 6); wFade(ctx, KU.k, v.x, v.y + v.h * .5, v.w, v.h * .5, 1, 2);
       if (f.s.T >= 100) for (var i = 0; i < 8; i++) { var bx = v.x + hash(i, 1) * v.w, by = v.y + v.h - ((f.t * (20 + f.s.T / 4) + i * 30) % v.h); disc(ctx, bx, by, 3 + hash(i, 2) * 3, KU.w); } }
   },
   front: function (ctx, f) {
@@ -1366,11 +1574,14 @@ SCENES.colour = {
 // A tug of war. The thread is the rope; every reason pulls the knot.
 SCENES.tug = {
   n: 200,
+  bottomBg: function () { return 'yellow'; },
+  demo: function (f) { var b = f.el.querySelector('.cons .chip-btn'); return b ? { kind: 'tap', pts: [domPt(f, b, 0, 6)], dur: 1.9 } : null; },
   init: function (f) {
     f.s.np = 0; f.s.nc = 0; f.s.u = .5; var self = this;
     f.el.querySelectorAll('.chip-btn').forEach(function (b) { b.addEventListener('click', function () {
       var on = b.getAttribute('aria-pressed') !== 'true'; b.setAttribute('aria-pressed', on);
       var pro = !!b.closest('.pros'); self.count(f); f.chain.kick((pro ? -1 : 1) * (on ? 1 : -1) * 5, 0);
+      if (on) { var kq = f.chain.p[self.knotAt(f)]; stamp(f, 'HEAVE', kq.x, kq.y - 56); }
     }); });
   },
   count: function (f) {
@@ -1400,7 +1611,9 @@ SCENES.wash = {
   n: 180,
   init: function (f) { f.s.rot = 0; f.s.until = 0; f.s.shown = -1; f.parts = []; var self = this; $('wash-go').addEventListener('click', function () { self.wash(f); }); },
   rate: function () { return (G.fil >= 144 ? 2 : 1) * (G.staple ? 1.7 - G.twist * .08 : 1); },
-  wash: function (f) { f.s.until = f.t + 3.4; this.reveal(f); },
+  wash: function (f) { f.s.until = f.t + 3.4; this.reveal(f); var g = this.geo(f); stamp(f, 'SLOSH', g.cx - 30, g.cy - g.r - 26); },
+  bottomBg: function () { return 'blue'; },
+  demo: function (f) { return { kind: 'tap', pts: [domPt(f, $('wash-go'), 0, 6)], dur: 1.9 }; },
   tap: function (f, x, y) { var g = this.geo(f); if (Math.hypot(x - g.cx, y - g.cy) < g.r) this.wash(f); },
   reveal: function (f) {
     if (!f.s.rev) { f.s.rev = true; card(f, 'wash'); }
@@ -1429,11 +1642,12 @@ SCENES.wash = {
   back: function (ctx, f) {
     var g = this.geo(f), sh = f.t < f.s.until ? Math.sin(f.t * 52) * 2.4 : 0;
     ctx.save(); ctx.translate(sh, 0);
+    wRect(ctx, KU.k, 2, g.x + 10, g.y + 10, g.w, g.h);
     ctx.fillStyle = KU.k; ctx.beginPath(); if (ctx.roundRect) ctx.roundRect(g.x, g.y, g.w, g.h, 18); else ctx.rect(g.x, g.y, g.w, g.h); ctx.fill();
     disc(ctx, g.cx, g.cy, g.r + 10, KU.g); disc(ctx, g.cx, g.cy, g.r, KU.w);
     ctx.restore();
     place($('wash-n'), g.x + 16, g.y + 12, g.w * .48, 32); place($('wash-go'), g.x + g.w - 16 - 78, g.y + 9, 78, 38);
-    wave(ctx, this.water(f), f, 5, KU.b, false);
+    var wl = this.water(f); wave(ctx, wl, f, 5, KU.b, false); wFade(ctx, KU.k, 0, wl + (f.h - wl) * .35, f.w, (f.h - wl) * .65, 1, 2);
   },
   front: function (ctx, f) {
     var wl = this.water(f); ctx.lineWidth = 2;
@@ -1450,8 +1664,9 @@ SCENES.bottle = {
     ['Then what?', 'The shirt usually stops there.', 'Start again', 'black']
   ],
   init: function (f) { f.s.step = 0; var self = this; $('bot-go').addEventListener('click', function () { self.next(f); }); },
+  demo: function (f) { return { kind: 'tap', pts: [domPt(f, $('bot-go'), 0, 6)], dur: 1.9 }; },
   next: function (f) {
-    f.s.step = (f.s.step + 1) % 3; var s = this.T[f.s.step];
+    f.s.step = (f.s.step + 1) % 3; var s = this.T[f.s.step]; stamp(f, ['POP', 'CRUNCH', 'THUD'][f.s.step], .56 * f.w, stage(f).t + 30);
     $('bot-h').textContent = s[0]; $('bot-p').textContent = s[1]; $('bot-go').textContent = s[2]; setBg(f, s[3]); f.measure();
     f.chain.kick(0, -6, 10, f.chain.n - 10); if (f.s.step === 2) card(f, 'bottle');
   },
@@ -1476,6 +1691,7 @@ SCENES.recycle = {
     $('rc-strip').addEventListener('click', function () { G.stripped = G.elastane ? 'elastane' : G.partner; G.partner = null; G.elastane = false; syncUI(); self.reset(f); });
   },
   blocked: function () { return G.elastane ? 'elastane' : G.partner; },
+  demo: function (f) { var g = this.geo(f); return { kind: 'tap', pts: [pt(g.cx + g.r * .72, g.cy + g.r * .72)], dur: 1.9 }; },
   reset: function (f) { f.s.rec = false; f.s.done = false; setBg(f, 'white'); $('rc-say').hidden = true; $('rc-strip').hidden = true; $('rc-hint').textContent = 'Tap the ring'; var b = this.blocked(); $('rc-p').textContent = b ? 'Your thread has ' + b + ' wrapped round it. Predict first: will it go round?' : 'Your thread is about to go round. Predict first: will it?'; f.measure(); },
   recycle: function (f) { this.reset(f); f.s.rec = true; f.s.rt = f.t; },
   geo: function (f) { var st = stage(f), W = f.w, r = Math.min(.3 * W, st.h * .3); return { cx: .5 * W, cy: st.t + st.h * .42, r: r, st: st, peg: pt(.8 * W, st.t + st.h * .66), cl: st.h * .26 }; },
@@ -1502,12 +1718,14 @@ SCENES.recycle = {
       var tired = !bad && G.rounds >= 3;
       setBg(f, bad ? 'black' : 'blue'); say($('rc-say'), bad ? 'Jammed.' : tired ? 'Weaker each time.' : 'It goes round.');
       $('rc-p').textContent = bad ? 'The ' + bad + ' and the polyester would have to be separated first.' : tired ? 'Each melt breaks some links. Could chemistry rebuild them? Scroll on.' : 'One material. Melted ' + G.rounds + (G.rounds === 1 ? ' time' : ' times') + '. Go again, or tap the coil to add elastane.';
-      $('rc-strip').hidden = !bad; if (bad) $('rc-strip').textContent = 'Strip the ' + bad + ' off'; $('rc-hint').textContent = bad ? 'Strip it, then tap the ring' : 'Tap the ring again'; card(f, bad ? 'jam' : tired ? 'downcycle' : 'loop'); f.measure();
+      $('rc-strip').hidden = !bad; if (bad) $('rc-strip').textContent = 'Strip the ' + bad + ' off'; $('rc-hint').textContent = bad ? 'Strip it, then tap the ring' : 'Tap the ring again'; card(f, bad ? 'jam' : tired ? 'downcycle' : 'loop');
+      var gr = this.geo(f); stamp(f, bad ? 'CLUNK!' : tired ? 'CRACK' : 'WHIRR', gr.cx, gr.cy - gr.r - 30); f.measure();
     }
   },
   back: function (ctx, f) {
     var g = this.geo(f), u = f.t - f.s.rt, jam = f.s.rec && this.blocked() && u > 0.9, sh = jam && Math.sin(f.t * 3) > .6 ? Math.sin(f.t * 45) * 4 : 0;
     var ringCol = f.bg === 'black' ? KU.w : KU.k, turn = f.s.rec && !jam ? f.t * 2 : 0;
+    var rs = shadeOf(f) && weave(KU.k, 2); if (rs) { ctx.strokeStyle = rs; ctx.lineWidth = 12; ctx.beginPath(); ctx.arc(g.cx + 8, g.cy + 8, g.r, 0, Math.PI * 2); ctx.stroke(); }
     ring(ctx, g.cx + sh, g.cy, g.r, 12, ringCol);
     for (var k = 0; k < 3; k++) { var a = turn + k * 2.094; ctx.save(); ctx.translate(g.cx + sh + Math.cos(a) * g.r, g.cy + Math.sin(a) * g.r); ctx.rotate(a + Math.PI / 2); ctx.fillStyle = ringCol; ctx.beginPath(); ctx.moveTo(-12, -11); ctx.lineTo(12, 0); ctx.lineTo(-12, 11); ctx.closePath(); ctx.fill(); ctx.restore(); }
     if (!this.blocked()) { ctx.fillStyle = ringCol; ctx.fillRect(g.peg.x - 22, g.peg.y - 8, 44, 8); }
@@ -1527,15 +1745,17 @@ SCENES.unzip = {
     f.el.querySelectorAll('[data-r]').forEach(function (b) { b.addEventListener('click', function () { self.pour(f, b.dataset.r); }); });
     $('uz-go').addEventListener('click', function () { self.rebuild(f); });
   },
+  demo: function (f) { if (f.s.r) return null; var g = this.geo(f); return { kind: 'drag', pts: [pt(g.fl[0].x, g.fl[0].y + g.fh / 2), pt(g.vx + g.vw * .35, g.vy + 34)], dur: 2.8 }; },
   clear: function (f) { f.s.u = 0; f.s.rb = 0; f.s.surf = null; f.s.mono = []; f.s.sp = []; f.s.q = []; f.s.done = false; },
   pour: function (f, r) {
     if (f.s.r && f.t - f.s.pt < 3.6 && !f.s.done) return false;
     var k = ['water', 'glycol', 'enzyme'].indexOf(r), g = this.geo(f), o = f.s.fk[k] || {}; f.s.from = o.held ? pt(o.x, o.y) : pt(g.fl[k].x, g.fl[k].y + g.fh / 2); o.held = false; f.s.fk[k] = o;
-    this.clear(f); f.s.r = r; f.s.pt = f.t;
+    this.clear(f); f.s.r = r; f.s.pt = f.t; stamp(f, 'GLUG GLUG', g.vx + g.vw * .45, g.vy + 30);
     f.s.old = look(f); f.s.hadP = G.reborn ? null : G.partner; f.s.hadE = G.elastane; f.s.hadC = G.reborn ? null : G.colour;
     $('uz-go').hidden = true; $('uz-say').hidden = true; f.measure(); return true;
   },
   rebuild: function (f) {
+    var gz = this.geo(f); stamp(f, 'CLICK CLICK', gz.vx + gz.vw * .5, gz.vy + 30);
     f.s.rb = f.t; G.reborn = f.s.r; G.rounds = 0; G.elastane = false; syncUI();
     $('uz-go').hidden = true; say($('uz-say'), 'Linked again.');
     $('uz-p').textContent = 'As good as new: no dye, no partner fibre. But its footprint depends on the plant and its power, and few plants run at scale yet.';
@@ -1588,7 +1808,7 @@ SCENES.unzip = {
       var H = f.s.surf + (f.h + 40 - f.s.surf) * f.s.u;
       for (i = 0; i < c.n; i++) { var q = c.p[i]; if (!f.s.sp[i] && q.y > f.s.surf && q.y < Math.min(H, g.vb - 6)) { f.s.sp[i] = true; if (i % 2 === 0) f.s.mono.push({ x: q.x, y: q.y, vx: (Math.random() - .5) * 1.6, vy: -Math.random() * .8, k: (i / 2) % 2, a: Math.random() * 6 }); } }
       if (f.s.u >= 1 && !f.s.done) {
-        f.s.done = true; var R = this.R[f.s.r];
+        f.s.done = true; var R = this.R[f.s.r]; stamp(f, { water: 'HISSS', glycol: 'BLUB', enzyme: 'MUNCH' }[f.s.r], g.vx + g.vw * .5, Math.min(lv, g.vb - 60) + 30);
         say($('uz-say'), R[1]); $('uz-p').textContent = R[2]; $('uz-go').hidden = false;
         if (f.s.hadE) { G.elastane = false; syncUI(); }
         card(f, 'unzip'); if (f.s.r === 'enzyme') f.s.q.push('enzyme'); if (f.s.hadP || f.s.hadE) f.s.q.push('separate'); f.s.qt = f.t + 4.5;
@@ -1605,7 +1825,7 @@ SCENES.unzip = {
   },
   back: function (ctx, f) {
     var g = this.geo(f), self = this, lv = this.level(f);
-    if (lv < g.vb - 1) { ctx.fillStyle = this.liquid(f); ctx.fillRect(g.vx, lv, g.vw, g.vb - lv); }
+    if (lv < g.vb - 1) { ctx.fillStyle = this.liquid(f); ctx.fillRect(g.vx, lv, g.vw, g.vb - lv); wFade(ctx, KU.k, g.vx, lv + (g.vb - lv) * .45, g.vw, (g.vb - lv) * .55, 1, 2); }
     ctx.strokeStyle = KU.w; ctx.lineWidth = 4; ctx.lineJoin = 'round'; ctx.beginPath(); ctx.moveTo(g.vx, g.vy); ctx.lineTo(g.vx, g.vb); ctx.lineTo(g.tx - 12, g.vb); ctx.moveTo(g.tx + 12, g.vb); ctx.lineTo(g.vx + g.vw, g.vb); ctx.lineTo(g.vx + g.vw, g.vy); ctx.stroke();
     ['water', 'glycol', 'enzyme'].forEach(function (r, k) { place(f.el.querySelector('[data-r="' + r + '"]'), g.fl[k].x - g.fw / 2 - 8, g.fl[k].y - 6, g.fw + 16, g.fh + 26); });
   },
@@ -1647,6 +1867,7 @@ SCENES.spot = {
     if (f.measure) f.measure();
   },
   geo: function (f) { var st = stage(f), W = f.w; return { F: pt(.5 * W, st.t + st.h * .06), J: pt(.5 * W, st.b - st.h * .05), dx: .2 * W, st: st }; },
+  demo: function (f) { if (f.s.ans !== null) return null; var g = this.geo(f); return { kind: 'tap', pts: [pt(g.F.x - g.dx, (g.F.y + g.J.y) / 2)], dur: 1.9 }; },
   side: function (g, s) { return [g.F, pt(g.F.x + s * g.dx, g.F.y + g.st.h * .22), pt(g.F.x + s * g.dx, g.J.y - g.st.h * .2), g.J]; },
   layout: function (f) { var g = this.geo(f); f.extras = f.s.ans === null ? [new Chain(this.side(g, -f.s.main), 60, { wind: .02, iter: 8 })] : []; },
   path: function (f) { var g = this.geo(f), W = f.w; return [pt(.87 * W, g.F.y - 30)].concat(this.side(g, f.s.main)).concat([pt(.87 * W, g.J.y + 24)]); },
@@ -1662,7 +1883,7 @@ SCENES.spot = {
       f.s.main = s;
     }
     f.s.fallPLA = !pla; f.extras = [];
-    say($('spot-say'), pla ? 'That was PLA' : 'PET. Good eye.');
+    say($('spot-say'), pla ? 'That was PLA' : 'PET. Good eye.'); stamp(f, pla ? 'OOPS' : 'YES!', g.F.x + s * g.dx, (g.F.y + g.J.y) / 2 - 60);
     $('spot-p').textContent = pla ? 'It\'s spliced into your thread now.' : 'The PLA strand is cut away.';
     $('spot-again').hidden = false; card(f, 'pla'); syncUI();
   },
@@ -1688,15 +1909,16 @@ SCENES.bend = {
     o.push(pt(.87 * W, g.b + 12)); return o;
   },
   k: function (f) { return f.vt < 0.5 ? 0.03 : 0.045; },
+  demo: function (f) { var g = this.geo(f), y = (g.t + g.b) / 2; return { kind: 'drag', pts: [pt(g.cx + g.a * .9, y), pt(g.cx + g.a + 100, y + 70)], dur: 2.6 }; },
   onDrag: function (f, d) {
     if (d.chain === f.sq && G.elastane) { var c = f.chain.p, best = 1e9; for (var i = 0; i < c.length; i += 4) best = Math.min(best, Math.hypot(c[i].x - d.chain.gx, c[i].y - d.chain.gy)); if (best > 80) pullOff(); }
   },
   tick: function (f) {
     var c = f.chain, v = 0, g = this.geo(f);
-    if (c.grab >= 0 && c.target) { v = Math.hypot(c.gx - c.target[c.grab].x, c.gy - c.target[c.grab].y) / (g.b - g.t) * 100; if (!G.bi) { G.bi = true; renderLabel(); } if (!f.s.c1) { f.s.c1 = true; card(f, 'spring'); } }
+    if (c.grab >= 0 && c.target) { v = Math.hypot(c.gx - c.target[c.grab].x, c.gy - c.target[c.grab].y) / (g.b - g.t) * 100; if (!G.bi) { G.bi = true; renderLabel(); } if (!f.s.c1) { f.s.c1 = true; card(f, 'spring'); stamp(f, 'BOING', c.gx - 60, c.gy - 50); } }
     f.s.v = (f.s.v || 0) + (v - (f.s.v || 0)) * .2; var r = Math.round(f.s.v / 5) * 5;
     if (r !== f.s.r) { f.s.r = r; $('bend-n').textContent = '+' + r + '%'; }
-    if (r >= 50 && !f.s.c2) { f.s.c2 = true; card(f, 'rubber'); }
+    if (r >= 50 && !f.s.c2) { f.s.c2 = true; card(f, 'rubber'); stamp(f, 'TWANG', g.cx, g.t + 40); }
   }
 };
 function pullOff() { if (!G.elastane) return; G.elastane = false; G.bi = true; syncUI(); }
@@ -1707,7 +1929,7 @@ SCENES.heat = {
   init: function (f) {
     f.s.T = 120; f.s.fl = 0; f.parts = [];
     f.temp = scrub($('heat-n'), { value: 120, min: 20, max: 260, step: 5, per: .9, keyMul: 2, fmt: function (v) { return v + '°C'; }, cap: function (v) { return v >= 250 ? 'PET goes too' : v >= 170 ? 'PLA gives way' : 'both plies hold'; },
-      onChange: function (v) { f.s.T = v; if (v >= 170 && !f.s.told) { f.s.told = true; card(f, 'plamelt'); } } });
+      onChange: function (v) { f.s.T = v; if (v >= 170 && !f.s.told) { f.s.told = true; card(f, 'plamelt'); var g = SCENES.heat.geo(f); stamp(f, 'DRIP', g.b.x - 30, g.S.y + g.st.h * .5); } } });
   },
   geo: function (f) { var st = stage(f), W = f.w; return { S: pt(.71 * W, st.t + st.h * .03), J: pt(.71 * W, st.b - st.h * .04), a: pt(.61 * W, 0), b: pt(.83 * W, 0), st: st }; },
   ply: function (g, x) { return [g.S, pt(x, g.S.y + g.st.h * .16), pt(x, g.J.y - g.st.h * .16), g.J]; },
@@ -1725,7 +1947,12 @@ SCENES.heat = {
     var lvl = f.h * (1 - f.s.fl);
     f.parts = f.parts.filter(function (d) { d.vy += .3; d.y += d.vy; return d.y < lvl && d.y < f.h; });
   },
-  back: function (ctx, f) { if (f.s.fl > .005) wave(ctx, f.h * (1 - f.s.fl), f, 7, KU.b, false); },
+  back: function (ctx, f) {
+    // heat rises from the bottom as a woven glow; hotter is denser and taller
+    var u = clamp((f.s.T - 30) / 220, 0, 1); if (u > 0) wFade(ctx, KU.y, 0, f.h * (1 - .55 * u), f.w, f.h * .55 * u, 1, 1 + Math.round(u * 4));
+    if (f.s.fl > .005) wave(ctx, f.h * (1 - f.s.fl), f, 7, KU.b, false);
+  },
+  demo: function (f) { var a = domPt(f, $('heat-n')); return { kind: 'drag', pts: [a, pt(a.x, a.y - 110)], dur: 2.6 }; },
   front: function (ctx, f) {
     var p = f.ply; if (p && p.restGoal > 1) cased(ctx, p, KU.b, KU.w, 6, [11, 7]);
     f.parts.forEach(function (d) { disc(ctx, d.x, d.y, 5, KU.b); });
@@ -1739,12 +1966,14 @@ SCENES.heat = {
 // Each promise ties a knot in the thread.
 SCENES.knots = {
   n: 200,
+  demo: function (f) { var b = f.el.querySelector('.pledge'); return b ? { kind: 'tap', pts: [domPt(f, b, -30, 6)], dur: 1.9 } : null; },
   init: function (f) {
     f.pl = Array.prototype.slice.call(f.el.querySelectorAll('.pledge'));
     f.pl.forEach(function (b) { b.addEventListener('click', function () {
       b.setAttribute('aria-pressed', b.getAttribute('aria-pressed') !== 'true');
       var n = f.pl.filter(function (x) { return x.getAttribute('aria-pressed') === 'true'; }).length; G.knots = n;
       setBg(f, n === 4 ? 'yellow' : 'white'); f.chain.kick(6, 0); renderLabel();
+      if (b.getAttribute('aria-pressed') === 'true') { var r = b.getBoundingClientRect(), fr = f.el.getBoundingClientRect(); stamp(f, 'KNOT!', .6 * f.w, r.top - fr.top + r.height / 2 - 34); }
     }); });
   },
   layout: function (f) { var pg = f.el.querySelector('.pledges'); pg.style.top = Math.round((f.named.top ? f.named.top.b : f.h * .3) + 8) + 'px'; f.measure(); var fr = f.el.getBoundingClientRect(); f.s.ys = f.pl.map(function (b) { var r = b.getBoundingClientRect(); return r.top - fr.top + r.height / 2; }); },
@@ -1774,7 +2003,7 @@ SCENES.end = {
   },
   k: function (f) { return f.vt < 0.5 ? 0.03 : 0.07; },
   tick: function (f) { var c = this.clean(); if (c !== f.s.c) { f.s.c = c; f.s.ct = f.t; } },
-  back: function (ctx, f) { if (!f.s.c) return; var g = this.geo(f), u = RM ? 1 : ease((f.t - f.s.ct - .8) / .8); disc(ctx, g.cx, g.cy, g.r * u, KU.b); },
+  back: function (ctx, f) { if (!f.s.c) return; var g = this.geo(f), u = RM ? 1 : ease((f.t - f.s.ct - .8) / .8); disc(ctx, g.cx, g.cy, g.r * u, KU.b); ctx.save(); ctx.beginPath(); ctx.arc(g.cx, g.cy, g.r * u, 0, Math.PI * 2); ctx.clip(); wDisc(ctx, KU.k, 2, g.cx + g.r * .5, g.cy + g.r * .5, g.r * u * .95); wDisc(ctx, KU.w, 1, g.cx - g.r * .45, g.cy - g.r * .5, g.r * u * .35); ctx.restore(); },
   onSeen: function () { renderLabel(); }
 };
 
@@ -1812,7 +2041,7 @@ function renderLabel() {
 }
 
 // ---------- frames ----------
-var feed = $('feed'), cv = $('ink'), ctx = cv.getContext('2d'), bar = $('bar');
+var feed = $('feed'), cv = $('ink'), ctx = cv.getContext('2d'), fxc = $('fx'), fx = fxc.getContext('2d'), bar = $('bar'), tally = $('tally');
 var frames = Array.prototype.slice.call(document.querySelectorAll('.frame')).map(function (el, i) {
   var name = el.dataset.scene, f = { el: el, i: i, name: name, sc: SCENES[name], s: {}, t: 0, vt: 0, extras: [], parts: [], rects: [], named: {}, dyn: [], bg: (el.className.match(/bg-(\w+)/) || [])[1] || (el.classList.contains('split') ? 'split' : 'white') };
   f.measure = function () {
@@ -1826,6 +2055,8 @@ var frames = Array.prototype.slice.call(document.querySelectorAll('.frame')).map
     });
     f.rects = out; f.named = named;
   };
+  f.cardEl = el.querySelector('.card'); f.tilt = i % 2 ? .9 : -1.1; if (f.cardEl) f.cardEl.style.rotate = f.tilt + 'deg';
+  ['pointerdown', 'keydown'].forEach(function (t) { el.addEventListener(t, function () { f.touched = true; f.demo = null; }, true); });
   return f;
 });
 var IDX = {}; frames.forEach(function (f) { IDX[f.name] = f.i; });
@@ -1846,7 +2077,7 @@ frames.forEach(function (f) {
 });
 
 var colLeft = 0, W0 = 0, VH = 0, DPR = 1;
-function pins(f) { var L = LANES[f.name] || [.87, .87]; return [pt(L[0] * f.w, 0), pt(L[1] * f.w, f.h)]; }
+function pins(f) { var L = LANES[f.name] || [.87, .87]; return [f.sc.pinTop ? f.sc.pinTop(f) : pt(L[0] * f.w, 0), pt(L[1] * f.w, f.h)]; }
 function fullPath(f) { var pp = pins(f), interior = f.sc.path ? f.sc.path(f) : []; return [pp[0]].concat(interior).concat([pp[1]]); }
 function allRects(f) { return f.dyn.length ? f.rects.concat(f.dyn) : f.rects; }
 function kOf(f) { return typeof f.sc.k === 'function' ? f.sc.k(f) : (f.sc.k || .06); }
@@ -1855,6 +2086,7 @@ function layout() {
   colLeft = r.left; W0 = r.width; VH = window.innerHeight; DPR = Math.min(2, window.devicePixelRatio || 1);
   cv.style.left = colLeft + 'px'; cv.style.width = W0 + 'px'; cv.style.height = VH + 'px';
   cv.width = Math.round(W0 * DPR); cv.height = Math.round(VH * DPR);
+  fxc.style.left = colLeft + 'px'; fxc.style.width = W0 + 'px'; fxc.style.height = VH + 'px'; fxc.width = cv.width; fxc.height = cv.height;
   bar.style.left = colLeft + 'px';
   var sh = $('sheet'); sh.style.left = colLeft + 'px'; sh.style.width = W0 + 'px';
   frames.forEach(function (f) {
@@ -1884,6 +2116,31 @@ if ('IntersectionObserver' in window) {
 // tutor sheet
 $('open-sheet').addEventListener('click', function () { $('sheet').hidden = false; $('close-sheet').focus(); });
 function closeSheet() { $('sheet').hidden = true; $('open-sheet').focus(); }
+// the collection: what you found, and where the rest are hiding
+function tallyUp() {
+  tally.textContent = NFOUND + '/' + NDISC; tally.setAttribute('aria-label', 'Discoveries: ' + NFOUND + ' of ' + NDISC + ' found. Open your collection.');
+  if (!RM) { tally.classList.remove('bump'); void tally.offsetWidth; tally.classList.add('bump'); }
+}
+var collFrom = null;
+function openColl(from) {
+  collFrom = from; var list = $('coll-list'), html = '', last = '';
+  frames.forEach(function (f) {
+    var keys = Object.keys(DMETA).filter(function (k) { return DMETA[k][1] === f.name; }); if (!keys.length) return;
+    var kick = f.el.querySelector('.kicker'), chap = f.name === 'cover' ? 'First page' : kick ? kick.textContent.split('·')[0].trim() : '', h2 = f.el.querySelector('h2'), name = f.name === 'cover' ? 'the first page' : h2 ? h2.textContent : '';
+    if (chap !== last) { if (last) html += '</ul>'; html += '<h3>' + chap + '</h3><ul class="coll">'; last = chap; }
+    keys.forEach(function (k) { html += FOUND[k] ? '<li class="found"><b>' + DMETA[k][0] + '</b><span>' + DISC[k].replace(/</g, '&lt;') + '</span></li>' : '<li class="locked"><b>?</b><span>Still hidden in ' + name + '.</span><button type="button" data-go="' + f.i + '">Go there</button></li>'; });
+  });
+  list.innerHTML = html + '</ul>';
+  $('coll-sum').textContent = NFOUND === NDISC ? 'All ' + NDISC + ' found. Every one of them.' : 'You have found ' + NFOUND + ' of ' + NDISC + '. The rest are still hiding in the exhibits. Go back and poke things.';
+  $('coll').hidden = false; $('close-coll').focus();
+}
+function closeColl() { $('coll').hidden = true; if (collFrom) collFrom.focus(); }
+tally.addEventListener('click', function () { openColl(tally); });
+$('open-coll').addEventListener('click', function () { openColl($('open-coll')); });
+$('close-coll').addEventListener('click', closeColl);
+$('coll-list').addEventListener('click', function (e) { var b = e.target.closest('[data-go]'); if (!b) return; $('coll').hidden = true; var f = frames[+b.dataset.go]; window.scrollTo({ top: f.top, behavior: RM ? 'auto' : 'smooth' }); });
+document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !$('coll').hidden) closeColl(); });
+tallyUp(); tally.classList.remove('bump');
 $('close-sheet').addEventListener('click', closeSheet);
 document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !$('sheet').hidden) closeSheet(); });
 
@@ -1922,6 +2179,7 @@ function loop(now) {
       if (f.sc.path) c.setTarget(fullPath(f), kOf(f), rects);
       if (f.i > IDX.spin && f.name !== 'heat') c.g = .02 * (1.5 - .12 * G.draw);
       if (f.sc.tick) f.sc.tick(f);
+      if (f.tk) { var ta = f.t - f.tk.t; if (ta < .7) c.kick(1.7 * (1 - ta / .7) * Math.sin(ta * 40), 0, Math.max(1, f.tk.i - 24), Math.min(c.n - 1, f.tk.i + 24)); else f.tk = null; }
       c.step(f.t, rects, sw);
       f.extras.forEach(function (x) { x.step(f.t, rects, sw * 0.5); });
       elastaneStep(f);
@@ -1929,7 +2187,12 @@ function loop(now) {
   }
   bumpText(now);
   draw(sy);
-  var max = document.documentElement.scrollHeight - VH; bar.style.width = (max > 0 ? sy / max * W0 : 0) + 'px';
+  var max = document.documentElement.scrollHeight - VH, bw = max > 0 ? sy / max * W0 : 0; bar.style.width = bw + 'px';
+  var tw = tally.offsetWidth || 60; tally.style.transform = 'translateX(' + Math.round(colLeft + clamp(bw - tw / 2, 8, W0 - tw - 8)) + 'px)';
+  frames.forEach(function (f) {
+    if (!f.vis || f.touched || f.demo || !f.sc.demo || (f.demoN || 0) >= 2 || Math.abs(f.top - sy) > VH * .2 || f.vt < (f.demoN ? 12 : 3.8) || !$('sheet').hidden || !$('coll').hidden) return;
+    var d = f.sc.demo(f); if (!d) return; d.t = f.t; d.dur = d.dur || 2.6; f.demo = d; f.demoN = (f.demoN || 0) + 1;
+  });
   requestAnimationFrame(loop);
 }
 function bumpText(now) {
@@ -2026,6 +2289,8 @@ function drawMain(ctx, f, cum, flow, over) {
 }
 function draw(sy) {
   ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, cv.width, cv.height);
+  fx.setTransform(1, 0, 0, 1, 0, 0); fx.clearRect(0, 0, fxc.width, fxc.height);
+  frames.forEach(function (f) { if (f.vis && f.demo) { fx.save(); fx.setTransform(DPR, 0, 0, DPR, 0, (f.top - sy) * DPR); fx.beginPath(); fx.rect(0, 0, f.w, f.h); fx.clip(); drawDemo(fx, f); fx.restore(); } });
   var cum = 0, flow = RM ? 0 : performance.now() / 1000 * 30;
   frames.forEach(function (f) {
     if (f.vis) {
@@ -2033,6 +2298,7 @@ function draw(sy) {
       ctx.beginPath(); ctx.rect(0, 0, f.w, f.h); ctx.clip();
       f.dyn = [];
       if (f.sc.back) f.sc.back(ctx, f);
+      dissolve(ctx, f); cardShadow(ctx, f); drawPrints(ctx, f);
       var sqCol = f.bg === 'black' ? KU.w : KU.k;
       if (f.sq) drawSquiggle(ctx, f.sq, f.t, sqCol);
       ctx.save();
@@ -2045,6 +2311,7 @@ function draw(sy) {
       ctx.restore();
       if (f.sq && !f.sq.falling) drawSquiggle(ctx, f.sq, f.t, sqCol, function (i) { return Math.cos(i * .75 + f.t * 3) > 0; });
       if (f.sc.front) f.sc.front(ctx, f);
+      drawStamps(ctx, f);
       ctx.restore();
     }
     cum += f.chain.len;
@@ -2068,7 +2335,8 @@ function start(cx, cy, touch, target) {
   if (target && target.closest && target.closest('button,input,a,label,select,[role="slider"],.sheet')) return false;
   var h = hit(cx, cy, touch); if (!h) return false;
   drag = h; drag.sx = cx; drag.sy = cy; drag.moved = 0; drag.lx = h.x; drag.ly = h.y; drag.vx = 0; drag.vy = 0;
-  if (h.custom) h.custom.move(h.x, h.y); else { h.chain.grab = h.i; h.chain.gx = h.x; h.chain.gy = h.y; }
+  h.f.touched = true; h.f.demo = null;
+  if (h.custom) h.custom.move(h.x, h.y); else { h.chain.grab = h.i; h.chain.gx = h.x; h.chain.gy = h.y; touchPrint(h.f, h.x, h.y); }
   return true;
 }
 function move(cx, cy) {
@@ -2082,7 +2350,7 @@ function move(cx, cy) {
 function end() {
   if (!drag) return; var d = drag; drag = null; suppress = performance.now();
   if (d.custom) { if (d.custom.end) d.custom.end(); }
-  else { var c = d.chain, q = c.p[c.grab]; c.grab = -1; if (q) { q.px = q.x - d.vx * .6; q.py = q.y - d.vy * .6; } }
+  else { var c = d.chain, gi = c.grab, q = c.p[gi]; c.grab = -1; if (q) { q.px = q.x - d.vx * .6; q.py = q.y - d.vy * .6; } if (d.moved < 10 && c === d.f.chain && !RM) d.f.tk = { t: d.f.t, i: gi }; }
   if (d.moved < 10 && d.f.sc.tap) d.f.sc.tap(d.f, d.x, d.y);
 }
 document.addEventListener('touchstart', function (e) { if (e.touches.length !== 1) return; var t = e.touches[0]; if (start(t.clientX, t.clientY, true, e.target)) e.preventDefault(); }, { passive: false });

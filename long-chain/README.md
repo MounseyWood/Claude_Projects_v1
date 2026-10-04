@@ -1,6 +1,8 @@
 # The Thread and the Loop
 
-An interactive, phone-first fibre lab for FN4005 undergraduates about polyester and recycling. It is built like a hands-on science-museum gallery: twenty-one full-screen exhibits snap like a social feed, and there are no information-only pages. Facts arrive as numbered discovery cards when you do something (34 in all). A wrong move gets a question back instead of the answer.
+An interactive, phone-first fibre lab for FN4005 undergraduates about polyester and recycling. It is built like a hands-on science-museum gallery: twenty-one full-screen exhibits snap like a social feed, and there are no information-only pages. Facts arrive as numbered discovery cards when you do something (35 in all, one hidden). A wrong move gets a question back instead of the answer. A tally on the progress bar opens a drawer of what you have found, with "Go there" links to the exhibits still hiding one.
+
+The look is a 1-bit fibre lab: every shade is woven, drawn with point-paper weave structures (spot, twill, plain weave) as dithering, and each exhibit frays into the colour of the next. The thread unwinds from a spool on the first page and writes "hi" there, with The Dot as the dot on the i. An original pixel hand demonstrates the gesture when an exhibit sits untouched; comic sound words pop on actions; fingerprints fade where you touch the thread; discovery cards are taped on.
 
 One Verlet-simulated thread runs through every exhibit and is the controller. It keeps what you do to it, so its shape, filament count, texture, form, plies, wrap, colour and recycling history carry forward. The care label at the end reads the thread back and decides whether the loop can close. Text blocks are solid: the thread routes round them.
 
@@ -27,7 +29,7 @@ Exhibits:
   - Spot the PET in a PET/PLA fork.
   - Stretch without elastane (bicomponent spring).
   - Turn up the heat: the PLA ply melts first.
-- **Promise:** tie knots. Then the care label, and tutor notes and sources (learning outcomes, seminar questions, confidence ratings, 35 sources).
+- **Promise:** tie knots. Then the care label, and tutor notes and sources (learning outcomes, seminar questions, confidence ratings, 36 sources).
 
 - `index.html`: the interactive piece (KU palette, Arial, no italics; retro flat-colour style after *The Dot and the Line*, 1965).
 - `storyboard-v2.html`: the earlier 9:16 storyboard and animatic, kept for reference.

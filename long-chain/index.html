@@ -404,7 +404,7 @@ body { margin: 0; padding-inline: 0; background: #121211; color: var(--k); font-
 
 <section class="frame bg-blue" data-scene="bottle" aria-label="Recycled polyester">
   <div class="copy tr" data-avoid="top">
-    <p class="kicker">Return · 1 of 6</p>
+    <p class="kicker">Return · 1 of 7</p>
     <h2 id="bot-h">Recycled polyester?</h2>
     <p id="bot-p">Tap the shape to see where most recycled polyester comes from.</p>
     <button class="btn" type="button" id="bot-go">Next step</button>
@@ -414,7 +414,7 @@ body { margin: 0; padding-inline: 0; background: #121211; color: var(--k); font-
 
 <section class="frame bg-white" data-scene="recycle" aria-label="Feed the recycler">
   <div class="copy tr" data-avoid="top">
-    <p class="kicker">Return · 2 of 6</p>
+    <p class="kicker">Return · 2 of 7</p>
     <h2>Feed the recycler</h2>
     <p class="say" id="rc-say" hidden></p>
     <p id="rc-p">Your thread is about to go round. Predict first: will it?</p>
@@ -428,7 +428,7 @@ body { margin: 0; padding-inline: 0; background: #121211; color: var(--k); font-
 
 <section class="frame bg-black" data-scene="unzip" aria-label="Chemical recycling">
   <div class="copy tl" data-avoid="top">
-    <p class="kicker">Return · 3 of 6</p>
+    <p class="kicker">Return · 3 of 7</p>
     <h2>Unzip the chain</h2>
     <p class="say" id="uz-say" hidden></p>
     <p id="uz-p">Melting breaks links at random. Can you undo them in order instead? Think back: what did each link give off? Tip a flask into the tank.</p>
@@ -442,7 +442,7 @@ body { margin: 0; padding-inline: 0; background: #121211; color: var(--k); font-
 
 <section class="frame bg-yellow" data-scene="spot" aria-label="Spot the PET">
   <div class="copy tl lassoed" data-avoid="top">
-    <p class="kicker">Return · 4 of 6</p>
+    <p class="kicker">Return · 4 of 7</p>
     <h2>Spot the PET</h2>
     <p class="say" id="spot-say" hidden></p>
     <p id="spot-p">Your thread forks. One strand is PET. The other is PLA, a polyester made from plants. Tap the PET.</p>
@@ -455,7 +455,7 @@ body { margin: 0; padding-inline: 0; background: #121211; color: var(--k); font-
 
 <section class="frame bg-black" data-scene="bend" aria-label="Stretch without elastane">
   <div class="copy tr" data-avoid="top">
-    <p class="kicker">Return · 5 of 6</p>
+    <p class="kicker">Return · 5 of 7</p>
     <h2>Stretch without elastane</h2>
     <p>Two polyesters in one filament shrink differently, so it curls into a spring.</p>
     <p class="hint">Pull the spring <span class="num" id="bend-n">+0%</span></p>
@@ -466,12 +466,24 @@ body { margin: 0; padding-inline: 0; background: #121211; color: var(--k); font-
 
 <section class="frame bg-white" data-scene="heat" aria-label="PLA and heat">
   <div class="copy tl lassoed" data-avoid="top">
-    <p class="kicker">Return · 6 of 6</p>
+    <p class="kicker">Return · 6 of 7</p>
     <h2>Turn up the heat</h2>
     <p>Two plies: PET, and PLA made from plant sugars. Which melts first?</p>
     <p class="hint">Drag the number up</p>
   </div>
   <div class="scrub" data-avoid="temp" id="heat-n" role="slider" tabindex="0" aria-label="Heat" aria-valuemin="20" aria-valuemax="260" aria-valuenow="120"><span class="sv">120°C</span><small id="heat-cap">both plies hold</small></div>
+  <div class="card bl reserve" data-avoid="card"><p class="cl"></p><p class="ct"></p></div>
+</section>
+
+<section class="frame bg-white" data-scene="rot" aria-label="Bury it: does it decompose?">
+  <div class="copy tl" data-avoid="top">
+    <p class="kicker">Return · 7 of 7</p>
+    <h2>Bury it</h2>
+    <p>Does it decompose? Cotton, polycotton and your thread go underground; a scrap of polyester stays in the sun.</p>
+    <p class="hint">Drag the time up · tap a microbe</p>
+    <button class="sr" type="button" id="rot-bug">Offer your thread to a microbe</button>
+  </div>
+  <div class="scrub" data-avoid="time" id="rot-n" role="slider" tabindex="0" aria-label="Time underground" aria-valuemin="0" aria-valuemax="6" aria-valuenow="0"><span class="sv">0</span><small>days: just buried</small></div>
   <div class="card bl reserve" data-avoid="card"><p class="cl"></p><p class="ct"></p></div>
 </section>
 
@@ -517,7 +529,7 @@ body { margin: 0; padding-inline: 0; background: #121211; color: var(--k); font-
 
 </main>
 
-<button class="tally" id="tally" type="button" aria-label="Discoveries: 0 found. Open your collection.">0/35</button>
+<button class="tally" id="tally" type="button" aria-label="Discoveries: 0 found. Open your collection.">0/42</button>
 <button class="fs" id="fs" type="button" hidden>Full screen</button>
 <a class="fs" id="fs-tab" target="_blank" rel="noopener" href="#" hidden>Open in new tab</a>
 <div class="sheet" id="coll" role="dialog" aria-modal="true" aria-label="Your discoveries" hidden>
@@ -553,11 +565,12 @@ body { margin: 0; padding-inline: 0; background: #121211; color: var(--k); font-
     <li>Compare two ways of colouring polyester and what each costs.</li>
     <li>Explain why blends with natural fibres or elastane block recycling, and judge claims about alternatives.</li>
     <li>Compare mechanical and chemical recycling: what each keeps, what each costs, and what is proven at scale.</li>
+    <li>Explain why cotton rots while polyester breaks up into microplastics, and question "biodegradable" claims.</li>
   </ol>
   <h3>How this lab works</h3>
   <ul>
     <li><b>Do something to find something out.</b> Facts arrive as discovery cards when you act. A wrong move gets a question back, not the answer.</li>
-    <li><b>Predict first.</b> Guess before you check: the 59% and 1.35% squares, the nozzle tests, the recycler, the fork, the heat.</li>
+    <li><b>Predict first.</b> Guess before you check: the 59% and 1.35% squares, the nozzle tests, the recycler, the fork, the heat, the burial.</li>
     <li><b>Your thread keeps every choice.</b> Shape, filaments, texture, twist, plies, wrap, colour, washing and recycling all stay with it. The care label at the end reads it back.</li>
     <li><b>Collect the set.</b> The counter on the progress bar opens your discoveries. Gaps show which page still hides one.</li>
     <li><b>Stuck?</b> If a page sits still, a pixel hand shows you the gesture.</li>
@@ -576,6 +589,8 @@ body { margin: 0; padding-inline: 0; background: #121211; color: var(--k); font-
     <li>Redesign one garment you own as a mono-material. What do you lose? What do you gain?</li>
     <li>Synthetic fibre uses about 1.35% of the world's oil. Small or large? What else would you need to know: tonnes, growth, the energy used to make it?</li>
     <li>Chemical recycling can separate blends. Does that make blends acceptable again? What would you need to know first?</li>
+    <li>A label says "biodegradable polyester". What three questions would you ask, and who should answer them?</li>
+    <li>Cotton rots in a compost heap, but most clothes end up in landfill or are burnt. Does "it rots" still help there? What would you need to find out?</li>
   </ol>
   <h3>How sure are we?</h3>
   <ul>
@@ -594,6 +609,11 @@ body { margin: 0; padding-inline: 0; background: #121211; color: var(--k); font-
     <li><span class="chip s">Strong</span> Single yarns are usually spun Z and plied S [24].</li>
     <li><span class="chip s">Strong</span> Polyester is thermoplastic, so heat-set pleats are permanent; Pleats Please garments are sewn, then pleated with heat [37]. Heat-setting runs at about 170 to 210°C (<span class="chip m">Moderate</span>, trade source) [38].</li>
     <li><span class="chip s">Strong</span> PLA composts only in industrial conditions (about 58°C and above), not at home [39]. Ordinary PET barely biodegrades: in one maker's accelerated sea-water test, just over 1% in about 2.7 years (<span class="chip w">Weak</span>) [40].</li>
+    <li><span class="chip s">Strong</span> Cotton biodegrades and polyester barely does. In a compost test, cotton fabrics lost 50–77% of their weight in 90 days while polyester kept its structure [41]. In water tests, cotton yarn was 76% broken down after 243 days and polyester under 5%; in a polyester/cotton blend, mainly the cotton broke down [42][43]. These studies were co-authored by Cotton Incorporated, a cotton industry body, and peer reviewed.</li>
+    <li><span class="chip m">Moderate</span> Simulated sunlight cracked PET fibres into smaller particles within 56 days, in seawater, in the lab [44]. PET bottles on the sea floor stayed largely unchanged for about 15 years, with ages estimated from printed dates (one study) [45].</li>
+    <li><span class="chip s">Strong</span> A bacterium from a Japanese PET recycling site digested thin, low-crystallinity PET film in about six weeks at 30°C [46]. Bottle and textile PET is far more crystalline, and most known enzymes struggle with it [49].</li>
+    <li><span class="chip s">Strong</span> UK advertising guidance: "biodegradable" and "compostable" claims should say how long, in what conditions, and any harmful by-products [47]. The CMA's Green Claims Code: claims must not omit or hide important information [48].</li>
+    <li><span class="chip m">Moderate</span> "No one has yet seen a polyester thread fully decompose" is reasoning, not a measurement: polyester dates from 1941 [2][3], and tests run for months or years, not lifetimes.</li>
     <li><span class="chip m">Moderate</span> Staple often cut near cotton length, around 32–38 mm [16].</li>
     <li><span class="chip m">Moderate</span> Core-spun thread: polyester filament core, cotton or polyester wrap [17].</li>
     <li><span class="chip s">Strong</span> Polyester dyes with disperse dyes at around 130°C under pressure [18].</li>
@@ -657,6 +677,15 @@ body { margin: 0; padding-inline: 0; background: #121211; color: var(--k); font-
     <li><a target="_blank" rel="noopener" href="https://ifactoryapp.com/industries/textile-manufacturing/heat-setting-polyester-fabric-dimensional-stability">iFactory, heat-setting polyester (trade guide)</a></li>
     <li><a target="_blank" rel="noopener" href="https://www.rsc.org/globalassets/22-new-perspectives/sustainability/progressive-plastics/explainers/rsc-explainer-2---compostable-and-biodegradable-plastics.pdf">Royal Society of Chemistry, compostable and biodegradable plastics</a></li>
     <li><a target="_blank" rel="noopener" href="https://www.primaloft.com/technologies/primaloft-bio">PrimaLoft Bio, biodegradation tests (producer)</a></li>
+    <li><a target="_blank" rel="noopener" href="https://doi.org/10.1177/155892501000500406">Li, Frey and Browning (2010), Journal of Engineered Fibers and Fabrics</a></li>
+    <li><a target="_blank" rel="noopener" href="https://agris.fao.org/search/en/records/65df076b7c7033e84bec9f24">Zambrano et al. (2019), Marine Pollution Bulletin</a></li>
+    <li><a target="_blank" rel="noopener" href="https://pubmed.ncbi.nlm.nih.gov/32056618/">Zambrano et al. (2020), Marine Pollution Bulletin</a></li>
+    <li><a target="_blank" rel="noopener" href="https://doi.org/10.1016/j.scitotenv.2020.143170">Sørensen et al. (2021), Science of the Total Environment</a></li>
+    <li><a target="_blank" rel="noopener" href="https://www.nature.com/articles/srep23501">Ioakeimidis et al. (2016), Scientific Reports</a></li>
+    <li><a target="_blank" rel="noopener" href="https://doi.org/10.1126/science.aad6359">Yoshida et al. (2016), Science</a></li>
+    <li><a target="_blank" rel="noopener" href="https://www.asa.org.uk/advice-online/environmental-claims-biodegradable-and-compostable.html">ASA, Environmental claims: biodegradable and compostable</a></li>
+    <li><a target="_blank" rel="noopener" href="https://www.gov.uk/government/publications/green-claims-code-making-environmental-claims/green-claims-and-your-business">CMA (2021), Green Claims Code</a></li>
+    <li><a target="_blank" rel="noopener" href="https://doi.org/10.1139/er-2023-0107">Sun et al. (2024), Environmental Reviews: PET-degrading enzymes</a></li>
   </ol>
   <p style="margin-top:14px">Visual style after The Dot and the Line (Chuck Jones and Maurice Noble, MGM, 1965).</p>
 </div>
@@ -671,7 +700,10 @@ var D = Math.PI / 180;
 var RM = false; try { RM = window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) {}
 
 // What the student has done to their thread. Every later exhibit reads this.
-var G = { draw: 1, shape: 'round', fil: 1, tex: null, loops: 0, crimp: 0, staple: false, twist: 0, ply: 1, plyTwist: 0, plyBal: false, partner: null, elastane: false, colour: null, mix: null, dye: null, pla: false, stripped: null, check: null, shed: 0, rounds: 0, reborn: null, bi: false, links: 0, knots: 0 };
+var G = { draw: 1, shape: 'round', fil: 1, tex: null, loops: 0, crimp: 0, staple: false, twist: 0, ply: 1, plyTwist: 0, plyBal: false, partner: null, elastane: false, colour: null, mix: null, dye: null, pla: false, stripped: null, check: null, shed: 0, rounds: 0, reborn: null, bi: false, links: 0, knots: 0, buried: 0 };
+
+// Polyester's age: no one has had longer than this to watch it decompose.
+var AGE = Math.max(85, new Date().getFullYear() - 1941);
 
 // Discoveries: found by doing, numbered like museum labels.
 var DISC = {
@@ -710,11 +742,16 @@ var DISC = {
   union: 'Only the polyester took the colour. Cotton and wool need other dyes, so blends are often dyed twice, once for each fibre.',
   plamelt: 'PLA melts at around 170°C, PET at around 250°C. That is why PLA needs a cool iron.',
   memory: 'This is polyester\'s memory. Heat-set at about 180 to 210°C, it keeps a new shape for good. Issey Miyake\'s Pleats Please garments are sewn first, then pleated with heat.',
-  compost: 'PLA can be composted, but only in industrial composters held at about 58°C; in a garden heap it barely breaks down. Ordinary PET hardly breaks down at all.',
+  compost: 'PLA can be composted, but only in industrial composters held at about 58°C; in a garden heap it barely breaks down.',
+  rot: 'Microbes eat cotton. It is cellulose, like leaves, and they turn it into carbon dioxide, water and more microbes. In one compost test, cotton fabrics lost 50 to 77% of their weight in 90 days.',
+  blendrot: 'In polycotton, microbes eat the cotton and leave the polyester. In one water test, cotton yarn was 76% broken down after 243 days; polyester, under 5%.',
+  breakup: 'Polyester breaks up, not down. Sunlight makes it brittle, so it cracks into ever smaller pieces: microplastics. Out of the sun it lasts longer: PET bottles on the sea floor barely changed for about 15 years.',
+  bug: 'Most microbes can\'t digest PET. In 2016 one that can was found at a bottle-recycling site in Japan. It took six weeks at 30°C to eat a thin, soft film. Fibres are much tougher.',
+  claims: 'Polyester has existed for ' + AGE + ' years, and no one has yet seen a polyester thread fully decompose. If a label says biodegradable, ask: where, how long, and what is left? UK advertising guidance expects all three.',
   jacquard: 'In 1804 Jacquard\'s loom read punched cards to choose which threads to lift. Babbage borrowed the cards for his computing engine. Ada Lovelace wrote that it "weaves algebraical patterns".'
 };
 // short names and where each one hides, for the collection drawer
-var DMETA = { link: ['The chain', 'oil'], y1941: ['Terylene', 'oil'], draw: ['Drawing', 'spin'], trilobal: ['Sparkle', 'shape'], hollow: ['Warmth', 'shape'], channel: ['Wicking', 'shape'], mono: ['Monofilament', 'count'], multi: ['Multifilament', 'count'], micro: ['Microfibre', 'count'], aty: ['Air loops', 'texture'], dty: ['Crimp', 'texture'], staple: ['Staple', 'cut'], twist: ['Twist', 'cut'], snarl: ['Snarl', 'ply'], ply: ['Balance', 'ply'], cotton: ['Core-spun', 'blend'], wool: ['Wool wrap', 'blend'], elastane: ['Elastane', 'blend'], bath: ['Dye bath', 'colour'], melt: ['Dope dyeing', 'colour'], union: ['Dyed twice', 'colour'], wash: ['Shedding', 'wash'], fleece: ['Fleece', 'wash'], bottle: ['Bottles', 'bottle'], jam: ['Jam', 'recycle'], loop: ['The loop', 'recycle'], downcycle: ['Weaker', 'recycle'], unzip: ['Unzip', 'unzip'], enzyme: ['Enzymes', 'unzip'], separate: ['Separating', 'unzip'], pla: ['PLA', 'spot'], compost: ['Compost', 'spot'], spring: ['Spring', 'bend'], rubber: ['Rubber', 'bend'], plamelt: ['Melting point', 'heat'], memory: ['Memory', 'heat'], jacquard: ['Punched cards', 'cover'] };
+var DMETA = { link: ['The chain', 'oil'], y1941: ['Terylene', 'oil'], draw: ['Drawing', 'spin'], trilobal: ['Sparkle', 'shape'], hollow: ['Warmth', 'shape'], channel: ['Wicking', 'shape'], mono: ['Monofilament', 'count'], multi: ['Multifilament', 'count'], micro: ['Microfibre', 'count'], aty: ['Air loops', 'texture'], dty: ['Crimp', 'texture'], staple: ['Staple', 'cut'], twist: ['Twist', 'cut'], snarl: ['Snarl', 'ply'], ply: ['Balance', 'ply'], cotton: ['Core-spun', 'blend'], wool: ['Wool wrap', 'blend'], elastane: ['Elastane', 'blend'], bath: ['Dye bath', 'colour'], melt: ['Dope dyeing', 'colour'], union: ['Dyed twice', 'colour'], wash: ['Shedding', 'wash'], fleece: ['Fleece', 'wash'], bottle: ['Bottles', 'bottle'], jam: ['Jam', 'recycle'], loop: ['The loop', 'recycle'], downcycle: ['Weaker', 'recycle'], unzip: ['Unzip', 'unzip'], enzyme: ['Enzymes', 'unzip'], separate: ['Separating', 'unzip'], pla: ['PLA', 'spot'], compost: ['Compost', 'spot'], spring: ['Spring', 'bend'], rubber: ['Rubber', 'bend'], plamelt: ['Melting point', 'heat'], memory: ['Memory', 'heat'], rot: ['Rot', 'rot'], blendrot: ['Blends', 'rot'], breakup: ['Breaks up', 'rot'], bug: ['PET-eater', 'rot'], claims: ['Biodegradable?', 'rot'], jacquard: ['Punched cards', 'cover'] };
 var FOUND = {}, NFOUND = 0, NDISC = Object.keys(DISC).length;
 
 // ---------- geometry ----------
@@ -2078,6 +2115,147 @@ SCENES.heat = {
 };
 
 // Each promise ties a knot in the thread.
+// Bury it. Microbes eat cellulose; polyester stays whole underground, and in the sun it breaks up instead.
+var ROT = {
+  num: [0, 1, 3, 6, 1, 15, AGE],
+  cap: ['days: just buried', 'month underground', 'months underground', 'months underground', 'year underground', 'years underground', 'years: since 1941'],
+  say: ['just buried', '1 month', '3 months', '6 months', '1 year', '15 years', AGE + ' years, since 1941'],
+  cot: [1, .72, .38, .1, 0, 0, 0],
+  bits: [1, 1, 1, 1, 3, 10, 26]
+};
+function lerpA(A, u) { u = clamp(u, 0, A.length - 1); var i = Math.floor(u), j = Math.min(A.length - 1, i + 1); return A[i] + (A[j] - A[i]) * (u - i); }
+// an original 1-bit microbe, eyes and wriggling legs
+var MICROBE = ['..####..', '.######.', '##o##o##', '########', '.######.'], LEGS = ['#.#..#.#', '.#.##.#.'];
+function microbe(ctx, x, y, ph, col) {
+  var rows = MICROBE.concat([LEGS[Math.floor(ph) % 2]]), x0 = Math.round(x) - 8, y0 = Math.round(y) - 6;
+  for (var r = 0; r < rows.length; r++) for (var c = 0; c < 8; c++) { var ch = rows[r][c]; if (ch === '.') continue; ctx.fillStyle = ch === 'o' ? KU.k : col; ctx.fillRect(x0 + c * 2, y0 + r * 2, 2, 2); }
+}
+SCENES.rot = {
+  n: 210,
+  init: function (f) {
+    f.s.s = 0; f.s.u = 0; f.s.q = []; f.s.qt = -9; f.s.bugs = []; f.s.puffs = []; f.parts = []; var self = this;
+    f.time = scrub($('rot-n'), { value: 0, snap: [0, 1, 2, 3, 4, 5, 6], fmt: function (v) { return String(ROT.num[v]); }, cap: function (v) { return ROT.cap[v]; }, onChange: function (v) { self.set(f, v); } });
+    $('rot-n').setAttribute('aria-valuetext', ROT.say[0]);
+    $('rot-bug').addEventListener('click', function () { var b = f.s.bugs[(Math.random() * f.s.bugs.length) | 0]; if (b) self.offer(f, b); });
+  },
+  // fixed at layout, so a tall card doesn't move the ground
+  geo: function (f) {
+    if (f.s.G) return f.s.G;
+    var st = stage(f), W = f.w, gy = st.t + Math.max(92, st.h * .3), sb = Math.max(gy + 120, st.b - 40), sp = clamp((sb - gy) / 3.6, 34, 50);
+    return { st: st, gy: gy, r1: gy + sp * .95, r2: gy + sp * 1.95, r3: gy + sp * 2.95, x0: .3 * W, x1: .74 * W, ox: .44 * W, ow: .24 * W, sun: pt(.72 * W, st.t + (gy - st.t) * .42) };
+  },
+  layout: function (f) {
+    f.s.G = null; var tn = $('rot-n'), g0 = this.geo(f);
+    tn.style.left = '6%'; tn.style.top = Math.round(g0.gy - 20 - tn.offsetHeight) + 'px'; f.measure();
+    var g = f.s.G = this.geo(f), W = f.w;
+    f.cot = new Chain([pt(g.x0, g.r1), pt(g.x1, g.r1)], 40, { wind: .008, iter: 6 });
+    f.pc = new Chain([pt(g.x0, g.r2), pt(g.x1, g.r2)], 40, { wind: .008, iter: 6 });
+    f.extras = [f.cot, f.pc];
+    if (!f.s.bugs.length) for (var i = 0; i < 7; i++) f.s.bugs.push({ x: (.12 + .76 * Math.random()) * W, y: g.gy + 24 + Math.random() * (g.r3 - g.gy), tx: 0, ty: 0, tt: 0, ph: Math.random() * 9 });
+    f.s.bugs.forEach(function (b) { b.tx = b.x; b.ty = b.y; });
+  },
+  set: function (f, v) {
+    var up = v > f.s.s, g = this.geo(f); f.s.s = v; if (v > G.buried) { G.buried = v; renderLabel(); }
+    $('rot-n').setAttribute('aria-valuetext', ROT.say[v]);
+    if (!up) return;
+    if (v >= 1 && !f.s.munch) { f.s.munch = true; stamp(f, 'MUNCH', .42 * f.w, g.r1 - 30); }
+    if (v >= 2) this.find(f, 'rot');
+    if (v >= 3) this.find(f, 'blendrot');
+    if (v >= 4 && !f.s.crack) { f.s.crack = true; stamp(f, 'CRACK', g.ox + g.ow / 2, g.gy - 46); this.find(f, 'breakup'); }
+    if (v >= 6) this.find(f, 'claims');
+  },
+  // one card at a time: later finds wait their turn
+  find: function (f, k) { if (!FOUND[k] && f.s.q.indexOf(k) < 0) f.s.q.push(k); },
+  // a microbe tries your polyester, and gives up
+  offer: function (f, b) {
+    var g = this.geo(f), c = f.chain, q = null, qd = 1e9;
+    for (var i = 0; i < c.n; i++) { var p = c.p[i]; if (p.y < g.gy + 8) continue; var d = Math.hypot(p.x - b.x, p.y - b.y); if (d < qd) { qd = d; q = p; } }
+    if (q) { b.tx = q.x; b.ty = q.y - 9; b.tt = f.t + 1.5; } b.nope = f.t + .9;
+    f.touched = true; f.demo = null;
+    if (!FOUND.bug) { card(f, 'bug'); f.s.qt = f.t; }
+  },
+  tap: function (f, x, y) { var best = null, bd = 30; f.s.bugs.forEach(function (b) { var d = Math.hypot(b.x - x, b.y - y); if (d < bd) { bd = d; best = b; } }); if (best) this.offer(f, best); },
+  demo: function (f) { if (f.s.s > 0) return null; var a = domPt(f, $('rot-n')); return { kind: 'drag', pts: [a, pt(a.x, a.y - 100)], dur: 2.6 }; },
+  // in at the top, a zigzag root into the ground, a buried loop, and out under the soil
+  path: function (f) {
+    var g = this.geo(f), W = f.w, xR = .87 * W, a = pt(xR, g.gy - 4), b = pt(.8 * W, g.r3 - 9), L = g.x0 + 9, c = pt(.78 * W, g.r3 + 9);
+    return [a].concat(swing(a, b, 'zig'), [pt(L, g.r3 - 9)], arc(L, g.r3, 9, 9, -90 * D, -270 * D, 14), [c], swing(c, pt(xR, g.r3 + 60), 'drape', true));
+  },
+  k: 0.09,
+  // underground, a natural wrap rots away; in the air it stays
+  split: function (f) { return look(f).partner ? { y: this.geo(f).gy, above: null, below: { fresh: lerpA(ROT.cot, f.s.u) } } : null; },
+  bottomBg: function () { return 'black'; },
+  tick: function (f) {
+    var s = f.s.s, g = this.geo(f), W = f.w;
+    f.s.u = RM ? s : f.s.u + (s - f.s.u) * .045; if (Math.abs(s - f.s.u) < .003) f.s.u = s;
+    var u = f.s.u, cl = lerpA(ROT.cot, u), eating = s > u + .01 && cl > .02;
+    if (f.s.q.length && f.t - f.s.qt > 3.6) { card(f, f.s.q.shift()); f.s.qt = f.t; }
+    // eaten cotton leaves as carbon dioxide
+    if (eating && !RM && Math.random() < .45) { var row = Math.random() < .5 ? f.cot : f.pc, q = row.p[(Math.random() * row.n) | 0]; f.parts.push({ x: q.x, y: q.y, r: 1.5 + Math.random() * 2.5, v: .5 + Math.random() * .6 }); }
+    f.parts = f.parts.filter(function (b) { b.y -= b.v; b.x += Math.sin(b.y * .12) * .3; if (b.y > g.gy + 3) return true; if (b.x > .6 * W && f.s.puffs.length < 2 && Math.random() < .2) f.s.puffs.push({ x: b.x, t: f.t }); return false; });
+    f.s.puffs = f.s.puffs.filter(function (p) { return f.t - p.t < 1.6; });
+    f.s.bugs.forEach(function (b, i) {
+      if (f.t > b.tt) {
+        if (cl > .04 && Math.random() < .75) { var row = Math.random() < .5 ? f.cot : f.pc, k = (Math.random() * row.n) | 0; b.tx = row.p[k].x; b.ty = row.p[k].y + (Math.random() - .5) * 10; }
+        else { b.tx = (.1 + .8 * Math.random()) * W; b.ty = g.gy + 18 + Math.random() * (g.r3 + 20 - g.gy); }
+        b.tt = f.t + 1.4 + Math.random() * 2.4;
+      }
+      if (b.nope && f.t > b.nope) { b.nope = 0; stamp(f, 'NOPE', b.x, b.y - 34); b.tx = b.x + (Math.random() - .5) * 90; b.ty = b.y - 26; b.tt = f.t + 1.2; }
+      var sp = RM ? 0 : eating ? .07 : .028;
+      b.x += (b.tx - b.x) * sp + (RM ? 0 : Math.sin(f.t * 5 + i) * .35); b.y += (b.ty - b.y) * sp + (RM ? 0 : Math.cos(f.t * 4 + i * 2) * .25);
+      b.x = clamp(b.x, 12, W - 12); b.y = clamp(b.y, g.gy + 12, f.h - 16); b.ph += RM ? 0 : eating ? .5 : .15;
+    });
+  },
+  back: function (ctx, f) {
+    var g = this.geo(f), W = f.w, u = f.s.u, i;
+    // the sun is The Dot, with a woven glow
+    wDisc(ctx, KU.y, u >= 4 ? 3 : 2, g.sun.x, g.sun.y, 34); disc(ctx, g.sun.x, g.sun.y, 19, KU.y);
+    // soil: a black field under a frayed edge, with woven crumbs
+    wFade(ctx, KU.k, 0, g.gy - 15, W, 13, 1, 4);
+    ctx.fillStyle = KU.k; ctx.beginPath(); ctx.moveTo(-4, f.h + 4); for (var x = -4; x <= W + 8; x += 8) ctx.lineTo(x, g.gy + Math.sin(x * .09) * 2 + Math.sin(x * .31) * 1.2); ctx.lineTo(W + 8, f.h + 4); ctx.closePath(); ctx.fill();
+    for (i = 0; i < 24; i++) wDisc(ctx, KU.w, 1, hash(i, 51) * W, g.gy + 14 + hash(i, 52) * (f.h - g.gy - 30), 2 + hash(i, 53) * 5);
+    // once years pass, the sun works on the scrap
+    if (u > 3.5) { ctx.globalAlpha = clamp(u - 3.5, 0, 1); ctx.strokeStyle = KU.y; ctx.lineWidth = 2; ctx.setLineDash([4, 6]); ctx.beginPath(); for (i = 0; i < 3; i++) { ctx.moveTo(g.sun.x - 12 + i * 8, g.sun.y + 24); ctx.lineTo(g.ox + g.ow * (.2 + i * .3), g.gy - 14); } ctx.stroke(); ctx.setLineDash([]); ctx.globalAlpha = 1; }
+  },
+  // cotton is a cream strand with loose fibre ends; as microbes eat it, pieces go, leaving crumbs
+  cotton: function (ctx, c, left, core) {
+    var p = c.p, n = c.n, cream = '#e8e1cf', i;
+    if (core) { strokeP(ctx, p, KU.w, 6.4); strokeP(ctx, p, KU.b, 3.2); }
+    ctx.lineCap = 'round';
+    for (i = 0; i < n - 1; i++) {
+      var h = hash(i, 61), a = p[i], b = p[i + 1];
+      if (h < left) {
+        ctx.strokeStyle = cream; ctx.lineWidth = core ? 8 : 9; ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+        if (hash(i, 62) > .45) { var sd = hash(i, 63) > .5 ? 1 : -1; ctx.lineWidth = 1.3; ctx.beginPath(); ctx.moveTo(a.x, a.y + sd * 4); ctx.lineTo(a.x + (hash(i, 65) - .5) * 8, a.y + sd * (8 + hash(i, 64) * 6)); ctx.stroke(); }
+      } else if (h < left + .12) disc(ctx, a.x + (hash(i, 66) - .5) * 6, a.y + (hash(i, 67) - .5) * 6, 1.6, cream);
+    }
+    if (core) strokeP(ctx, p, KU.b, 2.4, [2, 7]);
+  },
+  // the scrap in the sun cracks into more and smaller pieces, and they scatter; none of them goes away
+  scrap: function (ctx, g, u) {
+    var k = Math.max(1, Math.round(lerpA(ROT.bits, u))), spread = clamp((k - 3) / 23, 0, 1), y = g.gy - 6;
+    ctx.lineCap = 'round';
+    for (var j = 0; j < k; j++) {
+      var a = g.ox + g.ow * j / k, b = g.ox + g.ow * (j + 1) / k, gap = k > 1 ? Math.min(3, (b - a) * .18) : 0, half = Math.max(.5, (b - a) / 2 - gap);
+      var cx = (a + b) / 2 + (hash(j, 91) - .5) * 30 * spread, cy = y + hash(j, 92) * 16 * spread, rot = (hash(j, 93) - .5) * 1.2 * Math.min(1, (k - 1) / 4), dx = Math.cos(rot) * half, dy = Math.sin(rot) * half, w = k > 12 ? 4 : 6;
+      ctx.beginPath(); ctx.moveTo(cx - dx, cy - dy); ctx.lineTo(cx + dx, cy + dy);
+      ctx.strokeStyle = KU.w; ctx.lineWidth = w + 3; ctx.stroke(); ctx.strokeStyle = KU.b; ctx.lineWidth = w; ctx.stroke();
+      if (k === 1) { ctx.lineCap = 'butt'; ctx.setLineDash([3, 14]); ctx.strokeStyle = KU.w; ctx.lineWidth = 2; ctx.stroke(); ctx.setLineDash([]); ctx.lineCap = 'round'; }
+    }
+  },
+  front: function (ctx, f) {
+    var g = this.geo(f), W = f.w, u = f.s.u, cl = lerpA(ROT.cot, u);
+    this.cotton(ctx, f.cot, cl, false); this.cotton(ctx, f.pc, cl, true);
+    label(ctx, f, 'cotton', .06 * W, g.r1 + 5, 13, KU.w, 'left');
+    label(ctx, f, 'polycotton', .06 * W, g.r2 + 5, 13, KU.w, 'left');
+    label(ctx, f, 'your thread', .06 * W, g.r3 + 5, 13, KU.w, 'left');
+    this.scrap(ctx, g, u);
+    f.parts.forEach(function (b) { ring(ctx, b.x, b.y, b.r, 1.2, KU.w); });
+    f.s.puffs.forEach(function (p) { var a = (f.t - p.t) / 1.6; ctx.globalAlpha = clamp(1 - a, 0, 1); ctx.font = '700 13px ' + FONT; ctx.fillStyle = KU.k; ctx.textAlign = 'center'; ctx.fillText('CO₂', p.x, g.gy - 12 - a * 26); ctx.textAlign = 'left'; ctx.globalAlpha = 1; });
+    f.s.bugs.forEach(function (b) { microbe(ctx, b.x, b.y - (b.nope ? Math.abs(Math.sin(f.t * 9)) * 4 : 0), b.ph, KU.y); });
+  }
+};
+
 SCENES.knots = {
   n: 200,
   demo: function (f) { var b = f.el.querySelector('.pledge'); return b ? { kind: 'tap', pts: [domPt(f, b, -30, 6)], dur: 1.9 } : null; },
@@ -2186,6 +2364,7 @@ function renderLabel() {
     ['Drawn', G.draw > 1.05 ? '×' + G.draw.toFixed(1) : 'not stretched'],
     ['Shed', G.shed + ' fibres'],
     ['Recycled', G.reborn ? 'unzipped (' + REAGENT[G.reborn] + ')' : G.rounds ? 'melted ' + G.rounds + (G.rounds === 1 ? ' time' : ' times') : 'not yet'],
+    ['Buried', G.buried ? 'for ' + ROT.say[G.buried].replace(', since 1941', '') + ': polyester still there' + (G.buried >= 4 && G.partner && !G.reborn ? ', ' + G.partner + ' gone' : '') : 'not yet'],
     ['Promises', G.knots ? G.knots + (G.knots === 1 ? ' knot' : ' knots') : 'none yet'],
     ['Quick check', G.check == null ? 'not done yet' : G.check + ' of 5 first time'],
     ['Discoveries', NFOUND + ' of ' + NDISC]

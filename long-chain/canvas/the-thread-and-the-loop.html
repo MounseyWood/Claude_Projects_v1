@@ -68,12 +68,15 @@ body { margin: 0; padding-inline: 0; background: #121211; color: var(--k); font-
 /* Cover */
 .cover .title { top: 15%; left: 50%; transform: translateX(-50%); width: 74%; max-width: 74%; text-align: center; }
 .cover h1 { font-size: clamp(52px, 15.5vw, 76px); }
+.cover .meta { font-size: 13px !important; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; margin-top: 12px !important; opacity: .85; }
 
 /* Controls */
 .row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
 .btn, .opt { font: 700 16px/1.1 var(--font); border: 0; border-radius: 999px; padding: 13px 18px; min-height: 48px; cursor: pointer; background: var(--k); color: var(--w); }
 .opt { background: transparent; color: inherit; box-shadow: inset 0 0 0 2.5px currentColor; display: inline-flex; align-items: center; gap: 8px; padding: 9px 14px 9px 10px; min-height: 46px; font-size: 15px; }
 .opt[aria-pressed="true"] { background: var(--k); color: var(--w); box-shadow: none; }
+.opt:disabled { opacity: .4; cursor: default; }
+.opt[aria-pressed="true"]:disabled { opacity: 1; }
 .bg-black .btn, .on-dark .btn { background: var(--w); color: var(--k); }
 .bg-black .opt[aria-pressed="true"], .bg-blue .opt[aria-pressed="true"] { background: var(--w); color: var(--k); }
 .opt svg { width: 26px; height: 26px; flex: none; }
@@ -128,6 +131,12 @@ body { margin: 0; padding-inline: 0; background: #121211; color: var(--k); font-
 .label p { font-size: 15px !important; }
 .label .btn { font-size: 14px; padding: 10px 14px; min-height: 42px; }
 .bg-black .label .btn { background: var(--k); color: var(--w); }
+.bg-black .label .btn.primary { background: var(--y); color: var(--k); box-shadow: inset 0 0 0 2px var(--k); }
+.sheet label.rf { display: block; font-weight: 700; font-size: 16px; margin: 20px 0 6px; }
+.sheet textarea { display: block; width: 100%; font: 16px/1.4 var(--font); color: var(--k); background: var(--w); border: 2px solid var(--k); border-radius: 6px; padding: 10px 12px; resize: vertical; }
+.sheet textarea:focus-visible { outline: 3px solid var(--b); outline-offset: 2px; }
+.sheet .rf-acts { margin-top: 18px; display: flex; flex-wrap: wrap; gap: 8px; }
+#rf-out { font-size: 14px; background: repeating-conic-gradient(rgba(29, 29, 27, .06) 0 25%, transparent 0 50%) 0 0 / 4px 4px, var(--w); }
 
 /* Tutor sheet */
 .sheet { position: fixed; z-index: 20; top: 0; bottom: 0; overflow-y: auto; background: var(--w); color: var(--k); padding: 24px 24px 64px; overscroll-behavior: contain; }
@@ -197,7 +206,7 @@ body { margin: 0; padding-inline: 0; background: #121211; color: var(--k); font-
 <div class="aside" aria-hidden="true">
   <b>The Thread and the Loop</b>
   <p>Made for phones. Open it on yours, or scroll here.</p>
-  <p>Twenty-one exhibits. One thread. Shape it, puff it, cut it, ply it, wrap it, dye it, unzip it. It keeps what you do.</p>
+  <p>Twenty-two exhibits. One thread. Shape it, puff it, cut it, ply it, wrap it, dye it, unzip it. It keeps what you do.</p>
   <p>Every shade is woven: spot, twill and plain weave.</p>
 </div>
 
@@ -212,6 +221,7 @@ body { margin: 0; padding-inline: 0; background: #121211; color: var(--k); font-
     <span class="pill">Digital Practice / FN4005</span>
     <h1>The Thread &amp; the <span class="mark">Loop</span></h1>
     <p>An interactive fibre lab. Make a polyester thread, then find out if it can come back.</p>
+    <p class="meta">Independent study · about 20 minutes · best on a phone</p>
   </div>
   <div class="copy bl" data-avoid="bottom" style="max-width:50%">
     <p class="hint">Scroll down.<br>Pull the thread.<br>It remembers.</p>
@@ -482,6 +492,19 @@ body { margin: 0; padding-inline: 0; background: #121211; color: var(--k); font-
   </div>
 </section>
 
+<section class="frame bg-yellow" data-scene="check" aria-label="Check yourself">
+  <div class="copy tl" data-avoid="top">
+    <p class="kicker">Check yourself · <span id="ck-n">1</span> of 5</p>
+    <h2>What stuck?</h2>
+    <p id="ck-q"></p>
+    <div class="row" role="group" aria-label="Answers" id="ck-opts"></div>
+    <p class="say" id="ck-say" hidden></p>
+    <p id="ck-fb" aria-live="polite"></p>
+    <button class="btn" type="button" id="ck-next" hidden>Next question</button>
+  </div>
+  <div class="card bl reserve" data-avoid="card"><p class="cl"></p><p class="ct"></p></div>
+</section>
+
 <section class="frame bg-black" data-scene="end" aria-label="Your thread">
   <div class="endwrap">
     <div class="endq" data-avoid="q"><h2>What would you design if every garment had to come back?</h2></div>
@@ -490,7 +513,7 @@ body { margin: 0; padding-inline: 0; background: #121211; color: var(--k); font-
       <dl id="pass"></dl>
       <p class="say" id="end-say">…</p>
       <p id="end-p"></p>
-      <div class="acts"><button class="btn" type="button" id="open-coll">Your discoveries</button><button class="btn" type="button" id="open-sheet">Tutor notes</button></div>
+      <div class="acts"><button class="btn primary" type="button" id="open-reflect">Reflect and copy</button><button class="btn" type="button" id="open-coll">Discoveries</button><button class="btn" type="button" id="open-sheet">Notes</button></div>
     </div>
   </div>
 </section>
@@ -507,11 +530,25 @@ body { margin: 0; padding-inline: 0; background: #121211; color: var(--k); font-
   <div id="coll-list"></div>
 </div>
 
-<div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-label="Tutor notes and sources" hidden>
+<div class="sheet" id="reflect" role="dialog" aria-modal="true" aria-labelledby="rf-h" hidden>
+  <button class="btn close" type="button" id="close-reflect">Close</button>
+  <h2 id="rf-h">Reflect</h2>
+  <p>Write a few sentences for each question. Then copy your care label and answers, and paste them where your module asks, such as a Canvas discussion or your journal. Nothing is saved when you close the page.</p>
+  <label class="rf" for="rf-1">Which one choice changed your thread the most? Why?</label>
+  <textarea id="rf-1" rows="4"></textarea>
+  <label class="rf" for="rf-2">What would you design if every garment had to come back?</label>
+  <textarea id="rf-2" rows="4"></textarea>
+  <div class="rf-acts"><button class="btn" type="button" id="rf-copy">Copy my label and answers</button></div>
+  <p id="rf-msg" aria-live="polite"></p>
+  <label class="rf" for="rf-out">What gets copied</label>
+  <textarea id="rf-out" rows="12" readonly></textarea>
+</div>
+
+<div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-label="Notes and sources" hidden>
   <button class="btn close" type="button" id="close-sheet">Close</button>
-  <h2>Tutor notes</h2>
+  <h2>Notes and sources</h2>
   <p class="sig">Digital Practice / FN4005 · Kingston School of Art, Kingston University London · Matthew Mounsey-Wood FHEA MA (RCA) LCF Alumni</p>
-  <h3>By the end, students can</h3>
+  <h3>By the end, you can</h3>
   <ol>
     <li>Explain how PET becomes fibre: polymerise, melt-spin, draw.</li>
     <li>Link fibre form to performance: cross-section, filament count, filament versus staple, twist.</li>
@@ -520,19 +557,20 @@ body { margin: 0; padding-inline: 0; background: #121211; color: var(--k); font-
     <li>Explain why blends with natural fibres or elastane block recycling, and judge claims about alternatives.</li>
     <li>Compare mechanical and chemical recycling: what each keeps, what each costs, and what is proven at scale.</li>
   </ol>
-  <h3>How it teaches</h3>
+  <h3>How this lab works</h3>
   <ul>
-    <li><b>The thread is the controller.</b> Students pull, blow, cut, twist, ply, wrap, dye, recycle, unzip, fork, melt and knot it. Tests, yarns and flasks are objects to pick up and drop, not buttons. The idea and the action are the same thing.</li>
-    <li><b>Discovery, not display.</b> Facts arrive as numbered discovery cards when students find them. A wrong test gives a question back, not the answer.</li>
-    <li><b>Predict, then test.</b> The 59% and 1.35% guesses, the nozzle tests, will it recycle, spot the PET, which ply melts first.</li>
-    <li><b>Collect the set.</b> The tally on the progress bar opens a drawer of discoveries. Gaps say which exhibit still hides one, so students go back, retry and retrieve.</li>
-    <li><b>Show, then step back.</b> When an exhibit sits untouched, a pixel hand demonstrates the gesture, at most twice, then leaves students to it.</li>
-    <li><b>Consequences carry forward.</b> Shape, filament count, texture, staple, plies, partner fibre, colour, draw, shedding, melt rounds, elastane, PLA and promises all stay with the thread. The care label reads them back.</li>
+    <li><b>Do something to find something out.</b> Facts arrive as discovery cards when you act. A wrong move gets a question back, not the answer.</li>
+    <li><b>Predict first.</b> Guess before you check: the 59% and 1.35% squares, the nozzle tests, the recycler, the fork, the heat.</li>
+    <li><b>Your thread keeps every choice.</b> Shape, filaments, texture, twist, plies, wrap, colour, washing and recycling all stay with it. The care label at the end reads it back.</li>
+    <li><b>Collect the set.</b> The counter on the progress bar opens your discoveries. Gaps show which page still hides one.</li>
+    <li><b>Stuck?</b> If a page sits still, a pixel hand shows you the gesture.</li>
+    <li><b>Before you leave,</b> check yourself on the last pages, then use Reflect and copy. Nothing is saved when you close the page.</li>
   </ul>
   <h3>Why it looks like this</h3>
   <p class="note">Every shade is woven. The dithered tones are point-paper weave structures: spot, twill and plain weave. It nods to Jacquard's punched cards (1804), which taught looms, and later computers, to follow a pattern [36]. Students who tap the spool on the first page find this as a hidden discovery.</p>
   <p class="note">Each chapter moves the thread its own way, as the Line in The Dot and the Line shows character through shape: Make steps like pipework, Fibre curves like optics, Yarn coils, loops and stitches, Combine drapes and waves, and Return breaks into zigzags and sags. The chain rises like a molecule; the cut is a slash across the screen.</p>
-  <h3>Seminar questions</h3>
+  <h3>Questions to think about</h3>
+  <p>For your reflection, or to go further.</p>
   <ol>
     <li>Your leggings say "78% recycled polyester, 22% elastane". Where can they go at the end of their life?</li>
     <li>You need a warm, light jacket fill and a cool running top. Which nozzle for each, and why?</li>
@@ -629,7 +667,7 @@ var D = Math.PI / 180;
 var RM = false; try { RM = window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) {}
 
 // What the student has done to their thread. Every later exhibit reads this.
-var G = { draw: 1, shape: 'round', fil: 1, tex: null, loops: 0, crimp: 0, staple: false, twist: 0, ply: 1, plyTwist: 0, plyBal: false, partner: null, elastane: false, colour: null, mix: null, dye: null, pla: false, stripped: null, shed: 0, rounds: 0, reborn: null, bi: false, links: 0, knots: 0 };
+var G = { draw: 1, shape: 'round', fil: 1, tex: null, loops: 0, crimp: 0, staple: false, twist: 0, ply: 1, plyTwist: 0, plyBal: false, partner: null, elastane: false, colour: null, mix: null, dye: null, pla: false, stripped: null, check: null, shed: 0, rounds: 0, reborn: null, bi: false, links: 0, knots: 0 };
 
 // Discoveries: found by doing, numbered like museum labels.
 var DISC = {
@@ -2021,6 +2059,52 @@ SCENES.knots = {
   k: 0.12
 };
 
+// Check yourself: five quick questions. Each one you get right threads an eyelet on the thread.
+SCENES.check = {
+  n: 170,
+  Q: [
+    ['You want a light jacket fill that keeps you warm. Which fibre shape?', ['Round', 'Hollow', 'Trilobal'], 1, 'A hollow core traps air, and still air insulates.', ['Round fibres pack tight. Which shape could hold some air inside?', '', 'Trilobal fibres sparkle. Which shape could hold some air inside?']],
+    ['Which yarn sheds more microfibres in the wash?', ['Fine fibres, loosely twisted', 'Thick filament, tightly twisted'], 0, 'Fine fibres and low twist leave more loose ends to break off.', ['', 'Picture the loose ends. Which yarn has more of them, held less tightly?']],
+    ['Why does a cotton wrap jam the recycler?', ['Cotton melts too soon', 'Two fibres have to be separated first', 'Cotton is too strong'], 1, 'Melting needs one material. A blend has to come apart first.', ['Cotton does not melt at all; it chars. So what is the real problem?', '', 'Strength is not the issue. What happened when you stripped the wrap off?']],
+    ['What can chemical recycling do that melting cannot?', ['Break every link back into building blocks', 'Keep the chains long by melting gently', 'Turn the polyester into cotton'], 0, 'It runs the linking backwards, so rebuilt PET can be as good as new.', ['', 'Every melt shortens the chains. What did the flasks do instead?', 'Chemistry cannot change one fibre into another. What came out of the tank?']],
+    ['A batch of PET bottles has a few PLA bottles mixed in. Does it matter?', ['No, both are polyester', 'Yes, a little PLA can spoil the batch'], 1, 'In bottle recycling, just 0.1% PLA can spoil a batch of PET.', ['Remember the fork: PLA looked just like PET. What did that mean for the recycler?', '']]
+  ],
+  init: function (f) { var self = this; f.s.k = 0; f.s.ok = []; f.s.first = 0; f.s.tried = false; $('ck-next').addEventListener('click', function () { self.next(f); }); this.show(f); },
+  show: function (f) {
+    var q = this.Q[f.s.k], self = this, box = $('ck-opts');
+    $('ck-n').textContent = f.s.k + 1; $('ck-q').textContent = q[0]; $('ck-say').hidden = true; $('ck-fb').textContent = ''; $('ck-next').hidden = true; f.s.tried = false; box.innerHTML = '';
+    q[1].forEach(function (t, i) { var b = document.createElement('button'); b.type = 'button'; b.className = 'opt'; b.textContent = t; b.setAttribute('aria-pressed', 'false'); b.addEventListener('click', function () { self.answer(f, i, b); }); box.appendChild(b); });
+    if (f.measure) f.measure();
+  },
+  answer: function (f, i, b) {
+    var q = this.Q[f.s.k], g = this.geo(f), y = g.ey[f.s.k];
+    if (f.s.ok[f.s.k]) return;
+    if (i === q[2]) {
+      if (!f.s.tried) f.s.first++;
+      f.s.ok[f.s.k] = true; b.setAttribute('aria-pressed', 'true');
+      $('ck-opts').querySelectorAll('button').forEach(function (x) { x.disabled = true; });
+      say($('ck-say'), 'Yes.'); $('ck-fb').textContent = q[3];
+      $('ck-next').hidden = false; $('ck-next').textContent = f.s.k < 4 ? 'Next question' : 'See how you did';
+      stamp(f, 'THREADED', g.ex - 80, y); f.chain.kick(4, 0);
+    } else {
+      f.s.tried = true; b.disabled = true; say($('ck-say'), 'Not quite.'); $('ck-fb').textContent = q[4][i] || 'Try another answer.';
+    }
+    f.measure();
+  },
+  next: function (f) {
+    if (f.s.k < 4) { f.s.k++; this.show(f); var fb = $('ck-opts').querySelector('button'); if (fb) fb.focus(); return; }
+    G.check = f.s.first; renderLabel(); $('ck-next').hidden = true;
+    card(f, 'Check · ' + f.s.first + ' of 5 first time', f.s.first === 5 ? 'All five, first time. Scroll on to read your thread back.' : 'Missed some? The counter at the top opens your discoveries and shows where to look again.');
+  },
+  geo: function (f) { var t = f.h * .2, b = (f.named.card ? f.named.card.t : f.h * .9) - 24, ey = []; for (var k = 0; k < 5; k++) ey.push(t + (b - t) * (k + .5) / 5); return { ex: .87 * f.w, ey: ey }; },
+  path: function (f) { var g = this.geo(f), o = []; g.ey.forEach(function (y, k) { if (f.s.ok[k]) o.push(pt(g.ex, y - 18), pt(g.ex, y), pt(g.ex, y + 18)); else o.push(pt(g.ex + 26, y - 12), pt(g.ex + 26, y + 12)); }); return o; },
+  k: 0.1,
+  demo: function (f) { var b = $('ck-opts').querySelector('button:not(:disabled)'); return b && !f.s.ok[f.s.k] ? { kind: 'tap', pts: [domPt(f, b, 0, 6)], dur: 1.9 } : null; },
+  back: function (ctx, f) { var g = this.geo(f); g.ey.forEach(function (y) { wDisc(ctx, KU.k, 2, g.ex + 5, y + 5, 14); ring(ctx, g.ex, y, 12, 5, KU.k); }); },
+  // the near side of each eyelet sits over the thread, so a threaded one looks threaded
+  front: function (ctx, f) { var g = this.geo(f); ctx.strokeStyle = KU.k; ctx.lineWidth = 5; ctx.lineCap = 'round'; g.ey.forEach(function (y, k) { if (!f.s.ok[k]) return; ctx.beginPath(); ctx.arc(g.ex, y, 12, -.45 * Math.PI, .45 * Math.PI); ctx.stroke(); }); }
+};
+
 // The thread reads itself back. One material closes the loop.
 SCENES.end = {
   n: 170,
@@ -2063,6 +2147,7 @@ function renderLabel() {
     ['Shed', G.shed + ' fibres'],
     ['Recycled', G.reborn ? 'unzipped (' + REAGENT[G.reborn] + ')' : G.rounds ? 'melted ' + G.rounds + (G.rounds === 1 ? ' time' : ' times') : 'not yet'],
     ['Promises', G.knots ? G.knots + (G.knots === 1 ? ' knot' : ' knots') : 'none yet'],
+    ['Quick check', G.check == null ? 'not done yet' : G.check + ' of 5 first time'],
     ['Discoveries', NFOUND + ' of ' + NDISC]
   ];
   var dl = $('pass'); dl.innerHTML = '';
@@ -2124,7 +2209,7 @@ function layout() {
   cv.width = Math.round(W0 * DPR); cv.height = Math.round(VH * DPR);
   fxc.style.left = colLeft + 'px'; fxc.style.width = W0 + 'px'; fxc.style.height = VH + 'px'; fxc.width = cv.width; fxc.height = cv.height;
   bar.style.left = colLeft + 'px';
-  ['sheet', 'coll'].forEach(function (id) { var sh = $(id); sh.style.left = colLeft + 'px'; sh.style.width = W0 + 'px'; });
+  ['sheet', 'coll', 'reflect'].forEach(function (id) { var sh = $(id); sh.style.left = colLeft + 'px'; sh.style.width = W0 + 'px'; });
   if (fsEl) fsEl.style.left = (colLeft + 8) + 'px';
   frames.forEach(function (f) {
     var b = f.el.getBoundingClientRect(); f.top = b.top + window.scrollY; f.w = b.width; f.h = b.height;
@@ -2152,6 +2237,29 @@ if ('IntersectionObserver' in window) {
 
 // tutor sheet
 $('open-sheet').addEventListener('click', function () { $('sheet').hidden = false; $('close-sheet').focus(); });
+// Reflect: the care label plus two answers, as plain text to paste into Canvas
+function summary() {
+  var rows = $('pass').children, lines = ['The Thread and the Loop: my thread'];
+  for (var i = 0; i + 1 < rows.length; i += 2) lines.push(rows[i].textContent + ': ' + rows[i + 1].textContent);
+  lines.push('Verdict: ' + $('end-say').textContent, '', 'Which one choice changed my thread the most? Why?', $('rf-1').value.trim() || '(not answered yet)', '', 'What would I design if every garment had to come back?', $('rf-2').value.trim() || '(not answered yet)');
+  return lines.join('\n');
+}
+function updateOut() { $('rf-out').value = summary(); }
+['rf-1', 'rf-2'].forEach(function (id) { $(id).addEventListener('input', updateOut); });
+$('open-reflect').addEventListener('click', function () { renderLabel(); updateOut(); $('rf-msg').textContent = ''; $('reflect').hidden = false; $('rf-1').focus(); });
+function closeReflect() { $('reflect').hidden = true; $('open-reflect').focus(); }
+$('close-reflect').addEventListener('click', closeReflect);
+document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !$('reflect').hidden) closeReflect(); });
+$('rf-copy').addEventListener('click', function () {
+  var text = summary(), out = $('rf-out'), msg = $('rf-msg'), done = 'Copied. Paste it into your discussion or journal.';
+  out.value = text;
+  function fallback() {
+    out.focus(); out.select(); var ok = false; try { ok = document.execCommand('copy'); } catch (e) {}
+    msg.textContent = ok ? done : 'Your browser blocked copying. The text below is selected: copy it with Ctrl+C, or press and hold on a phone.';
+  }
+  try { if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(text).then(function () { msg.textContent = done; }, fallback); return; } } catch (e) {}
+  fallback();
+});
 function closeSheet() { $('sheet').hidden = true; $('open-sheet').focus(); }
 // Inside an iframe (a Canvas page), offer full screen, or a new tab where full screen is not allowed.
 var fsEl = null;
@@ -2250,7 +2358,7 @@ function loop(now) {
   var max = document.documentElement.scrollHeight - VH, bw = max > 0 ? sy / max * W0 : 0; bar.style.width = bw + 'px';
   var tw = tally.offsetWidth || 60, lo = fsEl ? 16 + fsEl.offsetWidth : 8; tally.style.transform = 'translateX(' + Math.round(colLeft + clamp(bw - tw / 2, lo, Math.max(lo, W0 - tw - 8))) + 'px)';
   frames.forEach(function (f) {
-    if (!f.vis || f.touched || f.demo || !f.sc.demo || (f.demoN || 0) >= 2 || Math.abs(f.top - sy) > VH * .2 || f.vt < (f.demoN ? 12 : 3.8) || !$('sheet').hidden || !$('coll').hidden) return;
+    if (!f.vis || f.touched || f.demo || !f.sc.demo || (f.demoN || 0) >= 2 || Math.abs(f.top - sy) > VH * .2 || f.vt < (f.demoN ? 12 : 3.8) || !$('sheet').hidden || !$('coll').hidden || !$('reflect').hidden) return;
     var d = f.sc.demo(f); if (!d) return; d.t = f.t; d.dur = d.dur || 2.6; f.demo = d; f.demoN = (f.demoN || 0) + 1;
   });
   requestAnimationFrame(loop);

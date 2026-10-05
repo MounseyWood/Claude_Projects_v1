@@ -29,7 +29,11 @@ Exhibits:
   - Spot the PET in a PET/PLA fork.
   - Stretch without elastane (bicomponent spring).
   - Turn up the heat: the PLA ply melts first.
-- **Promise:** tie knots. Then the care label, and tutor notes and sources (learning outcomes, seminar questions, confidence ratings, 36 sources).
+- **Promise:** tie knots.
+- **Check yourself:** five quick questions with hints for wrong answers; each right answer threads an eyelet on the thread.
+- **The end:** the care label reads the thread back. **Reflect and copy** asks two questions and copies the label and answers as plain text to paste into a Canvas discussion or journal. **Notes and sources** is written for students: outcomes, how the lab works, questions to think about, confidence ratings and 36 sources.
+
+It is built for asynchronous guided independent study: the cover gives the time (about 20 minutes), a pixel hand demonstrates gestures, and nothing needs a tutor or an account. Nothing is saved when the page closes, so the copy step is the record.
 
 - `index.html`: the interactive piece (KU palette, Arial, no italics; retro flat-colour style after *The Dot and the Line*, 1965).
 - `storyboard-v2.html`: the earlier 9:16 storyboard and animatic, kept for reference.

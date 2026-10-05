@@ -1003,6 +1003,7 @@ function label(ctx, f, s, x, y, size, col, align) {
   ctx.fillStyle = col; ctx.textAlign = 'left'; ctx.fillText(s, x0, y);
   f.dyn.push({ l: x0 - 8, r: x0 + m + 8, t: y - size - 6, b: y + 8 });
 }
+function pellet(ctx, x, y, a, col) { ctx.save(); ctx.translate(x, y); ctx.rotate(a); ctx.fillStyle = KU.k; ctx.fillRect(-7, -5, 14, 10); ctx.fillStyle = col; ctx.fillRect(-5.5, -3.5, 11, 7); ctx.restore(); }
 function disc(ctx, x, y, r, col) { if (r <= 0) return; ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fillStyle = col; ctx.fill(); }
 function ring(ctx, x, y, r, w, col) { ctx.beginPath(); ctx.arc(x, y, Math.max(1, r), 0, Math.PI * 2); ctx.strokeStyle = col; ctx.lineWidth = w; ctx.stroke(); }
 function hexagon(ctx, x, y, r, col) { ctx.beginPath(); for (var i = 0; i < 6; i++) { var a = i * 60 * D; ctx[i ? 'lineTo' : 'moveTo'](x + r * Math.cos(a), y + r * Math.sin(a)); } ctx.closePath(); ctx.fillStyle = col; ctx.fill(); }
@@ -1193,7 +1194,7 @@ var SND = (function () {
     wake: function () { if (on) ctx(); }
   };
 })();
-var STAMP_FX = { 'CLICK': 'click', 'CLICK CLICK': 'click2', 'POP': 'pop', 'CRUNCH': 'crunch', 'THUD': 'thud', 'ZIP!': 'zip', 'WHIRR': 'whirr', 'TWANG': 'twang', 'THREADED': 'chime', 'STRETCH': 'stretch', 'SNIP!': 'snip', 'SLOSH': 'slosh', 'PHEW': 'phew', 'NOPE': 'nope', 'MUNCH': 'munch', 'KNOT!': 'knot', 'KINK!': 'kink', 'HISSS': 'hiss', 'HEAVE': 'heave', 'GLUG GLUG': 'glug', 'BLUB': 'glug', 'FWOOSH': 'whoosh', 'DRIP': 'drip', 'PLIP': 'drip', 'CRACK': 'crack', 'BOOP': 'boop', 'BOING': 'boing', 'GLINT': 'glint', 'BRRR': 'brrr', 'OOPS': 'oops', 'YES!': 'yes', 'BLOOP': 'bloop', 'GLOOP': 'bloop', 'CLUNK!': 'clunk', 'PUFF!': 'puff' };
+var STAMP_FX = { 'CLICK': 'click', 'CLICK CLICK': 'click2', 'POP': 'pop', 'CRUNCH': 'crunch', 'THUD': 'thud', 'ZIP!': 'zip', 'WHIRR': 'whirr', 'TWANG': 'twang', 'THREADED': 'chime', 'STRETCH': 'stretch', 'SNIP!': 'snip', 'SLOSH': 'slosh', 'PHEW': 'phew', 'NOPE': 'nope', 'MUNCH': 'munch', 'KNOT!': 'knot', 'KINK!': 'kink', 'HISSS': 'hiss', 'HEAVE': 'heave', 'GLUG GLUG': 'glug', 'BLUB': 'glug', 'FWOOSH': 'whoosh', 'DRIP': 'drip', 'PLIP': 'drip', 'CRACK': 'crack', 'BOOP': 'boop', 'BOING': 'boing', 'GLINT': 'glint', 'BRRR': 'brrr', 'OOPS': 'oops', 'YES!': 'yes', 'BLOOP': 'bloop', 'GLOOP': 'bloop', 'CLUNK!': 'clunk', 'PUFF!': 'puff', 'RATTLE': 'click2' };
 function stamp(f, s, x, y) { SND.play(STAMP_FX[s] || 'pop'); if (!f.stamps) f.stamps = []; if (f.stamps.length > 3) f.stamps.shift(); f.stamps.push({ s: s, x: clamp(x, 70, f.w - 70), y: clamp(y, 40, f.h - 40), t: f.t, r: (Math.random() - .5) * .34 }); }
 function drawStamps(c, f) {
   if (!f.stamps || !f.stamps.length) return;
@@ -1966,42 +1967,115 @@ SCENES.blend = {
 SCENES.colour = {
   n: 140,
   init: function (f) {
-    var self = this; f.s.col = 'yellow'; f.s.m = null; f.s.u = 0; f.s.T = 60;
-    f.el.querySelectorAll('[data-c]').forEach(function (b) { b.addEventListener('click', function () { f.s.col = b.dataset.c; f.el.querySelectorAll('[data-c]').forEach(function (x) { x.setAttribute('aria-pressed', x === b); }); f.s.u = 0; f.s.done = false; }); });
-    f.el.querySelectorAll('[data-m]').forEach(function (b) { b.addEventListener('click', function () { f.s.m = b.dataset.m; f.s.u = 0; f.s.mt = f.t; f.s.done = false; $('dye-t').hidden = f.s.m !== 'bath'; self.layout(f); }); });
+    var self = this; f.s.col = 'yellow'; f.s.m = null; f.s.u = 0; f.s.T = 60; this.load(f);
+    f.el.querySelectorAll('[data-c]').forEach(function (b) { b.addEventListener('click', function () { f.s.col = b.dataset.c; f.el.querySelectorAll('[data-c]').forEach(function (x) { x.setAttribute('aria-pressed', x === b); }); f.s.u = 0; f.s.done = false; if (f.s.m === 'melt') { f.s.mt = f.t; self.load(f); } }); });
+    f.el.querySelectorAll('[data-m]').forEach(function (b) { b.addEventListener('click', function () { f.s.m = b.dataset.m; f.s.u = 0; f.s.mt = f.t; f.s.done = false; self.load(f); $('dye-t').hidden = f.s.m !== 'bath'; self.layout(f); }); });
     f.temp = scrub($('dye-t'), { value: 60, min: 20, max: 140, step: 5, per: .7, keyMul: 2, fmt: function (v) { return v + '°C'; }, cap: function (v) { return v >= 125 ? 'bath · under pressure' : 'bath · drag up'; }, onChange: function (v) { f.s.T = v; } });
   },
   target: function (f) { return f.s.col === 'black' ? KU.k : KU.y; },
   demo: function (f) { if (f.s.m) return null; var b = f.el.querySelector('[data-m="bath"]'); return b ? { kind: 'tap', pts: [domPt(f, b, 0, 4)], dur: 1.9 } : null; },
   layout: function (f) { var el = $('dye-t'), st = stage(f); if (!el.hidden) { el.style.left = '6%'; el.style.top = Math.round(st.t + 6) + 'px'; } f.measure(); },
-  geo: function (f) { var st = stage(f), W = f.w, vt = st.t + st.h * .52; if (f.named.temp) vt = Math.max(vt, f.named.temp.b); return { st: st, vat: { x: .26 * W, y: vt, w: .5 * W, h: st.b - vt - 8 }, hop: pt(.5 * W, st.t + st.h * .1) }; },
+  // a fresh load of pellets for the extruder
+  load: function (f) { f.s.pel = []; f.s.heap = 0; f.s.rat = false; f.s.whirr = false; },
+  geo: function (f) {
+    var st = stage(f), W = f.w, vt = st.t + st.h * .52; if (f.named.temp) vt = Math.max(vt, f.named.temp.b);
+    // the extruder: a hopper of pellets, a heated barrel with a screw inside, and a spinneret at the bottom
+    var ht = st.t + clamp(st.h * .1, 22, 50), hh = clamp(st.h * .19, 40, 90), sb = st.b - clamp(st.h * .25, 56, 120);
+    return { st: st, vat: { x: .26 * W, y: vt, w: .5 * W, h: st.b - vt - 8 }, hop: pt(.5 * W, st.t + st.h * .1),
+      ex: { x: .5 * W, ht: ht, hw: clamp(.46 * W, 150, 230), hh: hh, bw: clamp(.2 * W, 62, 96), bt: ht + hh, sp: sb - 16, sb: sb } };
+  },
   path: function (f) {
     var g = this.geo(f), W = f.w, v = g.vat, end = [pt(.87 * W, f.h * .975)];
     var a = pt(.87 * W, g.st.t + 4);
     if (f.s.m === 'bath') { var up = pt(.56 * W, v.y - 40); return [a].concat(swing(a, pt(.46 * W, v.y - 40), 'wave'), [pt(.46 * W, v.y + v.h - 16), pt(.56 * W, v.y + v.h - 16), up], swing(up, pt(.87 * W, v.y - 20), 'ogee', true), end); }
+    // into the melt: in at the hopper, out of the spinneret
+    if (f.s.m === 'melt') { var x = g.ex, o = pt(x.x, x.sb + 24); return [a].concat(swing(a, pt(x.x, x.ht - 8), 'wave'), [pt(x.x, x.ht + 10), pt(x.x, x.sb), o], swing(o, pt(.87 * W, g.st.b - 10), 'ogee', true), end); }
     var c = pt(g.hop.x, g.st.b - g.st.h * .1);
     return [a].concat(swing(a, pt(g.hop.x, g.hop.y + 34), 'wave'), [c], swing(c, pt(.87 * W, g.st.b - 10), 'ogee', true), end);
+  },
+  // inside the machine the thread can't be seen
+  hide: function (f) { var big = f.h + 40; if (f.s.m !== 'melt') return [big, big]; var x = this.geo(f).ex; return [x.ht + 2, x.sb + 1]; },
+  // what goes in is plain; what comes out of the spinneret carries the colour, and it spreads on down the thread
+  split: function (f) {
+    if (f.s.m !== 'melt') return null;
+    var x = this.geo(f).ex, e = ease((f.t - f.s.mt - 1.2) / 1.2), y1 = x.sb + e * (f.h + 10 - x.sb), plain = { colour: null };
+    return { zones: [{ a: -10, b: x.sb, o: plain }, { a: x.sb, b: y1, o: { colour: this.target(f) } }, { a: y1, b: f.h + 10, o: plain }] };
   },
   k: 0.1,
   tick: function (f) {
     if (f.s.m === 'bath') { var r = f.s.T >= 125 ? .5 : f.s.T >= 100 ? .04 : 0; f.s.u = clamp(f.s.u + r / 60, 0, 1); }
-    if (f.s.m === 'melt') f.s.u = clamp((f.t - f.s.mt - .6) / 1.2, 0, 1);
+    if (f.s.m === 'melt') { f.s.u = clamp((f.t - f.s.mt - .6) / 1.6, 0, 1); this.feed(f); }
     if (f.s.m && f.s.u > 0) { G.mix = mix(KU.b, this.target(f), f.s.u); }
-    if (f.s.m && f.s.u >= 1 && !f.s.done) { f.s.done = true; G.colour = this.target(f); G.dye = f.s.m; card(f, f.s.m); renderLabel(); var gs = this.geo(f); stamp(f, f.s.m === 'bath' ? 'BLOOP' : 'GLOOP', .4 * f.w, gs.st.t + gs.st.h * .5); f.s.union = G.partner ? f.t + 4 : 0; }
+    if (f.s.m && f.s.u >= 1 && !f.s.done) {
+      f.s.done = true; G.colour = this.target(f); G.dye = f.s.m; card(f, f.s.m); renderLabel(); var gs = this.geo(f), gx = gs.ex;
+      if (f.s.m === 'bath') stamp(f, 'BLOOP', .4 * f.w, gs.st.t + gs.st.h * .5); else stamp(f, 'GLOOP', gx.x + gx.bw / 2 + 64, (gx.bt + gx.sp) / 2);
+      f.s.union = G.partner ? f.t + 4 : 0;
+    }
     if (f.s.union && f.t > f.s.union) { f.s.union = 0; card(f, 'union'); }
     if (f.s.m === 'bath' && f.s.T < 100 && f.vt > 1 && !f.s.hinted && f.t - f.s.mt > 3) { f.s.hinted = true; card(f, 'Nothing yet', 'The dye just sits in the water. What would make polyester open up and let it in?'); }
+  },
+  // pellets rattle into the hopper and pile up; once the screw turns, it draws them down into the barrel
+  feed: function (f) {
+    var x = this.geo(f).ex, dt = f.t - f.s.mt;
+    if (dt < 1.3 && Math.random() < .55) f.s.pel.push({ x: x.x + (Math.random() - .5) * x.hw * .6, y: x.ht - 22 - Math.random() * 16, vy: Math.random() * 1.5, a: Math.random() * 3, c: Math.random() < .3 });
+    f.s.pel = f.s.pel.filter(function (q) { q.vy += .42; q.y += q.vy; q.a += .12; if (q.y > x.ht + x.hh * .4) { f.s.heap = Math.min(f.s.heap + 1, 40); return false; } return true; });
+    if (dt > 1.5) f.s.heap = Math.max(10, f.s.heap - .3);
+    if (dt > .2 && !f.s.rat) { f.s.rat = true; stamp(f, 'RATTLE', x.x + x.hw / 2 - 10, x.ht - 8); }
+    if (dt > .7 && !f.s.whirr) { f.s.whirr = true; SND.play('whirr'); }
   },
   back: function (ctx, f) {
     var g = this.geo(f), v = g.vat;
     if (f.s.m === 'bath') { var c = mix(this.target(f), KU.w, f.s.u * .75); wRect(ctx, KU.k, 2, v.x, v.y, v.w + 16, v.h + 16); ctx.fillStyle = KU.k; ctx.fillRect(v.x - 8, v.y - 8, v.w + 16, v.h + 16); ctx.fillStyle = c; ctx.fillRect(v.x, v.y + 6, v.w, v.h - 6); wFade(ctx, KU.k, v.x, v.y + v.h * .5, v.w, v.h * .5, 1, 2);
       if (f.s.T >= 100) for (var i = 0; i < 8; i++) { var bx = v.x + hash(i, 1) * v.w, by = v.y + v.h - ((f.t * (20 + f.s.T / 4) + i * 30) % v.h); disc(ctx, bx, by, 3 + hash(i, 2) * 3, KU.w); } }
+    if (f.s.m === 'melt') this.extruder(ctx, f, g.ex);
+  },
+  extruder: function (ctx, f, x) {
+    var dt = f.t - f.s.mt, tc = this.target(f), run = dt < 2.9, hot = run && dt > .4, L = x.x - x.hw / 2, R = x.x + x.hw / 2, bl = x.x - x.bw / 2, br = x.x + x.bw / 2, top = x.bt, H = x.sp - x.bt, i, k;
+    var pop = RM ? 1 : .9 + .1 * ease(dt / .3), cy = (x.ht + x.sb) / 2;
+    ctx.save(); ctx.translate(x.x, cy); ctx.scale(pop, pop); ctx.translate(-x.x, -cy);
+    function funnel(dx, dy, ins) { ctx.beginPath(); ctx.moveTo(L - 6 + ins + dx, x.ht + dy); ctx.lineTo(R + 6 - ins + dx, x.ht + dy); ctx.lineTo(br + 5 - ins * .5 + dx, x.bt + dy); ctx.lineTo(bl - 5 + ins * .5 + dx, x.bt + dy); ctx.closePath(); }
+    // woven shadow, then the hopper with its rim
+    var sh = weave(KU.k, 2); if (sh) { ctx.fillStyle = sh; funnel(8, 8, 0); ctx.fill(); ctx.fillRect(bl + 3, x.bt + 8, x.bw + 10, x.sb - x.bt); }
+    ctx.fillStyle = KU.k; funnel(0, 0, 0); ctx.fill(); ctx.fillRect(L - 12, x.ht - 8, x.hw + 24, 9);
+    // the pile of pellets in the hopper, filling up from the throat
+    ctx.save(); funnel(0, 0, 6); ctx.fillStyle = KU.w; ctx.fill(); ctx.clip();
+    var n = Math.floor(f.s.heap), row = 0, j = 0;
+    for (i = 0; i < n; i++) {
+      var y = x.bt - 8 - row * 7.5, wy = x.bw + (x.hw - x.bw) * clamp((x.bt - y) / x.hh, 0, 1), cnt = Math.max(1, Math.floor(wy / 13));
+      pellet(ctx, x.x + (j - (cnt - 1) / 2) * 13 + (hash(i, 63) - .5) * 4, y + (hash(i, 64) - .5) * 3, (hash(i, 61) - .5) * 1.2, hash(i, 62) < .3 ? tc : KU.w);
+      if (++j >= cnt) { j = 0; row++; }
+    }
+    ctx.restore();
+    // the barrel, with a window cut in it: melt fills it from the top, and the pigment mixes in on the way down
+    ctx.fillStyle = KU.k; ctx.fillRect(bl - 5, top - 1, x.bw + 10, H + 1);
+    var wx = bl + 4, ww = x.bw - 8, fill = clamp((dt - .5) / 1.3, 0, 1), fy = top + 4 + fill * (H - 8), yy;
+    ctx.save(); ctx.beginPath(); ctx.rect(wx, top + 4, ww, H - 8); ctx.clip();
+    ctx.fillStyle = KU.g; ctx.fillRect(wx, top + 4, ww, H - 8);
+    for (yy = top + 4; yy < fy; yy += 3) { ctx.fillStyle = mix(KU.w, tc, clamp((yy - top) / H * 1.5, 0, 1)); ctx.fillRect(wx, yy, ww, 3.5); }
+    ctx.strokeStyle = tc; ctx.lineWidth = 2.2; ctx.lineCap = 'round';
+    for (k = 0; k < 4; k++) { ctx.beginPath(); for (var s2 = 0; s2 <= 20; s2++) { var yv = top + 6 + s2 * H * .55 / 20; if (yv > fy) break; ctx[s2 ? 'lineTo' : 'moveTo'](wx + ww * (.2 + .6 * hash(k, 66)) + Math.sin(yv / 9 - (run ? f.t * 4 : 0) + k) * ww * .18, yv); } ctx.stroke(); }
+    // the screw: a shaft, and flights that slide down while it turns
+    var sl = run ? (f.t * 70) % 18 : 0;
+    for (var y2 = top - 18 + sl; y2 < x.sp + 18; y2 += 18) { var dark = y2 < fy && lum(mix(KU.w, tc, clamp((y2 - top) / H * 1.5, 0, 1))) < .2; ctx.strokeStyle = dark ? 'rgba(255,255,255,.55)' : 'rgba(29,29,27,.6)'; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(wx, y2); ctx.lineTo(wx + ww, y2 + 10); ctx.stroke(); }
+    ctx.fillStyle = KU.k; ctx.fillRect(x.x - 3, top, 6, H);
+    ctx.restore();
+    // heater bands clamp the barrel, glowing while it runs
+    for (k = 0; k < 3; k++) { var hy = top + H * (.2 + k * .3); [bl - 14, br + 3].forEach(function (hx) { ctx.fillStyle = KU.k; ctx.fillRect(hx, hy - 8, 11, 16); ctx.fillStyle = hot ? KU.y : KU.g; ctx.fillRect(hx + 2, hy - 6, 7, 12); }); if (hot) { ctx.strokeStyle = KU.y; ctx.lineWidth = 2; [-1, 1].forEach(function (sd) { var hx2 = sd < 0 ? bl - 20 : br + 20; ctx.beginPath(); for (var q = 0; q <= 6; q++) ctx[q ? 'lineTo' : 'moveTo'](hx2 + sd * Math.sin(q * 1.6 + f.t * 9) * 2.5, hy - 9 + q * 3); ctx.stroke(); }); } }
+    // the spinneret: a plate full of holes; once the colour reaches it, coloured filaments run out and gather into the thread
+    ctx.fillStyle = KU.k; ctx.beginPath(); ctx.moveTo(bl - 8, x.sp); ctx.lineTo(br + 8, x.sp); ctx.lineTo(x.x + x.bw * .75, x.sb); ctx.lineTo(x.x - x.bw * .75, x.sb); ctx.closePath(); ctx.fill();
+    var e = ease((dt - 1.2) / 1.2), hole = e > 0 ? (lum(tc) < .2 ? KU.w : tc) : KU.g;
+    for (k = -3; k <= 3; k++) disc(ctx, x.x + k * x.bw * .2, x.sb - 4, 1.8, hole);
+    if (e > 0) { ctx.strokeStyle = tc; ctx.lineWidth = 1.4; ctx.beginPath(); for (k = -3; k <= 3; k++) { ctx.moveTo(x.x + k * x.bw * .2, x.sb); ctx.lineTo(x.x + k * x.bw * .2 * (1 - e), x.sb + 22 * e); } ctx.stroke(); }
+    ctx.restore();
   },
   front: function (ctx, f) {
-    var g = this.geo(f), W = f.w;
-    if (f.s.m === 'melt') {
-      ctx.fillStyle = KU.k; ctx.beginPath(); ctx.moveTo(g.hop.x - .14 * W, g.hop.y - 20); ctx.lineTo(g.hop.x + .14 * W, g.hop.y - 20); ctx.lineTo(g.hop.x + .04 * W, g.hop.y + 30); ctx.lineTo(g.hop.x - .04 * W, g.hop.y + 30); ctx.closePath(); ctx.fill();
-      var tc = this.target(f); for (var i = 0; i < 6; i++) { var y = g.hop.y - 70 + ((f.t * 60 + i * 15) % 60); if (f.t - f.s.mt < 2.5) { ctx.fillStyle = tc; ctx.fillRect(g.hop.x - 22 + (i * 9) % 44, y, 10, 10); ctx.strokeStyle = casingFor(tc); ctx.lineWidth = 1.5; ctx.strokeRect(g.hop.x - 22 + (i * 9) % 44, y, 10, 10); } }
-    }
+    if (f.s.m !== 'melt') return;
+    var x = this.geo(f).ex, tc = this.target(f), lx = .06 * f.w, ly = x.bt + 16;
+    f.s.pel.forEach(function (q) { pellet(ctx, q.x, q.y, q.a, q.c ? tc : KU.w); });
+    // what goes in, and where it comes out
+    pellet(ctx, lx + 7, ly - 4, 0, KU.w); label(ctx, f, 'PET', lx + 20, ly, 12, KU.k, 'left');
+    pellet(ctx, lx + 7, ly + 18, 0, tc); label(ctx, f, 'PIGMENT', lx + 20, ly + 22, 12, KU.k, 'left');
+    label(ctx, f, 'SPINNERET', x.x + x.bw * .75 + 10, x.sb - 2, 12, KU.k, 'left');
   }
 };
 

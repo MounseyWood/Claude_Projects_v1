@@ -23,7 +23,7 @@ Exhibits:
   - Ply it: add bobbins and turn the twist dial. The hanging loop snarls until the ply twist balances the twist in each strand.
 - **Combine:**
   - Wrap it: pull a cotton, wool or elastane yarn off the rail and bring it to the thread, which leans towards it; it snaps on and the wrap spreads out from where it landed (core-spun). Cotton winds on smooth, slim and even; wool lofty, lumpy and hairy; both cover the whole thread, and the polyester (and any dye in it) shows between the turns. Elastane goes inside, as the core, where it usually sits in stretch yarn. Miss, and the yarn swings back to its hook.
-  - Colour it (a dye bath that only works at about 130°C, or pigment into the melt). Blends reveal that only the polyester takes the dye.
+  - Colour it (a dye bath that only works at about 130°C, or pigment into the melt). The melt is an extruder as big as the bath: PET and pigment pellets rattle into a hopper, a screw turns in a heated barrel with a window onto the colour mixing in, and the thread comes out of the spinneret coloured. Blends reveal that only the polyester takes the dye.
 - **For and against:** a tug-of-war.
 - **Wear:** the washing machine is the interface. Fine, staple and loose yarns shed more.
 - **Return:**

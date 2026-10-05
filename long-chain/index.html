@@ -63,9 +63,18 @@ body { margin: 0; padding-inline: 0; background: #121211; color: var(--k); font-
 
 /* Cover */
 .cover .title { top: 15%; left: 50%; transform: translateX(-50%); width: 74%; max-width: 74%; text-align: center; }
-.cover h1 { font-size: clamp(52px, 15.5vw, 76px); }
+.cover h1 { font-size: clamp(52px, 15.5vw, 76px); margin: 0; }
+.cover .pill { position: absolute; z-index: 2; margin: 0; white-space: nowrap; }
+.cover .under { top: 62%; left: 50%; transform: translateX(-50%); width: 66%; max-width: 66%; }
 .cover .lede { font-size: 17px !important; line-height: 1.28 !important; font-weight: 700; margin: 6px 0 0 !important; }
-.cover .meta { font-size: 13px !important; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; margin-top: 12px !important; opacity: .85; }
+
+/* Guess: the buttons sit under the thumb, bottom right */
+#guess-act { right: 6%; bottom: 10%; max-width: 70%; text-align: right; }
+#guess-act p { font-size: 16px; font-weight: 700; line-height: 1.3; margin: 0 0 12px; }
+#guess-a .big { font-size: clamp(56px, 17vw, 76px); }
+
+/* Spin: the draw ratio, big, stretching as the fibre does */
+.drawn { position: absolute; z-index: 2; left: 6%; font-weight: 700; line-height: 1; letter-spacing: -0.03em; white-space: nowrap; transform-origin: 0 0; pointer-events: none; font-variant-numeric: tabular-nums; transition: transform .2s; }
 
 /* Controls */
 .row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
@@ -202,7 +211,7 @@ body { margin: 0; padding-inline: 0; background: #121211; color: var(--k); font-
 <div class="aside" aria-hidden="true">
   <b>The Thread and the Loop</b>
   <p>Made for phones. Open it on yours, or scroll here.</p>
-  <p>Twenty-two exhibits. One thread. Shape it, puff it, cut it, ply it, wrap it, dye it, unzip it. It keeps what you do.</p>
+  <p>Twenty-three exhibits. One thread. Shape it, puff it, cut it, ply it, wrap it, dye it, unzip it, bury it. It keeps what you do.</p>
   <p>Every shade is woven: spot, twill and plain weave.</p>
 </div>
 
@@ -213,13 +222,11 @@ body { margin: 0; padding-inline: 0; background: #121211; color: var(--k); font-
 <main id="feed">
 
 <section class="frame bg-black cover" data-scene="cover" aria-label="Title">
+  <span class="pill" data-avoid="pill">Phygital Materials Studio</span>
   <div class="copy title" data-avoid="title">
-    <span class="pill">Phygital Materials Studio</span>
     <h1>The Thread &amp; the <span class="mark">Loop</span></h1>
-    <p>An interactive fibre lab. Make a polyester thread, then find out if it can come back.</p>
-    <p class="meta">Independent study · about 20 minutes · best on a phone</p>
   </div>
-  <div class="copy bl" data-avoid="bottom" style="max-width:56%">
+  <div class="copy under" data-avoid="bottom">
     <p class="hint">Scroll down. Pull the thread.</p>
     <p class="lede">Polyester has memory. But can it be recycled, or decompose?</p>
   </div>
@@ -235,14 +242,16 @@ body { margin: 0; padding-inline: 0; background: #121211; color: var(--k); font-
       <p id="guess-qt">Of all the fibre the world makes, how much is polyester?</p>
       <p class="hint">Drag across the squares <span class="num" id="guess-out">25%</span></p>
       <label class="sr">My guess <input type="range" id="guess-r" min="0" max="100" step="1" value="25"></label>
-      <button class="btn" type="button" id="guess-go">Show me</button>
     </div>
     <div id="guess-a" hidden>
       <div class="big"><span id="guess-n">0</span>%</div>
       <p id="guess-at">of all fibre made in 2024 was polyester. <span class="mark">88% of it came from fossil fuels.</span></p>
-      <p id="guess-you"></p>
-      <button class="btn" type="button" id="guess-next">One more guess</button>
     </div>
+  </div>
+  <div class="copy act" id="guess-act" data-avoid="act">
+    <p id="guess-you" aria-live="polite" hidden></p>
+    <button class="btn" type="button" id="guess-go">Show me</button>
+    <button class="btn" type="button" id="guess-next" hidden>One more guess</button>
   </div>
 </section>
 
@@ -261,9 +270,10 @@ body { margin: 0; padding-inline: 0; background: #121211; color: var(--k); font-
     <p class="kicker">Make · 2 of 2</p>
     <h2>Melt, push, stretch</h2>
     <p>Melted PET is pushed through a spinneret, cooled, then stretched.</p>
-    <p class="hint">Pull the thread down <span class="num" id="spin-out">×1.0</span></p>
+    <p class="hint">Pull the thread down</p>
     <label class="sr">Stretch the fibre <input type="range" id="spin-r" min="1" max="5" step="0.1" value="1"></label>
   </div>
+  <div class="drawn" id="spin-out" data-avoid="drawn" aria-hidden="true">×1.0</div>
   <div class="card bl reserve" data-avoid="card"><p class="cl"></p><p class="ct"></p></div>
 </section>
 
@@ -569,6 +579,7 @@ body { margin: 0; padding-inline: 0; background: #121211; color: var(--k); font-
   </ol>
   <h3>How this lab works</h3>
   <ul>
+    <li><b>Give it about 20 minutes,</b> ideally on a phone. Nothing needs an account.</li>
     <li><b>Do something to find something out.</b> Facts arrive as discovery cards when you act. A wrong move gets a question back, not the answer.</li>
     <li><b>Predict first.</b> Guess before you check: the 59% and 1.35% squares, the nozzle tests, the recycler, the fork, the heat, the burial.</li>
     <li><b>Your thread keeps every choice.</b> Shape, filaments, texture, twist, plies, wrap, colour, washing and recycling all stay with it. The care label at the end reads it back.</li>
@@ -802,8 +813,42 @@ var GLYPH = {
   T: [.62, [[.31, 1], [.31, 0], [0, 0], [.62, 0]]],
   r: [.42, [[0, 1], [0, .42], [.12, .33], [.28, .31], [.42, .37], [.28, .31], [.12, .33], [0, .42], [0, 1]]]
 };
-function wordW(w, H) { var x = 0; w.split('').forEach(function (ch, i) { x += (GLYPH[ch][0] + (i ? .24 : 0)) * H; }); return x; }
-function word(w, x0, y0, H) { var o = [], x = x0; w.split('').forEach(function (ch, i) { if (i) x += .24 * H; GLYPH[ch][1].forEach(function (q) { o.push(pt(x + q[0] * H, y0 + q[1] * H)); }); x += GLYPH[ch][0] * H; }); return o; }
+function wordW(w, H, gap) { gap = gap == null ? .34 : gap; var x = 0; w.split('').forEach(function (ch, i) { x += (GLYPH[ch][0] + (i ? gap : 0)) * H; }); return x; }
+// Between letters the thread goes through to the back of the cloth, as in embroidery: gs marks where it goes under, ge where it comes back up.
+// Under the cloth it dips below the baseline, so no letter gains an extra bar.
+function word(w, x0, y0, H, gap) {
+  gap = gap == null ? .34 : gap; var o = [], x = x0;
+  w.split('').forEach(function (ch, i) {
+    var g = GLYPH[ch][1];
+    if (i) { var last = o[o.length - 1], nx = x + gap * H; last.gs = 1; o.push(pt((last.x + nx + g[0][0] * H) / 2, y0 + H * 1.16)); x = nx; }
+    g.forEach(function (q, j) { var p = pt(x + q[0] * H, y0 + q[1] * H); if (!j) p.ge = 1; o.push(p); });
+    x += GLYPH[ch][0] * H;
+  });
+  o[o.length - 1].gs = 1; return o;
+}
+// The stretches of the chain that run behind the cloth, as chain-index ranges.
+function gapRanges(f) {
+  if (!f.sc.path) return [];
+  var P = fullPath(f), L = plen(P), n = f.chain.n, out = [], s = 0, st = null;
+  for (var i = 0; i < P.length; i++) {
+    if (i) s += Math.hypot(P[i].x - P[i - 1].x, P[i].y - P[i - 1].y);
+    if (P[i].ge && st != null) { out.push([st / L * (n - 1), s / L * (n - 1)]); st = null; }
+    if (P[i].gs) st = s;
+  }
+  return out;
+}
+// Hide those stretches and draw a faint stitch line instead, so each letter stands on its own.
+function stitchGaps(ctx, f) {
+  var R = gapRanges(f); if (!R.length) return;
+  var p = f.chain.p, L = look(f), ink = L.colour || inkFor(f.bg), bg = BGC[f.bg] || KU.w, w = f.i > IDX.spin ? clamp(7.4 - .6 * (G.draw - 1), 4.8, 7.4) : 7;
+  if (L.fil > 1) w += Math.min(4, Math.log(L.fil) * .7);
+  w = w * (L.ply >= 2 ? 1.35 : 1) + 1.8 * L.crimp + L.loops + 10;
+  R.forEach(function (r) {
+    var a = Math.ceil(r[0]) + 1, b = Math.floor(r[1]) - 1; if (b - a < 2) return;
+    strokeP(ctx, p, bg, w, [], a, b);
+    ctx.globalAlpha = .55; strokeP(ctx, p, ink, 1.6, [2, 5], a, b); ctx.globalAlpha = 1;
+  });
+}
 // The thread throws a loop round a block of text, the way it lassos the title on the first page.
 function lassoPts(r) { var cx = (r.l + r.r) / 2, cy = (r.t + r.b) / 2, rx = (r.r - r.l) / 2 + 10, ry = (r.b - r.t) / 2 + 12, o = []; for (var i = 0; i <= 72; i++) { var a = (-40 + i / 72 * 410) * D; o.push(pt(cx + rx * Math.cos(a), cy + ry * Math.sin(a))); } return o; }
 function arc(cx, cy, rx, ry, a0, a1, steps) { steps = steps || 60; var o = []; for (var i = 0; i <= steps; i++) { var a = a0 + (a1 - a0) * i / steps; o.push(pt(cx + rx * Math.cos(a), cy + ry * Math.sin(a))); } return o; }
@@ -1146,7 +1191,7 @@ SCENES.cover = {
   // the spool the whole thread unwinds from
   spool: function (f) { var W = f.w, r = clamp(.07 * W, 22, 32); return { x: .8 * W, y: clamp(f.h * .08, 46, 72), w: r * 1.8, h: r * 2.3 }; },
   pinTop: function (f) { var s = this.spool(f); return pt(s.x - s.w / 2 - 1, s.y + s.h * .12); },
-  whirl: function (f) { var s = this.spool(f); f.s.whirl = f.t; stamp(f, 'WHIRR', s.x - s.w - 56, s.y + 4); card(f, 'jacquard'); var h = f.el.querySelector('.copy.bl'); if (h) h.hidden = true; f.measure(); },
+  whirl: function (f) { var s = this.spool(f); f.s.whirl = f.t; stamp(f, 'WHIRR', s.x - s.w - 56, s.y + 4); card(f, 'jacquard'); var h = f.el.querySelector('.copy.under'); if (h) h.hidden = true; f.measure(); },
   tap: function (f, x, y) {
     var s = this.spool(f), d = f.s.dot;
     if (Math.abs(x - s.x) < s.w * .9 && Math.abs(y - s.y) < s.h * .75) this.whirl(f);
@@ -1157,16 +1202,34 @@ SCENES.cover = {
     var P = [[-.7, 0], [0, -.12], [.3, -.9], [.48, -1.65], [.42, -2.12], [.24, -2.02], [.16, -1.45], [.11, -.6], [.09, 0], [.22, -.62], [.46, -.98], [.68, -.72], [.73, -.22], [.86, .02], [1.06, -.2], [1.2, -.68], [1.28, -.98], [1.3, -.52], [1.36, -.06], [1.56, -.08], [1.8, -.36]];
     return catmull(P.map(function (q) { return pt(x0 + q[0] * H, y0 + q[1] * H * u); }), 6);
   },
+  // the studio's name sits beside the spool; the title hangs below it; the hint sits under the title's loop
+  layout: function (f) {
+    var sp = this.spool(f), pl = f.el.querySelector('.pill'), ti = f.el.querySelector('.copy.title'), un = f.el.querySelector('.copy.under');
+    var right = sp.x - sp.w / 2 - 9 - 30;
+    pl.style.left = Math.round(Math.max(.06 * f.w, right - pl.offsetWidth)) + 'px'; pl.style.top = Math.round(sp.y - pl.offsetHeight / 2) + 'px';
+    ti.style.top = Math.round(sp.y + pl.offsetHeight / 2 + 50) + 'px';
+    f.measure(); var e = this.loop(f); if (e && un) { un.style.top = Math.round(e.cy + e.ry + 22) + 'px'; f.measure(); }
+  },
+  // the big loop round the title; its top runs just under the studio's name
+  loop: function (f) {
+    var t = f.named.title, pl = f.named.pill, W = f.w; if (!t || !pl) return null;
+    var cx = (t.l + t.r) / 2, cy = (t.t + t.b) / 2;
+    return { cx: cx, cy: cy, rx: Math.min((t.r - t.l) / 2 + 14, .47 * W), ry: Math.max((t.b - t.t) / 2 + 12, cy - pl.b - 2) };
+  },
   path: function (f) {
-    var t = f.named.title, W = f.w, bt = f.named.bottom; if (!t) return [];
-    var cx = (t.l + t.r) / 2, cy = (t.t + t.b) / 2, rx = Math.min((t.r - t.l) / 2 + 18, .48 * W), ry = (t.b - t.t) / 2 + 22;
-    var shown = f.cardEl && f.cardEl.classList.contains('show'), hb = Math.min(bt ? bt.t : f.h * .85, shown && f.named.card ? f.named.card.t : f.h) - 18;
-    var o = [pt(cx, cy - ry - 26)].concat(arc(cx, cy, rx, ry, -90 * D, (232 + 5 * Math.sin(f.t * 1.2)) * D, 90)).concat([pt(cx - rx - 8, cy + ry * .25), pt(.05 * W, cy + ry + 40), pt(.05 * W, hb)]);
-    // beside the bottom hint, the thread writes "hi"; the dot on the i is The Dot
-    if (!bt || shown) { f.s.dot = null; return o.concat([pt(.87 * W, hb)]); }
-    var H = clamp(W * .08, 24, 32), x0 = .74 * W, yb = bt.b - 16, u = RM ? 1 : ease((f.t - .6) / 1.4);
+    var W = f.w, pl = f.named.pill, e = this.loop(f); if (!pl || !e) return [];
+    // first a turn round the studio's name: over the top, round its end, back underneath
+    var r = (pl.b - pl.t) / 2, pc = (pl.t + pl.b) / 2, lx = pl.l + r;
+    var o = [pt(pl.r - 6, pl.t + 1), pt(lx, pl.t + 1)].concat(arc(lx, pc, r - 1, r - 1, -90 * D, -270 * D, 16));
+    // then the big loop round the title, from under the name, ending high on the left
+    var a0 = Math.atan2(Math.max(-1, (pc + r - 1 - e.cy) / e.ry), (lx - e.cx) / e.rx);
+    o = o.concat(arc(e.cx, e.cy, e.rx, e.ry, a0, a0 + (330 + 5 * Math.sin(f.t * 1.2)) * D, 90), [pt(e.cx - e.rx - 8, e.cy + e.ry * .25), pt(.05 * W, e.cy + e.ry + 30)]);
+    var shown = f.cardEl && f.cardEl.classList.contains('show');
+    if (shown) { var hb = (f.named.card ? f.named.card.t : f.h * .85) - 18; f.s.dot = null; return o.concat([pt(.05 * W, hb), pt(.87 * W, hb)]); }
+    // along the bottom the thread writes "hi"; the dot on the i is The Dot
+    var H = clamp(W * .08, 24, 32), x0 = .74 * W, yb = f.h - clamp(f.h * .075, 52, 70), u = RM ? 1 : ease((f.t - .6) / 1.4);
     f.s.dot = pt(x0 + 1.32 * H, yb - 1.62 * H); f.s.dotU = u;
-    return o.concat([pt(.5 * W, hb), pt(x0 - 1.1 * H, yb)]).concat(this.hi(x0, yb, H, u)).concat([pt(.87 * W, yb + 8)]);
+    return o.concat([pt(.05 * W, yb - 16), pt(.12 * W, yb)]).concat(this.hi(x0, yb, H, u)).concat([pt(.87 * W, yb + 8)]);
   },
   k: 0.07,
   tick: function (f) { var a = f.t - f.s.whirl; f.s.spin += a < 1.6 ? 26 * (1 - a / 1.6) : 0; },
@@ -1202,19 +1265,29 @@ SCENES.guess = {
       var A = self.A[f.s.round], diff = A - f.s.g, near = Math.abs(diff) <= (f.s.round ? 2 : 5);
       if (f.s.round === 0) $('guess-you').textContent = 'You guessed ' + f.s.g + '%: ' + (near ? 'close.' : diff > 0 ? Math.round(diff) + ' points short.' : Math.round(-diff) + ' points over.') + ' One more?';
       else $('guess-you').textContent = 'You guessed ' + f.s.g + '%. If it is such a small share, why might it still matter?';
-      $('guess-next').hidden = f.s.round > 0;
+      $('guess-next').hidden = f.s.round > 0; $('guess-go').hidden = true; $('guess-you').hidden = false;
       $('guess-q').hidden = true; $('guess-a').hidden = false; $('guess-a').classList.remove('popin'); void $('guess-a').offsetWidth; $('guess-a').classList.add('popin');
+      if (!$('guess-next').hidden) $('guess-next').focus({ preventScroll: true });
+      f.measure(); self.fit(f);
     });
     $('guess-next').addEventListener('click', function () {
       f.s.round = 1; f.s.on = false; f.s.m = -1; self.setGuess(f, 10);
       $('guess-h').textContent = 'Guess again'; $('guess-qt').textContent = 'Polyester is made from oil and gas. How much of the world\'s oil goes into making synthetic fibre?';
       $('guess-at').innerHTML = 'of the world\'s oil goes into synthetic fibre, mostly polyester, by one estimate. <span class="mark">A small share, but it made 78 million tonnes of polyester in 2024.</span>';
-      $('guess-a').hidden = true; $('guess-q').hidden = false; f.measure();
+      $('guess-a').hidden = true; $('guess-q').hidden = false; $('guess-go').hidden = false; $('guess-next').hidden = true; $('guess-you').hidden = true;
+      $('guess-go').focus({ preventScroll: true });
+      f.measure(); self.fit(f);
     });
   },
   setGuess: function (f, v) { if (f.s.on) return; f.s.g = v; $('guess-r').value = v; $('guess-out').textContent = v + '%'; },
   final: function (f) { return Math.floor(this.A[f.s.round]); },
-  layout: function (f) { var st = stage(f), W = f.w, c = Math.floor(Math.min(.078 * W, (st.h - 24) / 10)); f.s.G = { c: c, x0: .06 * W, y0: st.t + (st.h - 10 * c) / 2 }; },
+  // the grid sits just under the words, centred, clear of the buttons under your thumb; when the words change length it glides to fit
+  fit: function (f) {
+    var st = stage(f), W = f.w, fr = f.el.getBoundingClientRect(), ar = $('guess-act').getBoundingClientRect(), y0 = st.t + 14;
+    var c = Math.max(14, Math.floor(Math.min(.08 * W, (ar.bottom - fr.top - 124 - y0) / 10)));
+    f.s.Gt = { c: c, x0: (W - 10 * c) / 2, y0: y0 };
+  },
+  layout: function (f) { this.fit(f); var t = f.s.Gt; f.s.G = { c: t.c, x0: t.x0, y0: t.y0 }; },
   cell: function (g, k) { var r = Math.floor(k / 10), col = r % 2 === 0 ? k % 10 : 9 - k % 10; return pt(g.x0 + (col + .5) * g.c, g.y0 + (r + .5) * g.c); },
   count: function (f) { if (!f.s.on) return f.s.g; var A = this.final(f); return Math.round(f.s.g + (A - f.s.g) * ease((f.t - f.s.rt - .4) / 1.8)); },
   done: function (f) { return f.s.on && f.t - f.s.rt > 2.3; },
@@ -1223,14 +1296,19 @@ SCENES.guess = {
     var g = f.s.G, self = this; if (f.s.on || x < g.x0 - 6 || x > g.x0 + 10 * g.c + 6 || y < g.y0 - 6 || y > g.y0 + 10 * g.c + 6) return null;
     return { move: function (mx, my) { var col = clamp(Math.floor((mx - g.x0) / g.c), 0, 9), row = clamp(Math.floor((my - g.y0) / g.c), 0, 9); self.setGuess(f, row * 10 + (row % 2 === 0 ? col : 9 - col) + 1); } };
   },
+  // in along the top edge of the grid, through the squares you fill, then straight down and out under the button
   path: function (f) {
-    var g = f.s.G, m = this.count(f), W = f.w, pts = [pt(.87 * W, g.y0 - 10)];
+    var g = f.s.G, m = this.count(f), W = f.w, top = g.y0 - 10, bot = f.h - 38, pts = [pt(.87 * W, top)];
+    if (!m) return pts.concat([pt(g.x0 - 12, top), pt(g.x0 - 12, bot), pt(.87 * W, f.h - 26)]);
+    pts.push(pt(this.cell(g, 0).x, top));
     for (var k = 0; k < m; k++) pts.push(this.cell(g, k));
-    var last = m ? this.cell(g, m - 1) : pt(.87 * W, g.y0); pts.push(pt(last.x, g.y0 + 10 * g.c + 14), pt(.87 * W, g.y0 + 10 * g.c + 34));
+    var last = this.cell(g, m - 1); pts.push(pt(last.x, g.y0 + 10 * g.c + 14), pt(last.x, bot), pt(.87 * W, f.h - 26));
     return pts;
   },
   k: 0.13,
-  tick: function (f) { if (!f.s.on) return; var m = this.count(f), d = f.s.round && this.done(f); if (m !== f.s.m || (d && !f.s.shown)) { f.s.m = m; f.s.shown = d; $('guess-n').textContent = d ? '1.35' : m; } },
+  tick: function (f) {
+    var g = f.s.G, t = f.s.Gt, k = RM ? 1 : .14; g.c += (t.c - g.c) * k; g.y0 += (t.y0 - g.y0) * k; g.x0 = (f.w - 10 * g.c) / 2;
+    if (!f.s.on) return; var m = this.count(f), d = f.s.round && this.done(f); if (m !== f.s.m || (d && !f.s.shown)) { f.s.m = m; f.s.shown = d; $('guess-n').textContent = d ? '1.35' : m; } },
   back: function (ctx, f) {
     var g = f.s.G, m = this.count(f), self = this;
     for (var k = 0; k < 100; k++) {
@@ -1252,12 +1330,19 @@ SCENES.oil = {
   init: function (f) { f.s.links = 0; f.s.fly = []; f.s.next = .5; },
   surf: function (f) { return (f.named.top ? f.named.top.b : f.h * .35) + 28; },
   // the word sits at the foot of the stage; the links attach to the rising chain above it
-  pet: function (f) { var st = stage(f), H = clamp(st.h * .16, 34, 62), ww = wordW('PET', H); return { H: H, x0: .5 * f.w - ww / 2, y0: st.b - H - 22, w: ww }; },
+  pet: function (f) { var st = stage(f), H = clamp(st.h * .17, 38, 66), ww = wordW('PET', H); return { H: H, x0: .5 * f.w - ww / 2, y0: st.b - H - 22, w: ww }; },
   path: function (f) {
     var W = f.w, sy = this.surf(f), st = stage(f), a = pt(.87 * W, sy - 24), b = pt(.5 * W, sy + 14), pw = this.pet(f), c = pt(pw.x0 - 16, pw.y0 + pw.H * .35), spine = [];
     for (var i = 1; i <= 30; i++) { var u = i / 30; spine.push(pt(b.x + (c.x - b.x) * ease(u) + Math.sin(u * Math.PI * 3) * .07 * W * Math.sin(u * Math.PI), b.y + (c.y - b.y) * u)); }
-    var letters = word('PET', pw.x0, pw.y0, pw.H), end = letters[letters.length - 1];
-    return [a].concat(swing(a, b, 'step'), spine, letters, swing(end, pt(.87 * W, st.b - 6), 'ogee', true));
+    var letters = word('PET', pw.x0, pw.y0, pw.H), end = letters[letters.length - 1], out = swing(end, pt(.87 * W, st.b - 6), 'ogee', true);
+    // the chain goes behind the cloth just below its last link, and comes back out clear of the T
+    var k = 0; while (k < spine.length - 1 && spine[k].y < pw.y0 - 18) k++; spine[k].gs = 1; out[8].ge = 1;
+    return [a].concat(swing(a, b, 'step'), spine, letters, out);
+  },
+  // the two building blocks as a big key, a step apart: each tap lifts a copy out of each
+  key: function (f) {
+    var W = f.w, sy = this.surf(f), span = this.pet(f).y0 - sy, sz = clamp(.12 * W, 38, 54);
+    return { s: sz, r: sz * .6, fs: Math.round(clamp(.085 * W, 26, 36)), e: pt(.3 * W, sy + Math.max(span * .32, sz / 2 + 40)), t: pt(.6 * W, sy + span * .66) };
   },
   k: 0.08,
   slot: function (f, j) {
@@ -1277,14 +1362,15 @@ SCENES.oil = {
   demo: function (f) { return { kind: 'tap', pts: [pt(.3 * f.w, this.surf(f) - 46)], dur: 1.9 }; },
   back: function (ctx, f) { var sy = this.surf(f); wave(ctx, sy, f, 6, KU.k, true); for (var k = 0; k < 4; k++) waveBand(ctx, sy + k * 8 - 1, sy + (k + 1) * 8, f, 6, weave(KU.k, 4 - k)); },
   front: function (ctx, f) {
-    var sy = this.surf(f), W = f.w, self = this;
-    // a key for the two building blocks, where they leave the oil
-    ctx.fillStyle = KU.k; ctx.fillRect(.22 * W - 30, sy + 47, 12, 12); label(ctx, f, 'EG', .22 * W + 6, sy + 58, 13, KU.k, 'center');
-    hexagon(ctx, .78 * W - 36, sy + 53, 7, KU.k); label(ctx, f, 'TPA', .78 * W + 6, sy + 58, 13, KU.k, 'center');
+    var sy = this.surf(f), W = f.w, self = this, K = this.key(f);
+    stitchGaps(ctx, f);
+    ctx.fillStyle = KU.k; ctx.fillRect(K.e.x - K.s / 2, K.e.y - K.s / 2, K.s, K.s); label(ctx, f, 'EG', K.e.x - K.s / 2 - 10, K.e.y + K.fs * .36, K.fs, KU.k, 'right');
+    hexagon(ctx, K.t.x, K.t.y, K.r, KU.k); label(ctx, f, 'TPA', K.t.x + K.r + 10, K.t.y + K.fs * .36, K.fs, KU.k, 'left');
+    f.dyn.push({ l: K.e.x - K.s / 2 - 8, r: K.e.x + K.s / 2 + 8, t: K.e.y - K.s / 2 - 8, b: K.e.y + K.s / 2 + 8 }, { l: K.t.x - K.r - 8, r: K.t.x + K.r + 8, t: K.t.y - K.r - 8, b: K.t.y + K.r + 8 });
     for (var i = 0; i < f.s.links; i++) {
       var fl = f.s.fly.find(function (q) { return q.i === i; }), u = fl ? ease((f.t - fl.t) / .55) : 1;
       var a = self.slot(f, i * 2), b = self.slot(f, i * 2 + 1), lift = Math.sin(u * Math.PI) * 60;
-      var sx = .22 * W + (a.x - .22 * W) * u, syy = sy + (a.y - sy) * u - lift, hx = .78 * W + (b.x - .78 * W) * u, hy = sy + (b.y - sy) * u - lift;
+      var sx = K.e.x + (a.x - K.e.x) * u, syy = K.e.y + (a.y - K.e.y) * u - lift, hx = K.t.x + (b.x - K.t.x) * u, hy = K.t.y + (b.y - K.t.y) * u - lift;
       ctx.fillStyle = KU.w; ctx.fillRect(sx - 11, syy - 11, 22, 22); ctx.fillStyle = KU.k; ctx.fillRect(sx - 9, syy - 9, 18, 18);
       hexagon(ctx, hx, hy, 13, KU.w); hexagon(ctx, hx, hy, 11, KU.k);
       // linking gives off water
@@ -1299,18 +1385,26 @@ SCENES.spin = {
   n: 120,
   demo: function (f) { var g = this.geo(f); return { kind: 'drag', pts: [pt(g.fx, g.ry + 34), pt(g.fx, g.ry + 34 + Math.min(150, g.st.b - g.ry - 70))], dur: 2.8 }; },
   init: function (f) { var r = $('spin-r'); r.addEventListener('input', function () { SCENES.spin.setDraw(f, +r.value); }); },
-  setDraw: function (f, v) { G.draw = v; $('spin-r').value = v; $('spin-out').textContent = '×' + v.toFixed(1); if (v >= 3 && !f.s.told) { f.s.told = true; card(f, 'draw'); var g = this.geo(f); stamp(f, 'STRETCH', g.fx - 80, g.ry + 80); } },
+  setDraw: function (f, v) { G.draw = v; $('spin-r').value = v; $('spin-out').textContent = '×' + v.toFixed(1); this.stretch(f); if (v >= 3 && !f.s.told) { f.s.told = true; card(f, 'draw'); var g = this.geo(f); stamp(f, 'STRETCH', g.fx - 80, g.ry + 80); } },
   geo: function (f) {
-    var st = stage(f), W = f.w, fx = .5 * W, ft = st.t + st.h * .05, fh = st.h * .12, sy = ft + fh + 2, cy = sy + st.h * .22;
+    var st = stage(f), W = f.w, fx = .7 * W, ft = st.t + st.h * .05, fh = st.h * .12, sy = ft + fh + 2, cy = sy + st.h * .22;
     return { st: st, fx: fx, ft: ft, fh: fh, sy: sy, cy: cy, ry: cy + st.h * .05, holes: [-2, -1, 0, 1, 2].map(function (k) { return fx + k * .05 * W; }) };
   },
   layout: function (f) {
-    var g = this.geo(f);
+    var g = this.geo(f), W = f.w, room = (g.fx - .2 * W) - .06 * W - 12;
+    f.s.F = clamp(room / 1.85, 30, 120); f.s.mh = g.ry + 13 - g.ft; f.s.ft = g.ft; $('spin-out').style.fontSize = Math.round(f.s.F) + 'px'; this.stretch(f);
     f.extras = g.holes.map(function (x) { var c = new Chain([pt(x, g.sy + 14), pt(g.fx, g.cy)], 16, { g: 0.04, wind: 0.02, iter: 8, slack: 1.04 }); c.grabbable = false; return c; });
   },
   path: function (f) { var g = this.geo(f), W = f.w, a = pt(.87 * W, g.ft - 26), c = pt(g.fx, g.ry + g.st.h * .28); return [a].concat(swing(a, pt(g.fx, g.ft), 'step'), [pt(g.fx, g.cy), pt(g.fx, g.ry), c], swing(c, pt(.87 * W, g.st.b - 6), 'loop', true)); },
   k: 0.07,
   hide: function (f) { var g = this.geo(f); return [g.ft, g.cy]; },
+  // the number beside the machine stretches like the fibre: taller and thinner as the draw ratio rises
+  stretch: function (f) {
+    if (!f.s.F) return; var el = $('spin-out'), F = f.s.F, d = G.draw, sy = Math.max(1, f.s.mh * (.45 + .075 * (d - 1)) / (.716 * F)), sx = Math.pow(d, -.25);
+    el.style.top = Math.round(f.s.ft - .131 * F * sy) + 'px'; el.style.transform = 'scale(' + sx.toFixed(3) + ',' + sy.toFixed(3) + ')';
+  },
+  // the thread goes in thick and comes out thinner; the harder you pull, the thinner it gets
+  split: function (f) { return { y: this.geo(f).ry, above: { w: 11 }, below: { w: clamp(7.4 - .6 * (G.draw - 1), 4.8, 7.4) } }; },
   onDrag: function (f, d) {
     if (d.chain !== f.chain) return; var g = this.geo(f);
     if (d.chain.gy < g.ry + 10) return;
@@ -1822,11 +1916,13 @@ SCENES.bottle = {
     if (s === 1) {
       // a slogan tee: the word goes on the chest, then the thread flicks to the armpit and leaves over the seams it already sewed
       var sw = Math.min(.72 * W, st.h * .82), sh = sw * 1.02, sy = st.t + (st.h - sh) / 2, H = sw * .17, x0 = cx - wordW('rPET', H) / 2, yw = sy + sh * .36, sx = sw * .318;
-      return [pt(.13 * W, sy + sh - 6)].concat(box(SHIRT_L, cx - sw / 2, sy, sw, sh), [pt(cx - sx, yw + H), pt(x0 - 4, yw + H)], word('rPET', x0, yw, H), [pt(cx + sx, sy + sh * .278), pt(cx + sx, sy + sh), pt(cx - sx, sy + sh), pt(.13 * W, sy + sh + 24)]);
+      var seam = pt(cx - sx, yw + H), pit = pt(cx + sx, sy + sh * .278); seam.gs = 1; pit.ge = 1;
+      return [pt(.13 * W, sy + sh - 6)].concat(box(SHIRT_L, cx - sw / 2, sy, sw, sh), [seam, pt(x0 - 4, yw + H)], word('rPET', x0, yw, H), [pit, pt(cx + sx, sy + sh), pt(cx - sx, sy + sh), pt(.13 * W, sy + sh + 24)]);
     }
     var r = Math.min(.3 * W, st.h * .32), cy = st.t + st.h * .4;
     return [pt(.13 * W, cy - r - 10), pt(cx, cy - r)].concat(arc(cx, cy, r, r, -90 * D, 220 * D, 70)).concat([pt(cx - r - 16, cy + r * .3)]).concat(heap(cx - r * .2, st.b - st.h * .1, .26 * W, st.h * .06, 11, 24)).concat([pt(.13 * W, st.b - 4)]);
   },
+  front: function (ctx, f) { stitchGaps(ctx, f); },
   k: 0.09
 };
 
@@ -2620,6 +2716,7 @@ function drawMain(ctx, f, cum, flow, over) {
   if (over) for (key in over) L[key] = over[key];
   var ink = L.colour || inkFor(f.bg), casing = casingFor(ink), n = c.n, i, k;
   var w = f.i > IDX.spin ? clamp(7.4 - .6 * (G.draw - 1), 4.8, 7.4) : 7;
+  if (L.w) w = L.w;
   if (L.fil > 1) w += Math.min(4, Math.log(L.fil) * .7);
   w += 1.8 * L.crimp + L.loops;
   if (f.sc.alpha) ctx.globalAlpha = f.sc.alpha(f);

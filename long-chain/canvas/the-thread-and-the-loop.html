@@ -531,6 +531,7 @@ body { margin: 0; padding-inline: 0; background: #121211; color: var(--k); font-
   </ul>
   <h3>Why it looks like this</h3>
   <p class="note">Every shade is woven. The dithered tones are point-paper weave structures: spot, twill and plain weave. It nods to Jacquard's punched cards (1804), which taught looms, and later computers, to follow a pattern [36]. Students who tap the spool on the first page find this as a hidden discovery.</p>
+  <p class="note">Each chapter moves the thread its own way, as the Line in The Dot and the Line shows character through shape: Make steps like pipework, Fibre curves like optics, Yarn coils, loops and stitches, Combine drapes and waves, and Return breaks into zigzags and sags. The chain rises like a molecule; the cut is a slash across the screen.</p>
   <h3>Seminar questions</h3>
   <ol>
     <li>Your leggings say "78% recycled polyester, 22% elastane". Where can they go at the end of their life?</li>
@@ -687,6 +688,30 @@ function resample(p, n) {
     out.push(pt(p[seg].x + (p[seg+1].x - p[seg].x) * f, p[seg].y + (p[seg+1].y - p[seg].y) * f));
   }
   return out;
+}
+// The thread's vocabulary: ways to travel from a to b, so the exhibits don't all move alike.
+// Make steps like pipework, Fibre curves like optics, Yarn coils, loops and stitches, Combine drapes and waves,
+// Return breaks into zigzags and sags. `out` marks a route leaving an exhibit rather than entering it.
+function qbz(a, c, b, t) { var u = 1 - t; return pt(u * u * a.x + 2 * u * t * c.x + t * t * b.x, u * u * a.y + 2 * u * t * c.y + t * t * b.y); }
+function cbz(a, c, d, b, t) { var u = 1 - t; return pt(u * u * u * a.x + 3 * u * u * t * c.x + 3 * u * t * t * d.x + t * t * t * b.x, u * u * u * a.y + 3 * u * u * t * c.y + 3 * u * t * t * d.y + t * t * t * b.y); }
+function swing(a, b, style, out) {
+  var dx = b.x - a.x, dy = b.y - a.y, L = Math.hypot(dx, dy) || 1, tx = dx / L, ty = dy / L, nx = -ty, ny = tx, o = [], i, u;
+  if (style === 'step') return out ? [pt(a.x, b.y), b] : [pt(b.x, a.y), b];
+  if (style === 'ogee') { var h = Math.abs(dy) * .6 + 12; for (i = 1; i <= 18; i++) o.push(cbz(a, pt(a.x, a.y + h), pt(b.x, b.y - h), b, i / 18)); return o; }
+  if (style === 'drape') { var sag = Math.min(70, L * .5); for (i = 1; i <= 18; i++) o.push(qbz(a, pt((a.x + b.x) / 2, Math.max(a.y, b.y) + sag), b, i / 18)); return o; }
+  if (style === 'loop') {
+    var m = pt(a.x + dx * .5, a.y + dy * .5), r = clamp(L * .2, 11, 22), sd = out ? -1 : 1, a0 = Math.atan2(-ny * sd, -nx * sd);
+    o.push(m); for (i = 1; i <= 30; i++) { var an = a0 + i / 30 * Math.PI * 2 * sd; o.push(pt(m.x + nx * sd * r + Math.cos(an) * r, m.y + ny * sd * r + Math.sin(an) * r)); }
+    o.push(b); return o;
+  }
+  if (style === 'zig') { var k = Math.max(4, Math.round(L / 22)); for (i = 1; i < k; i++) { u = i / k; var z = (i % 2 ? 1 : -1) * 12; o.push(pt(a.x + dx * u + nx * z, a.y + dy * u + ny * z)); } o.push(b); return o; }
+  if (style === 'wave') { for (i = 1; i <= 30; i++) { u = i / 30; var w = Math.sin(u * Math.PI * 4) * 9 * Math.sin(u * Math.PI); o.push(pt(a.x + dx * u + nx * w, a.y + dy * u + ny * w)); } return o; }
+  if (style === 'coil') {
+    var turns = Math.max(3, Math.round(L / 26)), N = turns * 14;
+    for (i = 1; i <= N; i++) { u = i / N; var an2 = u * turns * Math.PI * 2, rr = 9 * Math.sin(u * Math.PI), sw = Math.sin(an2) * rr, bk = (Math.cos(an2) - 1) * rr * .9; o.push(pt(a.x + dx * u + nx * sw + tx * bk, a.y + dy * u + ny * sw + ty * bk)); }
+    o.push(b); return o;
+  }
+  return [b];
 }
 function arc(cx, cy, rx, ry, a0, a1, steps) { steps = steps || 60; var o = []; for (var i = 0; i <= steps; i++) { var a = a0 + (a1 - a0) * i / steps; o.push(pt(cx + rx * Math.cos(a), cy + ry * Math.sin(a))); } return o; }
 function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
@@ -1125,7 +1150,11 @@ SCENES.oil = {
   n: 130,
   init: function (f) { f.s.links = 0; f.s.fly = []; f.s.next = .5; },
   surf: function (f) { return (f.named.top ? f.named.top.b : f.h * .35) + 28; },
-  path: function (f) { var W = f.w, sy = this.surf(f), st = stage(f); return [pt(.87 * W, sy - 24), pt(.5 * W, sy + 14), pt(.5 * W, st.b - 30), pt(.87 * W, st.b - 6)]; },
+  path: function (f) {
+    var W = f.w, sy = this.surf(f), st = stage(f), a = pt(.87 * W, sy - 24), b = pt(.5 * W, sy + 14), c = pt(.5 * W, st.b - 30), spine = [];
+    for (var i = 1; i <= 30; i++) { var u = i / 30; spine.push(pt(.5 * W + Math.sin(u * Math.PI * 3) * .08 * W * Math.sin(u * Math.PI), b.y + (c.y - b.y) * u)); }
+    return [a].concat(swing(a, b, 'step'), spine, swing(c, pt(.87 * W, st.b - 6), 'ogee', true));
+  },
   k: 0.08,
   slot: function (f, j) {
     var sy = this.surf(f), st = stage(f), y = sy + 46 + (st.b - 50 - sy - 46) * j / 19, c = f.chain, best = c.p[0], bd = 1e9;
@@ -1172,7 +1201,7 @@ SCENES.spin = {
     var g = this.geo(f);
     f.extras = g.holes.map(function (x) { var c = new Chain([pt(x, g.sy + 14), pt(g.fx, g.cy)], 16, { g: 0.04, wind: 0.02, iter: 8, slack: 1.04 }); c.grabbable = false; return c; });
   },
-  path: function (f) { var g = this.geo(f), W = f.w; return [pt(.87 * W, g.ft - 26), pt(g.fx, g.ft), pt(g.fx, g.cy), pt(g.fx, g.ry), pt(g.fx, g.ry + g.st.h * .28), pt(.87 * W, g.st.b - 6)]; },
+  path: function (f) { var g = this.geo(f), W = f.w, a = pt(.87 * W, g.ft - 26), c = pt(g.fx, g.ry + g.st.h * .28); return [a].concat(swing(a, pt(g.fx, g.ft), 'step'), [pt(g.fx, g.cy), pt(g.fx, g.ry), c], swing(c, pt(.87 * W, g.st.b - 6), 'loop', true)); },
   k: 0.07,
   hide: function (f) { var g = this.geo(f); return [g.ft, g.cy]; },
   onDrag: function (f, d) {
@@ -1245,7 +1274,7 @@ SCENES.shape = {
   },
   tap: function (f, x, y) { var g = this.geo(f); for (var k = 0; k < 3; k++) if (Math.hypot(g.tx[k] - x, g.ty - y) < 30) this.run(f, this.T[k]); },
   back: function (ctx, f) { var g = this.geo(f), self = this; this.T.forEach(function (t, k) { place(f.el.querySelector('[data-test="' + t + '"]'), g.tx[k] - 28, g.ty - 28, 56, 56); }); },
-  path: function (f) { var g = this.geo(f), W = f.w; return [pt(.87 * W, g.t + 4), pt(g.cx, g.cy - g.R - 10), pt(g.cx, g.cy + g.R + 10), pt(.87 * W, g.b - 4)]; },
+  path: function (f) { var g = this.geo(f), W = f.w, a = pt(.87 * W, g.t + 4), c = pt(g.cx, g.cy + g.R + 10); return [a].concat(swing(a, pt(g.cx, g.cy - g.R - 10), 'ogee'), [c], swing(c, pt(.87 * W, g.b - 4), 'wave', true)); },
   k: 0.1,
   front: function (ctx, f) {
     var g = this.geo(f), u = f.s.test ? clamp((f.t - f.s.tt) / 1.4, 0, 1) : 0, ink = KU.b, s = G.shape, i;
@@ -1288,14 +1317,14 @@ SCENES.count = {
   tick: function (f) { if (f.vt > 2 && !f.s.told && G.fil === 1) { f.s.told = true; card(f, 'mono'); } },
   layout: function (f) { var el = $('fil-n'), st = stage(f); el.style.left = '6%'; el.style.top = Math.round(st.m - el.offsetHeight / 2) + 'px'; f.measure(); },
   geo: function (f) { var st = stage(f), R = Math.min(.22 * f.w, st.h * .3); return { cx: .66 * f.w, cy: st.m, R: R, st: st }; },
-  path: function (f) { var g = this.geo(f), W = f.w; return [pt(.87 * W, g.st.t + 4), pt(g.cx, g.cy - g.R - 10), pt(g.cx, g.cy + g.R + 10), pt(.87 * W, g.st.b - 4)]; },
+  path: function (f) { var g = this.geo(f), W = f.w, a = pt(.87 * W, g.st.t + 4), c = pt(g.cx, g.cy + g.R + 10); return [a].concat(swing(a, pt(g.cx, g.cy - g.R - 10), 'loop'), [c], swing(c, pt(.87 * W, g.st.b - 4), 'ogee', true)); },
   k: 0.1,
   front: function (ctx, f) { var g = this.geo(f); lens(ctx, g.cx, g.cy, g.R, G.shape, G.fil, KU.b); label(ctx, f, 'cut end', g.cx, g.cy + g.R + 24, 14, KU.k, 'center'); }
 };
 
 // Two ways to texture filament: hold the air jet to blow loops, or twist and heat it to crimp it.
 SCENES.texture = {
-  n: 150,
+  n: 210,
   init: function (f) {
     var self = this, jet = $('tx-jet'); f.s.blow = false; f.s.until = 0; f.s.held = 0; f.s.ht = -9; f.parts = [];
     jet.addEventListener('pointerdown', function (e) { f.s.blow = true; try { jet.setPointerCapture(e.pointerId); } catch (x) {} e.preventDefault(); });
@@ -1315,7 +1344,7 @@ SCENES.texture = {
     var st = stage(f), W = f.w, x = .5 * W, jy = st.t + st.h * .28, hh = clamp(st.h * .26, 60, 120), hy = st.t + st.h * .52;
     return { st: st, x: x, jy: jy, jt: x - 30, j0: .06 * W, hx: x + 12, hy: hy, hw: .24 * W, hh: hh, sy: hy + hh + 30 };
   },
-  path: function (f) { var g = this.geo(f), W = f.w; return [pt(.87 * W, g.st.t + 4), pt(g.x, g.st.t + g.st.h * .1), pt(g.x, g.hy - 8), pt(g.hx - 7, g.hy + 12), pt(g.hx - 7, g.hy + g.hh - 12), pt(g.x, g.sy), pt(g.x, g.st.b - g.st.h * .03), pt(.87 * W, g.st.b - 4)]; },
+  path: function (f) { var g = this.geo(f), W = f.w, a = pt(.87 * W, g.st.t + 4), c = pt(g.x, g.st.b - g.st.h * .03); return [a].concat(swing(a, pt(g.x, g.st.t + g.st.h * .1), 'coil'), [pt(g.x, g.hy - 8), pt(g.hx - 7, g.hy + 12), pt(g.hx - 7, g.hy + g.hh - 12), pt(g.x, g.sy), c], swing(c, pt(.87 * W, g.st.b - 4), 'wave', true)); },
   k: 0.1,
   tick: function (f) {
     var g = this.geo(f), blowing = f.s.blow || f.t < f.s.until, c = f.chain, i;
@@ -1386,7 +1415,7 @@ SCENES.cut = {
       last = cur;
     } };
   },
-  path: function (f) { var st = stage(f), W = f.w; return [pt(.87 * W, st.t + 6), pt(.5 * W, st.t + st.h * .12), pt(.5 * W, st.b - st.h * .12), pt(.87 * W, st.b - 6)]; },
+  path: function (f) { var st = stage(f), W = f.w, a = pt(.87 * W, st.t + 6), p1 = pt(.14 * W, st.t + st.h * .16), c = pt(.86 * W, st.b - st.h * .12); return [a].concat(swing(a, p1, 'zig'), [c], swing(c, pt(.87 * W, st.b - 6), 'step', true)); },
   k: 0.08,
   tick: function (f) { f.falls = f.falls.filter(function (c) { c.step(f.t, [], 0); return !c.p.every(function (q) { return q.y > f.h + 30; }); }); },
   front: function (ctx, f) {
@@ -1505,7 +1534,11 @@ SCENES.blend = {
       c.top.x = g.xs[c.home] - slide * .6 * f.w; c.top.y = g.ry; return c;
     });
   },
-  path: function (f) { var st = stage(f), W = f.w; return [pt(.87 * W, st.t + 6), pt(.68 * W, st.t + st.h * .12), pt(.68 * W, st.b - st.h * .12), pt(.87 * W, st.b - 6)]; },
+  path: function (f) {
+    var st = stage(f), W = f.w, a = pt(.87 * W, st.t + 6), b = pt(.68 * W, st.t + st.h * .12), c = pt(.68 * W, st.b - st.h * .12), bow = [];
+    for (var i = 1; i <= 20; i++) bow.push(qbz(b, pt(.46 * W, (b.y + c.y) / 2), c, i / 20));
+    return [a].concat(swing(a, b, 'drape'), bow, swing(c, pt(.87 * W, st.b - 6), 'loop', true));
+  },
   k: 0.08,
   back: function (ctx, f) {
     var g = this.geo(f), self = this, slide = 1 - ease((f.vt - .2) / .9);
@@ -1546,8 +1579,10 @@ SCENES.colour = {
   geo: function (f) { var st = stage(f), W = f.w, vt = st.t + st.h * .52; if (f.named.temp) vt = Math.max(vt, f.named.temp.b); return { st: st, vat: { x: .26 * W, y: vt, w: .5 * W, h: st.b - vt - 8 }, hop: pt(.5 * W, st.t + st.h * .1) }; },
   path: function (f) {
     var g = this.geo(f), W = f.w, v = g.vat, end = [pt(.87 * W, f.h * .975)];
-    if (f.s.m === 'bath') return [pt(.87 * W, g.st.t + 4), pt(.46 * W, v.y - 40), pt(.46 * W, v.y + v.h - 16), pt(.56 * W, v.y + v.h - 16), pt(.56 * W, v.y - 40), pt(.87 * W, v.y - 20)].concat(end);
-    return [pt(.87 * W, g.st.t + 4), pt(g.hop.x, g.hop.y + 34), pt(g.hop.x, g.st.b - g.st.h * .1), pt(.87 * W, g.st.b - 10)].concat(end);
+    var a = pt(.87 * W, g.st.t + 4);
+    if (f.s.m === 'bath') { var up = pt(.56 * W, v.y - 40); return [a].concat(swing(a, pt(.46 * W, v.y - 40), 'wave'), [pt(.46 * W, v.y + v.h - 16), pt(.56 * W, v.y + v.h - 16), up], swing(up, pt(.87 * W, v.y - 20), 'ogee', true), end); }
+    var c = pt(g.hop.x, g.st.b - g.st.h * .1);
+    return [a].concat(swing(a, pt(g.hop.x, g.hop.y + 34), 'wave'), [c], swing(c, pt(.87 * W, g.st.b - 10), 'ogee', true), end);
   },
   k: 0.1,
   tick: function (f) {
@@ -1792,7 +1827,7 @@ SCENES.unzip = {
   },
   tap: function (f, x, y) { var g = this.geo(f); for (var k = 0; k < 3; k++) if (Math.hypot(g.fl[k].x - x, g.fl[k].y + g.fh / 2 - y) < g.fw * .7) this.pour(f, ['water', 'glycol', 'enzyme'][k]); },
   liquid: function (f) { var c = this.R[f.s.r][3]; return f.s.hadC ? mix(c, f.s.hadC, .55 * f.s.u) : c; },
-  path: function (f) { var g = this.geo(f), W = f.w; return [pt(.87 * W, g.st.t - 16), pt(g.tx, g.vy - 4), pt(g.tx, g.vb + 4), pt(g.tx + 10, g.vb + 26)]; },
+  path: function (f) { var g = this.geo(f), W = f.w, a = pt(.87 * W, g.st.t - 16); return [a].concat(swing(a, pt(g.tx, g.vy - 4), 'zig'), [pt(g.tx, g.vb + 4), pt(g.tx + 10, g.vb + 26)]); },
   k: 0.1,
   hide: function (f) {
     var big = f.h + 40, s0 = f.s.surf; if (s0 == null) return [big, big];
@@ -1935,7 +1970,7 @@ SCENES.heat = {
   geo: function (f) { var st = stage(f), W = f.w; return { S: pt(.71 * W, st.t + st.h * .03), J: pt(.71 * W, st.b - st.h * .04), a: pt(.61 * W, 0), b: pt(.83 * W, 0), st: st }; },
   ply: function (g, x) { return [g.S, pt(x, g.S.y + g.st.h * .16), pt(x, g.J.y - g.st.h * .16), g.J]; },
   layout: function (f) { var tn = $('heat-n'), st0 = stage(f); tn.style.left = '6%'; tn.style.top = Math.round(st0.m - tn.offsetHeight / 2) + 'px'; f.measure(); var g = this.geo(f); f.ply = new Chain(this.ply(g, g.b.x), 60, { wind: .02, iter: 8 }); f.extras = [f.ply]; f.s.plyOK = true; },
-  path: function (f) { var g = this.geo(f), W = f.w; return [pt(.87 * W, g.S.y - 26)].concat(this.ply(g, g.a.x)).concat([pt(.87 * W, g.J.y + 22)]); },
+  path: function (f) { var g = this.geo(f), W = f.w, a = pt(.87 * W, g.S.y - 26), P = this.ply(g, g.a.x); return [a].concat(swing(a, P[0], 'loop'), P.slice(1), swing(P[3], pt(.87 * W, g.J.y + 22), 'drape', true)); },
   k: 0.09,
   tick: function (f) {
     var T = f.s.T, c = f.chain, p = f.ply;

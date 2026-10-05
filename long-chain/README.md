@@ -18,11 +18,11 @@ Exhibits:
   - Pick a nozzle (round, trilobal, hollow or channelled), then drag a torch, an ice cube or a sweat drop onto the microscope lens.
   - One strand or hundreds (mono-, multi- and microfilament).
 - **Yarn:**
-  - Puff it up: hold the air jet to blow loops into the filaments (air-jet texturing), or tap the heater to crimp them (false-twist texturing). A feel meter fills from slick to soft. One thick filament won't texture.
+  - Puff it up: hold the air jet to blow loops into the filaments (air-jet texturing), or tap the heater to crimp them (false-twist texturing). The heater fires heat rays at the yarn, which glows and twists as the spindle backs twist up into it; past the spindle it untwists and puffs up into crimp, as in the real process. A feel meter fills from slick to soft. One thick filament won't texture.
   - Cut it and spin it (staple fibre and twist): the thread draws a Z, the direction most single yarns are spun.
   - Ply it: add bobbins and turn the twist dial. The hanging loop snarls until the ply twist balances the twist in each strand.
 - **Combine:**
-  - Wrap it: pull a cotton, wool or elastane yarn off the rail and bring it to the thread, which leans towards it; it snaps on and the wrap spreads out from where it landed (core-spun). Miss, and the yarn swings back to its hook.
+  - Wrap it: pull a cotton, wool or elastane yarn off the rail and bring it to the thread, which leans towards it; it snaps on and the wrap spreads out from where it landed (core-spun). Cotton winds on smooth, slim and even; wool lofty, lumpy and hairy; elastane as a springy coil. Each covers the whole thread, and the core (and any dye in it) shows between the turns. Miss, and the yarn swings back to its hook.
   - Colour it (a dye bath that only works at about 130°C, or pigment into the melt). Blends reveal that only the polyester takes the dye.
 - **For and against:** a tug-of-war.
 - **Wear:** the washing machine is the interface. Fine, staple and loose yarns shed more.

@@ -1166,6 +1166,7 @@ var SND = (function () {
     oops: function () { tone('square', 440, 210, .3, .13); },
     yes: function () { tone('square', 660, 660, .09, .12); tone('square', 990, 990, .14, .12, .1); },
     bloop: function () { tone('sine', 260, 900, .18, .35); },
+    puff: function () { noise('lowpass', 900, 250, .3, .4); tone('sine', 300, 140, .18, .25); },
     clunk: function () { tone('square', 160, 55, .15, .2); noise('lowpass', 500, 200, .1, .35); },
     pick: function () { tone('triangle', 520, 780, .07, .25); },
     unwrap: function () { noise('bandpass', 3000, 600, .25, .3, 0, 2); }
@@ -1192,7 +1193,7 @@ var SND = (function () {
     wake: function () { if (on) ctx(); }
   };
 })();
-var STAMP_FX = { 'CLICK': 'click', 'CLICK CLICK': 'click2', 'POP': 'pop', 'CRUNCH': 'crunch', 'THUD': 'thud', 'ZIP!': 'zip', 'WHIRR': 'whirr', 'TWANG': 'twang', 'THREADED': 'chime', 'STRETCH': 'stretch', 'SNIP!': 'snip', 'SLOSH': 'slosh', 'PHEW': 'phew', 'NOPE': 'nope', 'MUNCH': 'munch', 'KNOT!': 'knot', 'KINK!': 'kink', 'HISSS': 'hiss', 'HEAVE': 'heave', 'GLUG GLUG': 'glug', 'BLUB': 'glug', 'FWOOSH': 'whoosh', 'DRIP': 'drip', 'PLIP': 'drip', 'CRACK': 'crack', 'BOOP': 'boop', 'BOING': 'boing', 'GLINT': 'glint', 'BRRR': 'brrr', 'OOPS': 'oops', 'YES!': 'yes', 'BLOOP': 'bloop', 'GLOOP': 'bloop', 'CLUNK!': 'clunk' };
+var STAMP_FX = { 'CLICK': 'click', 'CLICK CLICK': 'click2', 'POP': 'pop', 'CRUNCH': 'crunch', 'THUD': 'thud', 'ZIP!': 'zip', 'WHIRR': 'whirr', 'TWANG': 'twang', 'THREADED': 'chime', 'STRETCH': 'stretch', 'SNIP!': 'snip', 'SLOSH': 'slosh', 'PHEW': 'phew', 'NOPE': 'nope', 'MUNCH': 'munch', 'KNOT!': 'knot', 'KINK!': 'kink', 'HISSS': 'hiss', 'HEAVE': 'heave', 'GLUG GLUG': 'glug', 'BLUB': 'glug', 'FWOOSH': 'whoosh', 'DRIP': 'drip', 'PLIP': 'drip', 'CRACK': 'crack', 'BOOP': 'boop', 'BOING': 'boing', 'GLINT': 'glint', 'BRRR': 'brrr', 'OOPS': 'oops', 'YES!': 'yes', 'BLOOP': 'bloop', 'GLOOP': 'bloop', 'CLUNK!': 'clunk', 'PUFF!': 'puff' };
 function stamp(f, s, x, y) { SND.play(STAMP_FX[s] || 'pop'); if (!f.stamps) f.stamps = []; if (f.stamps.length > 3) f.stamps.shift(); f.stamps.push({ s: s, x: clamp(x, 70, f.w - 70), y: clamp(y, 40, f.h - 40), t: f.t, r: (Math.random() - .5) * .34 }); }
 function drawStamps(c, f) {
   if (!f.stamps || !f.stamps.length) return;
@@ -1634,7 +1635,7 @@ SCENES.count = {
 SCENES.texture = {
   n: 230,
   init: function (f) {
-    var self = this, jet = $('tx-jet'); f.s.blow = false; f.s.until = 0; f.s.held = 0; f.s.ht = -9; f.parts = []; f.s.puffs = []; f.s.steam = []; f.s.feel = 0;
+    var self = this, jet = $('tx-jet'); f.s.blow = false; f.s.until = 0; f.s.held = 0; f.s.ht = -9; f.parts = []; f.s.puffs = []; f.s.feel = 0;
     jet.addEventListener('pointerdown', function (e) { f.s.blow = true; try { jet.setPointerCapture(e.pointerId); } catch (x) {} e.preventDefault(); });
     ['pointerup', 'pointercancel', 'lostpointercapture'].forEach(function (t) { jet.addEventListener(t, function () { f.s.blow = false; }); });
     jet.addEventListener('click', function () { f.s.until = f.t + 1.4; });
@@ -1650,14 +1651,32 @@ SCENES.texture = {
   },
   // bigger kit: the jet on the left, the heater on the right, the false-twist spindle below; the thread runs down between them
   geo: function (f) {
-    var st = stage(f), W = f.w, x = .5 * W, jh = clamp(.075 * W, 26, 36), jy = st.t + jh + 26, sr = clamp(.07 * W, 22, 34), hw = .33 * W, hy = jy + jh + 34;
+    var st = stage(f), W = f.w, x = .5 * W, jh = clamp(.075 * W, 26, 36), jy = st.t + jh + 26, sr = clamp(.07 * W, 22, 34), hx = x + clamp(.16 * W, 50, 76), hw = Math.min(.3 * W, .94 * W - hx), hy = jy + jh + 34;
     var hh = clamp(st.h - (hy - st.t) - 2 * sr - 96, 56, hw), sy = hy + hh + sr + 22;
-    return { st: st, x: x, jy: jy, jh: jh, jt: x - 26, j0: .06 * W, hx: x + 14, hy: hy, hw: hw, hh: hh, sy: sy, sr: sr };
+    return { st: st, x: x, jy: jy, jh: jh, jt: x - 26, j0: .06 * W, hx: hx, hy: hy, hw: hw, hh: hh, sy: sy, sr: sr };
   },
   // a curl on the way in, straight down past the kit, and the same curl on the way out
   path: function (f) {
     var g = this.geo(f), W = f.w, a = pt(.87 * W, g.st.t + 4), b = pt(g.x, g.st.t + 30), c = pt(g.x, g.sy + g.sr + 16), d = pt(.87 * W, c.y + 46);
-    return [a].concat(swing(a, b, 'coil'), [pt(g.x, g.hy - 8), pt(g.hx - 7, g.hy + 12), pt(g.hx - 7, g.hy + g.hh - 12), pt(g.x, g.sy - g.sr - 6), c], swing(c, d, 'coil', true));
+    return [a].concat(swing(a, b, 'coil'), [pt(g.x, g.hy - 8), pt(g.x, g.sy - g.sr - 6), c], swing(c, d, 'coil', true));
+  },
+  // air: the loops form at the jet. Heat: the spindle backs twist up through the heater, which sets it;
+  // past the spindle the yarn untwists and the set twist springs out as crimp, so that is where it puffs up
+  puffZone: function (f) {
+    var g = this.geo(f);
+    if (G.tex === 'air') return { a: g.jy + 4, b: f.h + 10 };
+    return { a: g.sy, b: g.sy + ease(G.crimp) * (f.h + 10 - g.sy) };
+  },
+  split: function (f) {
+    if (!this.multi() || !G.tex) return null; var g = this.geo(f), z = this.puffZone(f), on = f.t - f.s.ht < 2.2, flat = { crimp: 0 };
+    if (G.tex === 'air') return { y: z.a, above: { loops: 0, crimp: 0 }, below: { bulk: 1 } };
+    return { zones: [
+      { a: -10, b: g.hy, o: flat },
+      { a: g.hy, b: g.hy + g.hh, o: on ? { crimp: 0, tw: 1, glow: KU.y } : flat },
+      { a: g.hy + g.hh, b: z.a, o: on ? { crimp: 0, tw: 1 } : flat },
+      { a: z.a, b: z.b, o: { crimp: 1, bulk: 1 } },
+      { a: z.b, b: f.h + 10, o: flat }
+    ] };
   },
   k: 0.1,
   tick: function (f) {
@@ -1676,25 +1695,40 @@ SCENES.texture = {
       } else if (f.s.held > 1.2) this.few(f, 'air');
     }
     if (G.tex === 'crimp' && G.crimp < 1) { G.crimp = Math.min(1, G.crimp + 1 / 60 / 1.6); if (G.crimp >= 1 && !f.s.toldC) { f.s.toldC = true; card(f, 'dty'); renderLabel(); } }
-    // steam off the hot plate
-    if (f.t - f.s.ht < 1.8 && Math.random() < .3) f.s.steam.push({ x: g.hx + 14 + Math.random() * (g.hw - 28), y: g.hy - 4, t: f.t });
     // the feel meter fills a block at a time, with a pop
     var feel = this.multi() ? Math.floor(Math.max(G.loops, G.crimp) * 5 + .001) : 0;
     if (feel > f.s.feel) SND.play('pop'); f.s.feel = feel;
+    if (feel === 5 && !f.s.poofed) { f.s.poofed = true; if (G.tex === 'air') stamp(f, 'PUFF!', g.x + 84, g.jy + 44); else stamp(f, 'PUFF!', g.x + 80, g.hy + g.hh + 70); } if (feel < 5) f.s.poofed = false;
     f.parts = f.parts.filter(function (o) { o.x += o.v; o.y += (Math.random() - .5) * 1.4; return o.x < f.w + 20; });
     f.s.puffs = f.s.puffs.filter(function (o) { return f.t - o.t < .7; });
-    f.s.steam = f.s.steam.filter(function (o) { return f.t - o.t < 1.2; });
   },
   back: function (ctx, f) {
-    var g = this.geo(f), on = f.t - f.s.ht < 2.2, i, hx = g.hx + (f.t - f.s.ht < .35 ? Math.sin(f.t * 70) * 2.5 : 0);
-    // the heater plate, judders as it clicks on, then glows
-    wRect(ctx, KU.k, 2, hx + 8, g.hy + 8, g.hw, g.hh); if (on) wFade(ctx, KU.y, hx, g.hy - 46, g.hw, 46, 1, 3);
+    var g = this.geo(f), dt = f.t - f.s.ht, on = dt < 2.2, i, j, hx = g.hx + (dt < .35 ? Math.sin(f.t * 70) * 2.5 : 0), z = this.multi() && G.tex ? this.puffZone(f) : null, amt = z ? (G.tex === 'air' ? G.loops : 1) : 0, c = f.chain;
+    // the puff: past the jet, or out of the spindle, the yarn swells into a soft cloud of loops (air) or a springy mass of crimps (heat)
+    if (z && amt > .02) {
+      if (G.tex === 'air') { for (j = 0; j < c.n; j += 2) { var q = c.p[j]; if (q.y < z.a || q.y > z.b) continue; wDisc(ctx, KU.w, 2, q.x + (hash(j, 72) - .5) * 12 * amt, q.y, (7 + hash(j, 71) * 10) * amt); } }
+      else { var nm = normals(c.p); ctx.strokeStyle = KU.w; ctx.lineWidth = 1.6; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; [-1, 1].forEach(function (sd) { ctx.beginPath(); var pen = false; for (j = 0; j < c.n; j++) { var q = c.p[j]; if (q.y < z.a || q.y > z.b) { pen = false; continue; } var o = sd * 12 + Math.sin(j * 1.7 + sd) * 5, x = q.x + nm[j].x * o, y = q.y + nm[j].y * o; if (pen) ctx.lineTo(x, y); else { ctx.moveTo(x, y); pen = true; } } ctx.stroke(); }); }
+    }
+    // the heater: a grille on the face that points at the yarn; when it is on, heat rolls across the gap and the yarn glows where it lands
+    wRect(ctx, KU.k, 2, hx + 8, g.hy + 8, g.hw, g.hh);
     ctx.fillStyle = KU.k; ctx.fillRect(hx, g.hy, g.hw, g.hh);
     ctx.fillStyle = on ? KU.y : KU.g; ctx.fillRect(hx + 7, g.hy + 7, g.hw - 14, g.hh - 14);
-    if (on) { ctx.strokeStyle = KU.k; ctx.lineWidth = 2.4; for (i = 0; i < 4; i++) { var cx = hx + g.hw * (.2 + i * .2), o = Math.sin(f.t * 8 + i) * 4; ctx.beginPath(); ctx.moveTo(cx, g.hy + g.hh - 16); ctx.quadraticCurveTo(cx + 7 + o, g.hy + g.hh / 2, cx, g.hy + 16); ctx.stroke(); } }
-    ctx.strokeStyle = KU.w; ctx.lineWidth = 2; ctx.lineCap = 'round';
-    f.s.steam.forEach(function (o) { var a = (f.t - o.t) / 1.2, y = o.y - a * 50; ctx.globalAlpha = 1 - a; ctx.beginPath(); ctx.moveTo(o.x, y); ctx.quadraticCurveTo(o.x + 7 * Math.sin(f.t * 6 + o.x), y - 10, o.x, y - 20); ctx.stroke(); });
-    ctx.globalAlpha = 1;
+    ctx.fillStyle = KU.k; ctx.fillRect(hx - 8, g.hy + 4, 8, g.hh - 8);
+    ctx.fillStyle = on ? KU.y : KU.g; for (i = 0; i < 5; i++) ctx.fillRect(hx - 6, g.hy + 10 + i * (g.hh - 26) / 4, 4, 6);
+    if (on) {
+      ctx.strokeStyle = KU.k; ctx.lineWidth = 2.4; for (i = 0; i < 4; i++) { var cx = hx + g.hw * (.2 + i * .2), o = Math.sin(f.t * 8 + i) * 4; ctx.beginPath(); ctx.moveTo(cx, g.hy + g.hh - 16); ctx.quadraticCurveTo(cx + 7 + o, g.hy + g.hh / 2, cx, g.hy + 16); ctx.stroke(); }
+      // heat rays shoot across the gap, wavy, each ending in an arrowhead on the yarn, which glows where they land
+      var fade = clamp((2.2 - dt) / .4, 0, 1), xa = hx - 12, xb = g.x + 13, xe = xa - (xa - xb) * clamp(dt / .3, 0, 1);
+      ctx.globalAlpha = fade; wRect(ctx, KU.y, 3, g.x - 20, g.hy, 40, g.hh);
+      ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+      for (j = 0; j < 3; j++) {
+        var wy = g.hy + g.hh * (.22 + j * .28), ray = [];
+        for (var xx = xa; xx > xe; xx -= 2) ray.push(pt(xx, wy + Math.sin(xx * .4 + f.t * 14 + j * 2) * 3.5 * clamp((xx - xe) / 8, 0, 1)));
+        ray.push(pt(xe, wy)); if (ray.length < 3) continue;
+        [[KU.k, 6.5], [KU.y, 3]].forEach(function (sk) { ctx.strokeStyle = sk[0]; ctx.lineWidth = sk[1]; ctx.beginPath(); ray.forEach(function (r, k) { if (k) ctx.lineTo(r.x, r.y); else ctx.moveTo(r.x, r.y); }); ctx.moveTo(xe + 7, wy - 6); ctx.lineTo(xe, wy); ctx.lineTo(xe + 7, wy + 6); ctx.stroke(); });
+      }
+      ctx.globalAlpha = 1;
+    }
     place($('tx-heat'), g.hx - 4, g.hy - 8, g.hw + 12, g.hh + 16);
     // the air jet, juddering while it blows
     var bl = f.s.blow || f.t < f.s.until, kick = bl ? Math.sin(f.t * 60) * 1.6 : 0, h = g.jh;
@@ -1904,10 +1938,16 @@ SCENES.blend = {
       ctx.globalAlpha = a;
       if (c.kind === 'elastane') drawSquiggle(ctx, c, f.t, KU.k, null, 1.7);
       else {
-        var wool = c.kind === 'wool', col = wool ? KU.w : '#f3ecd9', pts = wool ? offsetBy(p, nm, function (j) { return Math.sin(j * 1.6) * 3.2; }) : p;
-        strokeP(ctx, pts, KU.k, wool ? 15 : 14); strokeP(ctx, pts, col, wool ? 11 : 10);
+        var wool = c.kind === 'wool', col = natural(c.kind, f.bg).col, pts = wool ? offsetBy(p, nm, function (j) { return Math.sin(j * 1.6) * 3.4; }) : p;
+        strokeP(ctx, pts, KU.k, wool ? 17 : 13); strokeP(ctx, pts, col, wool ? 13 : 9.5);
+        if (!wool) { ctx.strokeStyle = '#bfb08a'; ctx.lineWidth = 1.4; ctx.beginPath(); for (i = 1; i < c.n - 1; i++) { var q1 = p[i], n1 = nm[i]; ctx.moveTo(q1.x - n1.x * 4 - n1.y * 2, q1.y - n1.y * 4 + n1.x * 2); ctx.lineTo(q1.x + n1.x * 4 + n1.y * 2, q1.y + n1.y * 4 - n1.x * 2); } ctx.stroke(); }
         ctx.strokeStyle = col; ctx.lineWidth = 1.6; ctx.beginPath();
-        for (i = 1; i < c.n; i++) { var sd = hash(i, 51) > .5 ? 1 : -1, ln = (wool ? 10 : 6) + hash(i, 52) * (wool ? 8 : 6), q = p[i]; ctx.moveTo(q.x + nm[i].x * sd * 5.5, q.y + nm[i].y * sd * 5.5); if (wool) ctx.lineTo(q.x + nm[i].x * sd * ln * .6 + 3, q.y + nm[i].y * sd * ln * .6 - 3); ctx.lineTo(q.x + nm[i].x * sd * ln, q.y + nm[i].y * sd * ln); }
+        for (i = 1; i < c.n; i++) {
+          var sd = hash(i, 51) > .5 ? 1 : -1, q = p[i];
+          if (!wool) { if (hash(i, 50) > .3) continue; var l2 = 7 + hash(i, 52) * 3; ctx.moveTo(q.x + nm[i].x * sd * 5, q.y + nm[i].y * sd * 5); ctx.lineTo(q.x + nm[i].x * sd * l2, q.y + nm[i].y * sd * l2); continue; }
+          var ln = 12 + hash(i, 52) * 9, b = 7; ctx.moveTo(q.x + nm[i].x * sd * b, q.y + nm[i].y * sd * b);
+          for (var z = 1; z <= 3; z++) { var d2 = b + (ln - b) * z / 3, wg = z % 2 ? 3 : -3; ctx.lineTo(q.x + nm[i].x * sd * d2 + nm[i].y * wg, q.y + nm[i].y * sd * d2 - nm[i].x * wg); }
+        }
         ctx.stroke();
       }
       ctx.globalAlpha = 1;
@@ -2791,10 +2831,10 @@ function wrapPts(f, from, to, amp) {
 function elastaneStep(f) {
   if (f.i < IDX.blend) return;
   var want = G.elastane;
-  if (want && (!f.sq || f.sq.falling)) { var start = wrapPts(f, .35, .65, 0).map(function (q) { return pt(q.x + 30, q.y); }); f.sq = new Chain(start, 64, { pinTop: false, pinBot: false, g: 0, wind: .03, iter: 8 }); f.sq.grabbable = !!f.sc.sqGrab; }
+  if (want && (!f.sq || f.sq.falling)) { var start = wrapPts(f, .05, .95, 0).map(function (q) { return pt(q.x + 30, q.y); }); f.sq = new Chain(start, clamp(Math.round(f.chain.n * .9), 64, 360), { pinTop: false, pinBot: false, g: 0, wind: .03, iter: 8 }); f.sq.grabbable = !!f.sc.sqGrab; }
   if (!want && f.sq && !f.sq.falling) { f.sq.falling = true; f.sq.target = null; f.sq.kGoal = 0; f.sq.k = 0; f.sq.g = .3; f.sq.avoid = false; f.sq.grabbable = false; f.sq.p.forEach(function (q) { q.px -= (Math.random() - .5) * 4; }); }
   if (!f.sq) return;
-  if (!f.sq.falling && f.sq.grab < 0) { var special = f.sc.sqTarget ? f.sc.sqTarget(f) : null; f.sq.setTarget(special || wrapPts(f, .35, .65, 11), .14, allRects(f)); }
+  if (!f.sq.falling && f.sq.grab < 0) { var special = f.sc.sqTarget ? f.sc.sqTarget(f) : null; f.sq.setTarget(special || wrapPts(f, .05, .95, 9), .14, allRects(f)); }
   if (f.sq.grab >= 0) f.sq.kGoal = .01;
   f.sq.step(f.t, allRects(f), 0);
   if (f.sq.falling && f.sq.p.every(function (q) { return q.y > f.h + 40; })) f.sq = null;
@@ -2867,6 +2907,26 @@ function look(f) {
     from: i === IDX.blend && f.s.wAt != null ? f.s.wAt : null
   };
 }
+// Cotton and wool, as a natural fibre round the polyester core. Cotton is smooth and even; wool is lofty, lumpy and hairy.
+function natural(kind, bg) {
+  var wool = kind === 'wool', col = wool ? '#ece0c4' : '#f8f2e2';
+  return { wool: wool, col: col, edge: bg === 'black' ? '#6b655a' : KU.k, hair: bg === 'white' ? '#a8946a' : bg === 'yellow' ? KU.k : col, pitch: wool ? 13 : 10, band: wool ? 4.6 : 3, slant: wool ? 1.5 : 1, over: wool ? 6 : 3.4 };
+}
+// the fibre winds round the core: diagonal bands a fixed distance apart along the thread, so the core shows between turns.
+// u < 1 when it is going (eaten in the soil): turns drop out and the rest thin
+function helix(ctx, p, nm, w, a, b, N, u) {
+  var n = p.length, cl = [0], i, j = 0;
+  for (i = 1; i < n; i++) cl.push(cl[i - 1] + Math.hypot(p[i].x - p[i - 1].x, p[i].y - p[i - 1].y));
+  function at(s) { while (j < n - 2 && cl[j + 1] < s) j++; var seg = cl[j + 1] - cl[j] || 1, v = clamp((s - cl[j]) / seg, 0, 1); return { x: p[j].x + (p[j + 1].x - p[j].x) * v, y: p[j].y + (p[j + 1].y - p[j].y) * v, nx: nm[j].x, ny: nm[j].y, j: j }; }
+  var s0 = cl[Math.max(0, a)], s1 = cl[Math.min(n - 1, b)], d = w * N.slant, r = w / 2 + N.over * u, bands = [], k = Math.floor(s0 / N.pitch) + 1;
+  for (; k * N.pitch + d < s1; k++) {
+    if (hash(k, 35) > u * 1.02) continue;
+    var A = at(k * N.pitch), jA = j, B = at(k * N.pitch + d), wob = N.wool ? (hash(k, 33) - .5) * 5 : 0;
+    j = jA; bands.push([A.x - A.nx * r, A.y - A.ny * r, B.x + B.nx * r, B.y + B.ny * r, (A.x + B.x) / 2 + A.nx * wob, (A.y + B.y) / 2 + A.ny * wob, N.wool ? N.band * (.7 + hash(k, 34) * .7) : N.band]);
+  }
+  ctx.lineCap = 'round';
+  [[N.edge, 2.2], [N.col, 0]].forEach(function (pass) { ctx.strokeStyle = pass[0]; bands.forEach(function (q) { ctx.lineWidth = q[6] * Math.max(u, .5) + pass[1]; ctx.beginPath(); ctx.moveTo(q[0], q[1]); ctx.quadraticCurveTo(q[4], q[5], q[2], q[3]); ctx.stroke(); }); });
+}
 function drawMain(ctx, f, cum, flow, over) {
   var c = f.chain, p = c.p, L = look(f), key;
   if (over) for (key in over) L[key] = over[key];
@@ -2875,18 +2935,30 @@ function drawMain(ctx, f, cum, flow, over) {
   if (L.w) w = L.w;
   if (L.fil > 1) w += Math.min(4, Math.log(L.fil) * .7);
   w += 1.8 * L.crimp + L.loops;
+  if (L.bulk) w += 5 * L.bulk * Math.max(L.loops, L.crimp);
   if (f.sc.alpha) ctx.globalAlpha = f.sc.alpha(f);
   var nm = normals(p);
-  // natural-fibre sheath, under everything; while it is going on, it spreads out from where the yarn landed
+  // natural fibre, coating the core end to end; while it is going on, it spreads out from where the yarn landed
   var wa = 0, wb = n - 1, wu = L.fresh;
   if (L.partner && L.from != null && wu < 1) { var spr = Math.round(wu * n * .75) + 2; wa = Math.max(0, L.from - spr); wb = Math.min(n - 1, L.from + spr); wu = 1; }
-  if (L.partner) {
-    var sheath = f.bg === 'white' ? '#e8e1cf' : 'rgba(255,255,255,0.92)', u = wu;
-    strokeP(ctx, p, sheath, (w + 14) * u + 0.1, null, wa, wb);
-    ctx.strokeStyle = sheath; ctx.lineWidth = 1.4; ctx.beginPath();
-    for (i = Math.max(1, wa); i < Math.min(n - 1, wb); i += 1) { if (hash(i, 7) > .75 * u) continue; var side = hash(i, 8) > .5 ? 1 : -1, len = (w / 2 + 7 + hash(i, 9) * 9) * u, q = p[i]; ctx.moveTo(q.x + nm[i].x * side * (w / 2 + 4), q.y + nm[i].y * side * (w / 2 + 4)); if (L.partner === 'wool') { ctx.lineTo(q.x + nm[i].x * side * len * .6 + 3, q.y + nm[i].y * side * len * .6 - 3); ctx.lineTo(q.x + nm[i].x * side * len, q.y + nm[i].y * side * len); } else ctx.lineTo(q.x + nm[i].x * side * len + (hash(i, 10) - .5) * 6, q.y + nm[i].y * side * len + (hash(i, 11) - .5) * 6); }
-    ctx.stroke();
+  var NAT = L.partner && wu > .02 ? natural(L.partner, f.bg) : null;
+  if (NAT) {
+    var u = wu, ia = Math.max(1, wa), ib = Math.min(n - 1, wb), side, len, q, hb, dd, zz, wg;
+    if (NAT.wool) {
+      // wool: a halo of crimped hairs round a lofty, lumpy cloud
+      ctx.strokeStyle = NAT.hair; ctx.lineWidth = 1.3; ctx.lineJoin = 'round'; ctx.beginPath();
+      for (i = ia; i < ib; i += 1) { if (hash(i, 7) > .8 * u) continue; side = hash(i, 8) > .5 ? 1 : -1; hb = w / 2 + 6 * u; len = hb + (9 + hash(i, 9) * 10) * u; q = p[i]; ctx.moveTo(q.x + nm[i].x * side * hb, q.y + nm[i].y * side * hb); for (zz = 1; zz <= 3; zz++) { dd = hb + (len - hb) * zz / 3; wg = zz % 2 ? 3 : -3; ctx.lineTo(q.x + nm[i].x * side * dd + nm[i].y * wg, q.y + nm[i].y * side * dd - nm[i].x * wg); } }
+      ctx.stroke();
+      [[NAT.edge, 1.4], [NAT.col, 0]].forEach(function (pass) { ctx.fillStyle = pass[0]; for (i = ia; i < ib; i += 2) { ctx.beginPath(); ctx.arc(p[i].x, p[i].y, w / 2 + (6 + hash(i, 13) * 6) * u + pass[1], 0, Math.PI * 2); ctx.fill(); } });
+    } else {
+      // cotton: smooth and even, a clean straight edge with only a few short fibre ends
+      ctx.strokeStyle = NAT.hair; ctx.lineWidth = 1.1; ctx.beginPath();
+      for (i = ia; i < ib; i += 1) { if (hash(i, 7) > .12 * u) continue; side = hash(i, 8) > .5 ? 1 : -1; len = w / 2 + (7 + hash(i, 9) * 3) * u; q = p[i]; ctx.moveTo(q.x + nm[i].x * side * (w / 2 + 4 * u), q.y + nm[i].y * side * (w / 2 + 4 * u)); ctx.lineTo(q.x + nm[i].x * side * len, q.y + nm[i].y * side * len); }
+      ctx.stroke();
+      strokeP(ctx, p, NAT.edge, w + 11 * u, null, wa, wb); strokeP(ctx, p, NAT.col, w + 8.4 * u, null, wa, wb);
+    }
   }
+  if (L.glow) strokeP(ctx, p, L.glow, w + 16);
   strokeP(ctx, p, casing, w + 3.4);
   if (L.ply >= 2) {
     // plies wind round each other; the slope shows S or Z
@@ -2898,10 +2970,12 @@ function drawMain(ctx, f, cum, flow, over) {
     if (L.shape === 'channel') { strokeP(ctx, offsetBy(p, nm, function () { return w * .22; }), casing, 1.2); strokeP(ctx, offsetBy(p, nm, function () { return -w * .22; }), casing, 1.2); }
   } else {
     var ns = L.fil >= 144 ? 9 : L.fil >= 24 ? 6 : L.fil >= 6 ? 4 : 2, sw = w / ns * 1.15;
-    for (k = 0; k < ns; k++) { (function (k) { var base = (k - (ns - 1) / 2) / ns * w * .92; strokeP(ctx, offsetBy(p, nm, function (j) { return base + Math.sin(j * .33 + k * 1.7) * w * .1 + Math.sin(j * 1.9 + k * 2.3) * w * .2 * L.crimp; }), ink, sw); })(k); }
+    for (k = 0; k < ns; k++) { (function (k) { var base = (k - (ns - 1) / 2) / ns * w * .92; strokeP(ctx, offsetBy(p, nm, function (j) { return base + Math.sin(j * .33 + k * 1.7) * w * .1 + Math.sin(j * 1.9 + k * 2.3) * w * .2 * L.crimp * (1 + .8 * (L.bulk || 0)); }), ink, sw); })(k); }
   }
+  // false twist: the spindle backs twist up the yarn, so the marks run upwards, into the heater
+  if (L.tw) { var tsh = (f.t * 5) % 1; ctx.strokeStyle = casing; ctx.lineWidth = 1.6; ctx.beginPath(); for (i = 2; i < n - 3; i += 2) { var ti = i + 2 * (1 - tsh), i0 = Math.floor(ti), fr = ti - i0, ta = p[i0], tb = p[i0 + 1], dx = tb.x - ta.x, dy = tb.y - ta.y, tx = ta.x + dx * fr, ty = ta.y + dy * fr, tn = nm[i0]; ctx.moveTo(tx - tn.x * w * .55 - dx * 1.3, ty - tn.y * w * .55 - dy * 1.3); ctx.lineTo(tx + tn.x * w * .55 + dx * 1.3, ty + tn.y * w * .55 + dy * 1.3); } ctx.stroke(); }
   // air-jet loops stand off the surface
-  if (L.loops > 0) { ctx.strokeStyle = ink; ctx.lineWidth = 1.3; for (i = 2; i < n - 2; i += 2) { if (hash(i, 41) > L.loops * .8) continue; var sd0 = hash(i, 42) > .5 ? 1 : -1, lr = 2.4 + hash(i, 43) * 3.6, q0 = p[i]; ctx.beginPath(); ctx.arc(q0.x + nm[i].x * sd0 * (w * .5 + lr * .6), q0.y + nm[i].y * sd0 * (w * .5 + lr * .6), lr, 0, Math.PI * 2); ctx.stroke(); } }
+  if (L.loops > 0) { ctx.strokeStyle = ink; ctx.lineWidth = 1.3; for (i = 2; i < n - 2; i += 2) { if (hash(i, 41) > L.loops * .8) continue; var sd0 = hash(i, 42) > .5 ? 1 : -1, lr = (2.4 + hash(i, 43) * 3.6) * (1 + .7 * (L.bulk || 0)), q0 = p[i]; ctx.beginPath(); ctx.arc(q0.x + nm[i].x * sd0 * (w * .5 + lr * .6), q0.y + nm[i].y * sd0 * (w * .5 + lr * .6), lr, 0, Math.PI * 2); ctx.stroke(); } }
   // spun staple: fibre ends stick out; more twist tucks them in
   if (L.staple) {
     var loose = clamp(1 - L.twist / 11, .12, 1); ctx.strokeStyle = ink; ctx.lineWidth = 1.3; ctx.beginPath();
@@ -2909,8 +2983,8 @@ function drawMain(ctx, f, cum, flow, over) {
     ctx.stroke();
     if (L.twist > 0) { ctx.strokeStyle = casing; ctx.lineWidth = 1.2; ctx.beginPath(); var step = Math.max(2, Math.round(9 - L.twist * .7)); for (i = 2; i < n - 2; i += step) { var a = p[i], na = nm[i]; ctx.moveTo(a.x - na.x * w * .45 - (p[i+1].x - a.x) * .8, a.y - na.y * w * .45 - (p[i+1].y - a.y) * .8); ctx.lineTo(a.x + na.x * w * .45 + (p[i+1].x - a.x) * .8, a.y + na.y * w * .45 + (p[i+1].y - a.y) * .8); } ctx.stroke(); }
   }
-  // the natural fibre wraps round the core
-  if (L.partner) { var su = wu; ctx.strokeStyle = f.bg === 'white' ? '#bfb6a0' : 'rgba(255,255,255,.95)'; ctx.lineWidth = 2; ctx.beginPath(); for (i = Math.max(2, wa); i < Math.min(n - 2, wb); i += 3) { if (hash(i, 31) > su) continue; var b0 = p[i], nb = nm[i]; ctx.moveTo(b0.x - nb.x * (w / 2 + 5), b0.y - nb.y * (w / 2 + 5)); ctx.lineTo(p[i + 2].x + nm[i + 2].x * (w / 2 + 5), p[i + 2].y + nm[i + 2].y * (w / 2 + 5)); } ctx.stroke(); }
+  // ...and winds round it, so the core (and any dye in it) shows between the turns: cotton tight and even, wool loose and lumpy
+  if (NAT) helix(ctx, p, nm, w, wa, wb, NAT, wu);
   // trilobal fibres sparkle
   if (L.shape === 'trilobal') { var fr = Math.floor(f.t * 3); for (i = 3; i < n - 3; i += 5) { if (hash(i, fr) < .78) continue; var tw = .6 + .4 * Math.sin(f.t * 10 + i); star(ctx, p[i].x + nm[i].x * w * .3, p[i].y + nm[i].y * w * .3, 6 * tw, KU.w); star(ctx, p[i].x + nm[i].x * w * .3, p[i].y + nm[i].y * w * .3, 3 * tw, KU.y); } }
   var bi = f.sc.bi || (G.bi && f.i >= IDX.bend);
@@ -2947,8 +3021,8 @@ function draw(sy) {
       if (f.sc.hide) { var hb = f.sc.hide(f); ctx.beginPath(); ctx.rect(0, -10, f.w, hb[0] + 10); ctx.rect(0, hb[1], f.w, f.h - hb[1] + 10); ctx.clip(); }
       var spl = f.sc.split ? f.sc.split(f) : null;
       if (spl) {
-        ctx.save(); ctx.beginPath(); ctx.rect(0, -10, f.w, spl.y + 10); ctx.clip(); drawMain(ctx, f, cum, flow, spl.above); ctx.restore();
-        ctx.save(); ctx.beginPath(); ctx.rect(0, spl.y, f.w, f.h - spl.y + 10); ctx.clip(); drawMain(ctx, f, cum, flow, spl.below); ctx.restore();
+        // the thread can look different in bands down the page: before and after a machine, say
+        (spl.zones || [{ a: -10, b: spl.y, o: spl.above }, { a: spl.y, b: f.h + 10, o: spl.below }]).forEach(function (z) { if (z.b <= z.a) return; ctx.save(); ctx.beginPath(); ctx.rect(0, z.a, f.w, z.b - z.a); ctx.clip(); drawMain(ctx, f, cum, flow, z.o); ctx.restore(); });
       } else drawMain(ctx, f, cum, flow);
       ctx.restore();
       if (f.sq && !f.sq.falling) drawSquiggle(ctx, f.sq, f.t, sqCol, function (i) { return Math.cos(i * .75 + f.t * 3) > 0; });

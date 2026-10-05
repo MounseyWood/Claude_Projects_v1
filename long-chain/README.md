@@ -22,21 +22,21 @@ Exhibits:
   - Cut it and spin it (staple fibre and twist): the thread draws a Z, the direction most single yarns are spun.
   - Ply it: add bobbins and turn the twist dial. The hanging loop snarls until the ply twist balances the twist in each strand.
 - **Combine:**
-  - Wrap it: pull a cotton, wool or elastane yarn off the rail and bring it to the thread, which leans towards it; it snaps on and the wrap spreads out from where it landed (core-spun). Cotton winds on smooth, slim and even; wool lofty, lumpy and hairy; elastane as a springy coil. Each covers the whole thread, and the core (and any dye in it) shows between the turns. Miss, and the yarn swings back to its hook.
+  - Wrap it: pull a cotton, wool or elastane yarn off the rail and bring it to the thread, which leans towards it; it snaps on and the wrap spreads out from where it landed (core-spun). Cotton winds on smooth, slim and even; wool lofty, lumpy and hairy; both cover the whole thread, and the polyester (and any dye in it) shows between the turns. Elastane goes inside, as the core, where it usually sits in stretch yarn. Miss, and the yarn swings back to its hook.
   - Colour it (a dye bath that only works at about 130°C, or pigment into the melt). Blends reveal that only the polyester takes the dye.
 - **For and against:** a tug-of-war.
 - **Wear:** the washing machine is the interface. Fine, staple and loose yarns shed more.
 - **Return:**
   - Where recycled polyester comes from: bottle to a slogan tee that reads rPET.
-  - Feed the recycler: blends jam it; strip them off. Each melt breaks links, and the thread shows it.
+  - Feed the recycler: predict first, then tap the ring. Blends jam it. A cotton or wool wrap can be stripped off; an elastane core can't, so chemistry is the next stop. Each melt breaks links, and the thread shows it.
   - Unzip the chain: tip a flask of water, glycol or enzymes into the tank and the chain breaks into its building blocks (dye leaches out, cotton comes out whole). Then link it back up, clean.
   - Spot the PET in a PET/PLA fork, then find out where PLA can compost.
-  - Stretch without elastane (bicomponent spring).
+  - Stretch without elastane: a bicomponent spring, stretch built in from the start. There's no pulling elastane off; if your thread has an elastane core, a card says why it stays.
   - Turn up the heat: the PLA ply melts first, and PET shows its memory.
   - Bury it: drag time from today to polyester's whole life since 1941. Cotton rots, polycotton loses only its cotton, a natural wrap on your thread rots underground but not in the air, and a scrap of polyester in the sun cracks into microplastics. Tap a microbe: it tries your polyester and gives up. The last card asks what a "biodegradable" label should tell you.
 - **Promise:** tie knots.
 - **Check yourself:** five quick questions with hints for wrong answers; each right answer threads an eyelet on the thread.
-- **The end:** the care label reads the thread back. **Reflect and copy** asks two questions and copies the label and answers as plain text to paste into a Canvas discussion or journal. **Notes and sources** is written for students: outcomes, how the lab works, questions to think about, confidence ratings and 49 sources.
+- **The end:** the care label reads the thread back. **Reflect and copy** asks two questions and copies the label and answers as plain text to paste into a Canvas discussion or journal. **Notes and sources** is written for students: outcomes, how the lab works, questions to think about, confidence ratings and 50 sources.
 
 It is built for asynchronous guided independent study: the notes give the time (about 20 minutes), a pixel hand demonstrates gestures, and nothing needs a tutor or an account. Nothing is saved when the page closes, so the copy step is the record.
 

@@ -367,7 +367,7 @@ body { margin: 0; padding-inline: 0; background: #121211; color: var(--k); font-
   </div>
   <button class="hit kb" type="button" data-p="cotton" aria-label="Wrap the thread in cotton"></button>
   <button class="hit kb" type="button" data-p="wool" aria-label="Wrap the thread in wool"></button>
-  <button class="hit kb" type="button" data-p="elastane" aria-label="Wrap the thread in elastane"></button>
+  <button class="hit kb" type="button" data-p="elastane" aria-label="Put elastane in the core"></button>
   <div class="card bl reserve" data-avoid="card"><p class="cl"></p><p class="ct"></p></div>
 </section>
 
@@ -444,7 +444,7 @@ body { margin: 0; padding-inline: 0; background: #121211; color: var(--k); font-
     <p class="hint" id="rc-hint">Tap the ring</p>
     <button class="btn" type="button" id="rc-strip" hidden>Strip the partner fibre off</button>
   </div>
-  <button class="hit" type="button" id="rc-coil" aria-label="Add elastane"></button>
+  <button class="hit" type="button" id="rc-coil" aria-label="Give the thread an elastane core"></button>
   <button class="hit" type="button" id="rc-ring" aria-label="Recycle the thread"></button>
   <div class="card bl reserve" data-avoid="card"><p class="cl"></p><p class="ct"></p></div>
 </section>
@@ -482,7 +482,6 @@ body { margin: 0; padding-inline: 0; background: #121211; color: var(--k); font-
     <h2>Stretch without elastane</h2>
     <p>Two polyesters in one filament shrink differently, so it curls into a spring.</p>
     <p class="hint">Pull the spring <span class="num" id="bend-n">+0%</span></p>
-    <button class="btn" type="button" id="bend-swap" hidden>Pull off the elastane</button>
   </div>
   <div class="card bl reserve" data-avoid="card"><p class="cl"></p><p class="ct"></p></div>
 </section>
@@ -646,6 +645,7 @@ body { margin: 0; padding-inline: 0; background: #121211; color: var(--k); font-
     <li><span class="chip w">Weak</span> Solution dyeing water savings: figures come from producers [19].</li>
     <li><span class="chip m">Moderate</span> 6,000,000+ microfibres from one 5 kg wash; fleece shed most; high-twist yarns shed less [5][20].</li>
     <li><span class="chip m">Moderate</span> Elastane in ~80% of discarded US clothes: one estimate [6].</li>
+    <li><span class="chip s">Strong</span> In stretch yarn, elastane usually forms the core, with cotton or filament spun or wound round it (core-spun or covered yarn) [50].</li>
     <li><span class="chip m">Moderate</span> No scalable fibre-to-fibre route for polycotton yet; one plant due 2028 [21].</li>
     <li><span class="chip m">Moderate</span> Dyes compromise recycled polyester; removal still in research [22].</li>
     <li><span class="chip m">Moderate</span> Repeated melting shortens PET chains and lowers its properties [28].</li>
@@ -711,6 +711,7 @@ body { margin: 0; padding-inline: 0; background: #121211; color: var(--k); font-
     <li><a target="_blank" rel="noopener" href="https://www.asa.org.uk/advice-online/environmental-claims-biodegradable-and-compostable.html">ASA, Environmental claims: biodegradable and compostable</a></li>
     <li><a target="_blank" rel="noopener" href="https://www.gov.uk/government/publications/green-claims-code-making-environmental-claims/green-claims-and-your-business">CMA (2021), Green Claims Code</a></li>
     <li><a target="_blank" rel="noopener" href="https://doi.org/10.1139/er-2023-0107">Sun et al. (2024), Environmental Reviews: PET-degrading enzymes</a></li>
+    <li><a target="_blank" rel="noopener" href="https://www.cell.com/heliyon/fulltext/S2405-8440(21)02635-9">Heliyon (2021), stretch denim from core-spun yarn</a>; <a target="_blank" rel="noopener" href="https://adityabirla-yarn.com/product/classical-yarns/core-spun-yarns">Aditya Birla, core-spun yarns (trade)</a></li>
   </ol>
   <p style="margin-top:14px">Visual style after The Dot and the Line (Chuck Jones and Maurice Noble, MGM, 1965).</p>
 </div>
@@ -749,7 +750,7 @@ var DISC = {
   ply: 'Plying the other way balances the twist, so the yarn hangs calm. Sewing thread is usually 2, 3 or 4 plies.',
   cotton: 'Core-spun: a polyester core for strength, cotton outside for feel and dye. Common in sewing thread.',
   wool: 'Wool on the outside, polyester inside: two different fibres that a recycler would have to separate.',
-  elastane: 'Elastane (spandex) is polyurethane, not polyester. One estimate finds it in about 80% of discarded clothes.',
+  elastane: 'Elastane (spandex) is polyurethane, not polyester. In stretch yarn it usually forms the core. One estimate finds it in about 80% of discarded clothes.',
   bath: 'Polyester repels water. Disperse dyes only get in at about 130°C, under pressure. And dyes are hard to get back out when it is recycled.',
   melt: 'Solution dyeing puts the colour in before spinning: no dye bath. Water-saving figures come from the makers, so ask for their data.',
   wash: 'In one lab study, a 5 kg wash of polyester released more than 6,000,000 microfibres.',
@@ -2121,18 +2122,19 @@ SCENES.bottle = {
   k: 0.09
 };
 
-// Feed the recycler. Anything wrapped round the polyester jams it.
+// Feed the recycler. Anything mixed into the polyester jams it. A wrap can be stripped; an elastane core can't.
 SCENES.recycle = {
   n: 180,
   init: function (f) {
     f.s.rec = false; f.s.rt = 0; f.s.done = false; var self = this;
     $('rc-coil').addEventListener('click', function () { if (!G.elastane && !G.partner) { G.elastane = true; self.reset(f); syncUI(); } });
     $('rc-ring').addEventListener('click', function () { self.recycle(f); });
-    $('rc-strip').addEventListener('click', function () { G.stripped = G.elastane ? 'elastane' : G.partner; G.partner = null; G.elastane = false; syncUI(); self.reset(f); });
+    $('rc-strip').addEventListener('click', function () { if (!G.partner) return; G.stripped = G.partner; G.partner = null; syncUI(); self.reset(f); });
   },
   blocked: function () { return G.elastane ? 'elastane' : G.partner; },
+  onSeen: function (f) { if (!f.s.rec) this.reset(f); },
   demo: function (f) { var g = this.geo(f); return { kind: 'tap', pts: [pt(g.cx + g.r * .72, g.cy + g.r * .72)], dur: 1.9 }; },
-  reset: function (f) { f.s.rec = false; f.s.done = false; setBg(f, 'white'); $('rc-say').hidden = true; $('rc-strip').hidden = true; $('rc-hint').textContent = 'Tap the ring'; var b = this.blocked(); $('rc-p').textContent = b ? 'Your thread has ' + b + ' wrapped round it. Predict first: will it go round?' : 'Your thread is about to go round. Predict first: will it?'; f.measure(); },
+  reset: function (f) { f.s.rec = false; f.s.done = false; setBg(f, 'white'); $('rc-say').hidden = true; $('rc-strip').hidden = true; $('rc-hint').textContent = 'Tap the ring'; var b = this.blocked(); $('rc-p').textContent = b === 'elastane' ? 'Your thread has an elastane core. Predict first: will it go round?' : b ? 'Your thread has ' + b + ' wrapped round it. Predict first: will it go round?' : 'Your thread is about to go round. Predict first: will it?'; f.measure(); },
   recycle: function (f) { this.reset(f); f.s.rec = true; f.s.rt = f.t; },
   geo: function (f) { var st = stage(f), W = f.w, r = Math.min(.3 * W, st.h * .3); return { cx: .5 * W, cy: st.t + st.h * .42, r: r, st: st, peg: pt(.8 * W, st.t + st.h * .66), cl: st.h * .26 }; },
   tap: function (f, x, y) { var g = this.geo(f); if (Math.hypot(x - g.cx, y - g.cy) < g.r + 20) this.recycle(f); else if (!this.blocked() && Math.abs(x - g.peg.x) < 40 && y > g.peg.y - 10 && y < g.peg.y + g.cl + 20) { G.elastane = true; this.reset(f); syncUI(); } },
@@ -2144,12 +2146,6 @@ SCENES.recycle = {
     return [pt(.13 * W, g.cy - g.r * .6), pt(g.cx - g.r, g.cy)].concat(arc(g.cx, g.cy, g.r, g.r, 180 * D, (180 + Math.max(4, this.sweep(f))) * D, 70)).concat([pt(.87 * W, g.cy + g.r + 50)]);
   },
   k: 0.09,
-  sqTarget: function (f) {
-    if (!(f.s.rec && G.elastane && f.t - f.s.rt > 0.5)) return null;
-    var g = this.geo(f), o = [], stall = 330 * D;
-    for (var i = 0; i < 60; i++) { var s = i / 59, ang = (180 + Math.min(s * 1.7, 1) * 150) * D, rr = g.r + 10 * Math.sin(s * 40 + f.t * 4); if (s > .58) ang = stall + (s - .58) * .3; o.push(pt(g.cx + rr * Math.cos(ang), g.cy + rr * Math.sin(ang))); }
-    return o;
-  },
   tick: function (f) {
     if (!this.blocked() && f.coil) f.coil.step(f.t, [], 0);
     if (f.s.rec && !f.s.done && f.t - f.s.rt > 1.7) {
@@ -2157,8 +2153,9 @@ SCENES.recycle = {
       if (!bad) { G.rounds = Math.min(4, G.rounds + 1); renderLabel(); }
       var tired = !bad && G.rounds >= 3;
       setBg(f, bad ? 'black' : 'blue'); say($('rc-say'), bad ? 'Jammed.' : tired ? 'Weaker each time.' : 'It goes round.');
-      $('rc-p').textContent = bad ? 'The ' + bad + ' and the polyester would have to be separated first.' : tired ? 'Each melt breaks some links. Could chemistry rebuild them? Scroll on.' : 'One material. Melted ' + G.rounds + (G.rounds === 1 ? ' time' : ' times') + '. Go again, or tap the coil to add elastane.';
-      $('rc-strip').hidden = !bad; if (bad) $('rc-strip').textContent = 'Strip the ' + bad + ' off'; $('rc-hint').textContent = bad ? 'Strip it, then tap the ring' : 'Tap the ring again'; card(f, bad ? 'jam' : tired ? 'downcycle' : 'loop');
+      var core = bad === 'elastane';
+      $('rc-p').textContent = core ? 'The elastane is in the core, so it can\'t be pulled out. Could chemistry get it out? Scroll on.' : bad ? 'The ' + bad + ' and the polyester would have to be separated first.' : tired ? 'Each melt breaks some links. Could chemistry rebuild them? Scroll on.' : 'One material. Melted ' + G.rounds + (G.rounds === 1 ? ' time' : ' times') + '. Go again, or tap the coil to give it an elastane core.';
+      $('rc-strip').hidden = !bad || core; if (bad && !core) $('rc-strip').textContent = 'Strip the ' + bad + ' off'; $('rc-hint').textContent = core ? 'Scroll on to unzip the chain' : bad ? 'Strip it, then tap the ring' : 'Tap the ring again'; card(f, bad ? 'jam' : tired ? 'downcycle' : 'loop');
       var gr = this.geo(f); stamp(f, bad ? 'CLUNK!' : tired ? 'CRACK' : 'WHIRR', gr.cx, gr.cy - gr.r - 30); f.measure();
     }
   },
@@ -2338,10 +2335,9 @@ SCENES.spot = {
   splice: function (f) { var g = this.geo(f), c = f.chain, a = -1, b = -1; for (var i = 0; i < c.n; i++) { var q = c.p[i]; if (q.y > g.F.y + 16 && q.y < g.J.y - 16) { if (a < 0) a = i; b = i; } } return a >= 0 ? [a, b] : null; }
 };
 
-// The thread coils into a spring. Pull it. Drag any elastane off.
+// The thread coils into a spring. Pull it. An elastane core can't be pulled out; this stretch is built in instead.
 SCENES.bend = {
-  n: 280, bi: true, sqGrab: true,
-  init: function (f) { $('bend-swap').addEventListener('click', function () { pullOff(); }); },
+  n: 280, bi: true,
   geo: function (f) { var st = stage(f); return { cx: .5 * f.w, t: st.t + st.h * .06, b: st.b - st.h * .06, a: .15 * f.w }; },
   path: function (f) {
     var g = this.geo(f), W = f.w, o = [pt(.13 * W, g.t - 8)];
@@ -2350,18 +2346,15 @@ SCENES.bend = {
   },
   k: function (f) { return f.vt < 0.5 ? 0.03 : 0.045; },
   demo: function (f) { var g = this.geo(f), y = (g.t + g.b) / 2; return { kind: 'drag', pts: [pt(g.cx + g.a * .9, y), pt(g.cx + g.a + 100, y + 70)], dur: 2.6 }; },
-  onDrag: function (f, d) {
-    if (d.chain === f.sq && G.elastane) { var c = f.chain.p, best = 1e9; for (var i = 0; i < c.length; i += 4) best = Math.min(best, Math.hypot(c[i].x - d.chain.gx, c[i].y - d.chain.gy)); if (best > 80) pullOff(); }
-  },
   tick: function (f) {
     var c = f.chain, v = 0, g = this.geo(f);
-    if (c.grab >= 0 && c.target) { v = Math.hypot(c.gx - c.target[c.grab].x, c.gy - c.target[c.grab].y) / (g.b - g.t) * 100; if (!G.bi) { G.bi = true; renderLabel(); } if (!f.s.c1) { f.s.c1 = true; card(f, 'spring'); stamp(f, 'BOING', c.gx - 60, c.gy - 50); } }
+    if (c.grab >= 0 && c.target) { v = Math.hypot(c.gx - c.target[c.grab].x, c.gy - c.target[c.grab].y) / (g.b - g.t) * 100; if (!G.bi && !G.elastane) { G.bi = true; renderLabel(); } if (!f.s.c1) { f.s.c1 = true; f.s.c1t = f.t; card(f, 'spring'); stamp(f, 'BOING', c.gx - 60, c.gy - 50); } }
     f.s.v = (f.s.v || 0) + (v - (f.s.v || 0)) * .2; var r = Math.round(f.s.v / 5) * 5;
     if (r !== f.s.r) { f.s.r = r; $('bend-n').textContent = '+' + r + '%'; }
     if (r >= 50 && !f.s.c2) { f.s.c2 = true; card(f, 'rubber'); stamp(f, 'TWANG', g.cx, g.t + 40); }
+    if (G.elastane && !f.s.toldE && f.vt > 1.4 && (!f.s.c1 || f.t > f.s.c1t + 4.5)) { f.s.toldE = true; card(f, 'Elastane inside', 'Your thread\'s elastane is in its core, so it can\'t be pulled out. A spring like this one has its stretch built in from the start.'); }
   }
 };
-function pullOff() { if (!G.elastane) return; G.elastane = false; G.bi = true; syncUI(); }
 
 // Two plies, PET and PLA. Scrub the temperature. Melted polymer floods the frame.
 SCENES.heat = {
@@ -2637,7 +2630,7 @@ SCENES.end = {
 };
 
 // ---------- shared state → words ----------
-function syncUI() { $('bend-swap').hidden = !G.elastane; renderLabel(); }
+function syncUI() { renderLabel(); }
 var SHAPES = { round: 'round', trilobal: 'trilobal', hollow: 'hollow', channel: 'channelled' };
 var REAGENT = { water: 'hydrolysis', glycol: 'glycolysis', enzyme: 'enzymes' };
 function renderLabel() {
@@ -2645,7 +2638,8 @@ function renderLabel() {
   var yarn = [G.staple ? 'staple (twist ' + G.twist + ')' : 'continuous filament'];
   if (G.tex === 'air' && G.loops > .2) yarn.push('air-textured'); if (G.tex === 'crimp' && G.crimp > .5) yarn.push('crimped');
   if (G.ply >= 2) yarn.push(G.ply + '-ply, ' + (G.plyBal ? 'balanced' : 'snarly'));
-  var wrapped = G.elastane ? 'elastane' : G.partner ? (G.reborn ? G.partner + ', removed by chemistry' : G.partner) : G.stripped ? 'nothing (' + G.stripped + ' stripped off)' : G.bi ? 'nothing: built-in spring' : 'nothing';
+  if (G.elastane) yarn.push('elastane core');
+  var wrapped = G.partner ? (G.reborn ? G.partner + ', removed by chemistry' : G.partner) : G.stripped ? 'nothing (' + G.stripped + ' stripped off)' : G.bi && !G.elastane ? 'nothing: built-in spring' : 'nothing';
   var rows = [
     ['Polymer', G.pla ? 'PET + PLA splice' : 'PET'],
     ['Fibre', fibre],
@@ -2666,7 +2660,7 @@ function renderLabel() {
   say($('end-say'), clean ? 'Can come back.' : 'Can\'t come back.');
   $('end-p').textContent = clean
     ? (G.reborn ? 'Rebuilt from its building blocks, so it can go round again, if a plant exists and its energy is clean.' : 'One material, so in principle it can go round again. In practice, under 1% of fibre does today.' + (G.colour ? ' Your dye will still have to come out.' : ''))
-    : G.elastane ? 'The elastane wrapped round it jams the loop. Scroll up to the spring and pull it off.'
+    : G.elastane ? 'The elastane in its core jams the loop, and it can\'t be pulled out. Scroll up and unzip the chain.'
     : G.partner && !G.reborn ? 'The ' + G.partner + ' wrapped round it has to be separated first. Scroll up: strip it in the recycler, or unzip the chain.'
     : 'PLA in a PET batch spoils it. Scroll up to Spot the PET and try again.';
 }
@@ -2730,7 +2724,6 @@ function layout() {
     f.chain.setTarget(path, kOf(f), f.rects);
     f.chain.p.forEach(function (q, i) { q.x = q.px = f.chain.target[i].x; q.y = q.py = f.chain.target[i].y; });
     f.chain.rest = f.chain.restGoal; f.chain.k = f.chain.kGoal;
-    f.sq = null;
   });
 }
 frames.forEach(function (f) { if (f.sc.init) f.sc.init(f); });
@@ -2828,23 +2821,6 @@ tallyUp(); tally.classList.remove('bump');
 $('close-sheet').addEventListener('click', closeSheet);
 document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !$('sheet').hidden) closeSheet(); });
 
-// ---------- elastane that follows the thread ----------
-function wrapPts(f, from, to, amp) {
-  var c = f.chain.p, n = f.chain.n, a = (n * from) | 0, b = (n * to) | 0, o = [];
-  for (var i = a; i <= b; i++) { var q = c[i], nx = c[Math.min(n - 1, i + 1)], dx = nx.x - q.x, dy = nx.y - q.y, L = Math.hypot(dx, dy) || 1, w = amp * Math.sin(i * .8 + f.t * 3); o.push(pt(q.x - dy / L * w, q.y + dx / L * w)); }
-  return o;
-}
-function elastaneStep(f) {
-  if (f.i < IDX.blend) return;
-  var want = G.elastane;
-  if (want && (!f.sq || f.sq.falling)) { var start = wrapPts(f, .05, .95, 0).map(function (q) { return pt(q.x + 30, q.y); }); f.sq = new Chain(start, clamp(Math.round(f.chain.n * .9), 64, 360), { pinTop: false, pinBot: false, g: 0, wind: .03, iter: 8 }); f.sq.grabbable = !!f.sc.sqGrab; }
-  if (!want && f.sq && !f.sq.falling) { f.sq.falling = true; f.sq.target = null; f.sq.kGoal = 0; f.sq.k = 0; f.sq.g = .3; f.sq.avoid = false; f.sq.grabbable = false; f.sq.p.forEach(function (q) { q.px -= (Math.random() - .5) * 4; }); }
-  if (!f.sq) return;
-  if (!f.sq.falling && f.sq.grab < 0) { var special = f.sc.sqTarget ? f.sc.sqTarget(f) : null; f.sq.setTarget(special || wrapPts(f, .05, .95, 9), .14, allRects(f)); }
-  if (f.sq.grab >= 0) f.sq.kGoal = .01;
-  f.sq.step(f.t, allRects(f), 0);
-  if (f.sq.falling && f.sq.p.every(function (q) { return q.y > f.h + 40; })) f.sq = null;
-}
 
 // ---------- loop ----------
 var last = performance.now(), acc = 0, lastScroll = window.scrollY, scrollV = 0, tick = 0;
@@ -2866,7 +2842,6 @@ function loop(now) {
       if (f.tk) { var ta = f.t - f.tk.t; if (ta < .7) c.kick(1.7 * (1 - ta / .7) * Math.sin(ta * 40), 0, Math.max(1, f.tk.i - 24), Math.min(c.n - 1, f.tk.i + 24)); else f.tk = null; }
       c.step(f.t, rects, sw);
       f.extras.forEach(function (x) { x.step(f.t, rects, sw * 0.5); });
-      elastaneStep(f);
     });
   }
   bumpText(now);
@@ -2910,7 +2885,8 @@ function look(f) {
     colour: rb ? null : i > IDX.colour ? G.colour : i === IDX.colour ? G.mix : null,
     rounds: i >= IDX.recycle && !rb ? G.rounds : 0,
     fresh: i === IDX.blend ? ease((f.t - f.s.wt) / 1) : 1,
-    from: i === IDX.blend && f.s.wAt != null ? f.s.wAt : null
+    from: i === IDX.blend && f.s.wAt != null ? f.s.wAt : null,
+    elastane: i >= IDX.blend && G.elastane
   };
 }
 // Cotton and wool, as a natural fibre round the polyester core. Cotton is smooth and even; wool is lofty, lumpy and hairy.
@@ -2931,7 +2907,7 @@ function helix(ctx, p, nm, w, a, b, N, u) {
     j = jA; bands.push([A.x - A.nx * r, A.y - A.ny * r, B.x + B.nx * r, B.y + B.ny * r, (A.x + B.x) / 2 + A.nx * wob, (A.y + B.y) / 2 + A.ny * wob, N.wool ? N.band * (.7 + hash(k, 34) * .7) : N.band]);
   }
   ctx.lineCap = 'round';
-  [[N.edge, 2.2], [N.col, 0]].forEach(function (pass) { ctx.strokeStyle = pass[0]; bands.forEach(function (q) { ctx.lineWidth = q[6] * Math.max(u, .5) + pass[1]; ctx.beginPath(); ctx.moveTo(q[0], q[1]); ctx.quadraticCurveTo(q[4], q[5], q[2], q[3]); ctx.stroke(); }); });
+  [[N.edge, N.rim == null ? 2.2 : N.rim], [N.col, 0]].forEach(function (pass) { ctx.strokeStyle = pass[0]; bands.forEach(function (q) { ctx.lineWidth = q[6] * Math.max(u, .5) + pass[1]; ctx.beginPath(); ctx.moveTo(q[0], q[1]); ctx.quadraticCurveTo(q[4], q[5], q[2], q[3]); ctx.stroke(); }); });
 }
 function drawMain(ctx, f, cum, flow, over) {
   var c = f.chain, p = c.p, L = look(f), key;
@@ -2946,7 +2922,7 @@ function drawMain(ctx, f, cum, flow, over) {
   var nm = normals(p);
   // natural fibre, coating the core end to end; while it is going on, it spreads out from where the yarn landed
   var wa = 0, wb = n - 1, wu = L.fresh;
-  if (L.partner && L.from != null && wu < 1) { var spr = Math.round(wu * n * .75) + 2; wa = Math.max(0, L.from - spr); wb = Math.min(n - 1, L.from + spr); wu = 1; }
+  if ((L.partner || L.elastane) && L.from != null && wu < 1) { var spr = Math.round(wu * n * .75) + 2; wa = Math.max(0, L.from - spr); wb = Math.min(n - 1, L.from + spr); wu = 1; }
   var NAT = L.partner && wu > .02 ? natural(L.partner, f.bg) : null;
   if (NAT) {
     var u = wu, ia = Math.max(1, wa), ib = Math.min(n - 1, wb), side, len, q, hb, dd, zz, wg;
@@ -2991,11 +2967,19 @@ function drawMain(ctx, f, cum, flow, over) {
   }
   // ...and winds round it, so the core (and any dye in it) shows between the turns: cotton tight and even, wool loose and lumpy
   if (NAT) helix(ctx, p, nm, w, wa, wb, NAT, wu);
+  // elastane sits in the core: the same restless dark scribble as on the rail, now inside, glimpsed between the polyester turns
+  if (L.elastane && wu > .02) {
+    var ecol = lum(ink) < .12 ? KU.w : KU.k, jit = Math.min(1.6, w * .17), efr = RM ? 0 : Math.floor(f.t * 12), ga = ctx.globalAlpha, ja = Math.max(0, wa), jb = Math.min(n - 1, wb);
+    ctx.strokeStyle = ecol; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    [[Math.max(2.2, w * .2), 1, 0], [Math.max(1.1, w * .1), .8, 1]].forEach(function (st) { ctx.lineWidth = st[0]; ctx.globalAlpha = ga * st[1]; ctx.beginPath(); for (var j = ja; j <= jb; j++) { var o = (hash(j + efr * 7, st[2] + 70) - .5) * 2 * jit, x = p[j].x + nm[j].x * o, y = p[j].y + nm[j].y * o; if (j > ja) ctx.lineTo(x, y); else ctx.moveTo(x, y); } ctx.stroke(); });
+    ctx.globalAlpha = ga;
+    helix(ctx, p, nm, w, wa, wb, { col: ink, edge: ink, rim: 0, pitch: 14, band: 2.6, slant: .7, over: -w * .08 }, 1);
+  }
   // trilobal fibres sparkle
   if (L.shape === 'trilobal') { var fr = Math.floor(f.t * 3); for (i = 3; i < n - 3; i += 5) { if (hash(i, fr) < .78) continue; var tw = .6 + .4 * Math.sin(f.t * 10 + i); star(ctx, p[i].x + nm[i].x * w * .3, p[i].y + nm[i].y * w * .3, 6 * tw, KU.w); star(ctx, p[i].x + nm[i].x * w * .3, p[i].y + nm[i].y * w * .3, 3 * tw, KU.y); } }
-  var bi = f.sc.bi || (G.bi && f.i >= IDX.bend);
+  var bi = f.sc.bi || (G.bi && !G.elastane && f.i >= IDX.bend);
   if (bi) { strokeP(ctx, offsetBy(p, nm, function () { return w * .28; }), casing, 1.6); }
-  else if (L.fil <= 1 && !L.staple && L.ply < 2) { ctx.lineCap = 'butt'; smooth(ctx, p); ctx.setLineDash([3, 14]); ctx.lineDashOffset = cum - flow; ctx.strokeStyle = casing; ctx.lineWidth = 2; ctx.stroke(); ctx.setLineDash([]); }
+  else if (L.fil <= 1 && !L.staple && L.ply < 2 && !L.elastane) { ctx.lineCap = 'butt'; smooth(ctx, p); ctx.setLineDash([3, 14]); ctx.lineDashOffset = cum - flow; ctx.strokeStyle = casing; ctx.lineWidth = 2; ctx.stroke(); ctx.setLineDash([]); }
   var sp = null;
   if (G.pla && f.name === 'spot' && f.s.ans !== null) sp = SCENES.spot.splice(f);
   else if (G.pla && f.i > IDX.spot) sp = [(n * .44) | 0, (n * .56) | 0];
@@ -3021,8 +3005,6 @@ function draw(sy) {
       f.dyn = [];
       if (f.sc.back) f.sc.back(ctx, f);
       dissolve(ctx, f); cardShadow(ctx, f);
-      var sqCol = f.bg === 'black' ? KU.w : KU.k;
-      if (f.sq) drawSquiggle(ctx, f.sq, f.t, sqCol);
       ctx.save();
       if (f.sc.hide) { var hb = f.sc.hide(f); ctx.beginPath(); ctx.rect(0, -10, f.w, hb[0] + 10); ctx.rect(0, hb[1], f.w, f.h - hb[1] + 10); ctx.clip(); }
       var spl = f.sc.split ? f.sc.split(f) : null;
@@ -3031,7 +3013,6 @@ function draw(sy) {
         (spl.zones || [{ a: -10, b: spl.y, o: spl.above }, { a: spl.y, b: f.h + 10, o: spl.below }]).forEach(function (z) { if (z.b <= z.a) return; ctx.save(); ctx.beginPath(); ctx.rect(0, z.a, f.w, z.b - z.a); ctx.clip(); drawMain(ctx, f, cum, flow, z.o); ctx.restore(); });
       } else drawMain(ctx, f, cum, flow);
       ctx.restore();
-      if (f.sq && !f.sq.falling) drawSquiggle(ctx, f.sq, f.t, sqCol, function (i) { return Math.cos(i * .75 + f.t * 3) > 0; });
       if (f.sc.front) f.sc.front(ctx, f);
       drawStamps(ctx, f);
       ctx.restore();
@@ -3048,7 +3029,6 @@ function hit(cx, cy, touch) {
     var f = frames[k]; if (!f.vis) continue; var y = yw - f.top; if (y < 0 || y > f.h) continue;
     if (f.sc.hitTest) { var h = f.sc.hitTest(f, x, y); if (h) return { f: f, custom: h, x: x, y: y }; }
     var cs = [f.chain].concat(f.extras.filter(function (c) { return c.grabbable; }));
-    if (f.sq && f.sq.grabbable && !f.sq.falling) cs.unshift(f.sq);
     cs.forEach(function (c) { for (var i = 1; i < c.n - 1; i++) { var d = Math.hypot(c.p[i].x - x, c.p[i].y - y); if (d < bd) { bd = d; best = { f: f, chain: c, i: i, x: x, y: y }; } } });
   }
   return best;

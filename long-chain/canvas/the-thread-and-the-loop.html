@@ -338,8 +338,8 @@ body { margin: 0; padding-inline: 0; background: #121211; color: var(--k); font-
     <p id="cut-p">Filament runs unbroken. Staple is cut short and spun, like cotton.</p>
     <p class="hint" id="cut-hint">Swipe across the thread to cut it</p>
     <button class="sr" type="button" id="cut-key">Cut the thread into staple</button>
-    <div class="scrub inline" id="twist" role="slider" tabindex="0" aria-label="Twist" aria-valuemin="0" aria-valuemax="10" aria-valuenow="0" hidden><span class="sv">0</span><small>twist · drag up</small></div>
   </div>
+  <div class="scrub" data-avoid="twist" id="twist" role="slider" tabindex="0" aria-label="Twist" aria-valuemin="0" aria-valuemax="10" aria-valuenow="0" hidden><span class="sv">0</span><small>twist · drag up</small></div>
   <div class="card bl reserve" data-avoid="card"><p class="cl"></p><p class="ct"></p></div>
 </section>
 
@@ -442,7 +442,6 @@ body { margin: 0; padding-inline: 0; background: #121211; color: var(--k); font-
     <p class="say" id="rc-say" hidden></p>
     <p id="rc-p">Your thread is about to go round. Predict first: will it?</p>
     <p class="hint" id="rc-hint">Tap the ring</p>
-    <button class="btn" type="button" id="rc-strip" hidden>Strip the partner fibre off</button>
   </div>
   <button class="hit" type="button" id="rc-coil" aria-label="Give the thread an elastane core"></button>
   <button class="hit" type="button" id="rc-ring" aria-label="Recycle the thread"></button>
@@ -726,7 +725,7 @@ var D = Math.PI / 180;
 var RM = false; try { RM = window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) {}
 
 // What the student has done to their thread. Every later exhibit reads this.
-var G = { draw: 1, shape: 'round', fil: 1, tex: null, loops: 0, crimp: 0, staple: false, twist: 0, ply: 1, plyTwist: 0, plyBal: false, partner: null, elastane: false, colour: null, mix: null, dye: null, pla: false, stripped: null, check: null, shed: 0, rounds: 0, reborn: null, bi: false, links: 0, knots: 0, buried: 0 };
+var G = { draw: 1, shape: 'round', fil: 1, tex: null, loops: 0, crimp: 0, staple: false, twist: 0, ply: 1, plyTwist: 0, plyBal: false, partner: null, elastane: false, colour: null, mix: null, dye: null, pla: false, check: null, shed: 0, rounds: 0, reborn: null, bi: false, links: 0, knots: 0, buried: 0 };
 
 // Polyester's age: no one has had longer than this to watch it decompose.
 var AGE = Math.max(85, new Date().getFullYear() - 1941);
@@ -1764,10 +1763,13 @@ SCENES.texture = {
   }
 };
 
-// Swipe across the thread to cut it into staple. Then drag the twist up to spin it.
+// Swipe across the thread to cut it into staple. Then, below it, drag the twist up to spin it.
 SCENES.cut = {
   n: 140,
-  demo: function (f) { if (G.staple) return null; var st = stage(f), y = st.t + st.h * .5; return { kind: 'drag', pts: [pt(.06 * f.w, y + 30), pt(.94 * f.w, y - 30)], dur: 2.4 }; },
+  demo: function (f) {
+    if (G.staple) { if (G.twist > 0 || f.t - (f.s.twAt || 0) < 3) return null; var a = domPt(f, $('twist')); return { kind: 'drag', pts: [a, pt(a.x, a.y - 90)], dur: 2.6 }; }
+    var st = stage(f), y = st.t + st.h * .5; return { kind: 'drag', pts: [pt(.06 * f.w, y + 30), pt(.94 * f.w, y - 30)], dur: 2.4 };
+  },
   init: function (f) {
     f.s.cuts = 0; f.s.trail = []; f.falls = []; var self = this;
     f.twist = scrub($('twist'), { value: 0, min: 0, max: 10, step: 1, per: .06, fmt: function (v) { return String(v); },
@@ -1780,7 +1782,7 @@ SCENES.cut = {
     if (bit.length > 2) { var fall = new Chain(bit, bit.length, { pinTop: false, pinBot: false, g: .3 }); fall.grabbable = false; fall.p.forEach(function (q) { q.px -= (Math.random() - .5) * 4; }); f.falls.push(fall); }
     var cq = c.p[i]; if (cq) stamp(f, 'SNIP!', cq.x - 64, cq.y - 24);
     f.s.cuts++; c.kick(0, -4, a, b);
-    if (f.s.cuts === 3) { G.staple = true; $('twist').hidden = false; $('cut-hint').textContent = 'Now spin it: drag the twist up'; card(f, 'staple'); f.measure(); }
+    if (f.s.cuts === 3) { G.staple = true; $('twist').hidden = false; $('cut-hint').textContent = 'Now spin it: drag the twist up'; f.s.twAt = f.t; f.touched = false; f.demoN = 0; card(f, 'staple'); this.layout(f); }
   },
   hitTest: function (f, x, y) {
     var c = f.chain, self = this; for (var i = 0; i < c.n; i++) if (Math.hypot(c.p[i].x - x, c.p[i].y - y) < 26) return null;
@@ -1792,12 +1794,15 @@ SCENES.cut = {
       last = cur;
     } };
   },
-  zbox: function (f) { var st = stage(f); return { L: .14 * f.w, R: .86 * f.w, t: st.t + st.h * .16, b: st.b - st.h * .14 }; },
+  // once it is cut, the Z lifts to leave room for the twist underneath
+  room: function () { return G.staple ? ($('twist').offsetHeight || 90) + 36 : 0; },
+  zbox: function (f) { var st = stage(f); return { L: .14 * f.w, R: .86 * f.w, t: st.t + st.h * .16, b: st.b - Math.max(st.h * .14, this.room()) }; },
+  layout: function (f) { var el = $('twist'); if (!el.hidden) { el.style.left = '6%'; el.style.top = Math.round(this.zbox(f).b + 24) + 'px'; } f.measure(); },
   path: function (f) { var st = stage(f), W = f.w, z = this.zbox(f), a = pt(.87 * W, st.t + 6); return [a].concat(swing(a, pt(z.L, z.t - 18), 'zig'), [pt(z.L, z.t), pt(z.R, z.t), pt(z.L, z.b), pt(z.R, z.b), pt(.87 * W, st.b - 6)]); },
   k: 0.08,
   tick: function (f) { f.falls = f.falls.filter(function (c) { c.step(f.t, [], 0); return !c.p.every(function (q) { return q.y > f.h + 30; }); }); },
   front: function (ctx, f) {
-    if (G.twist > 0) { var z = this.zbox(f); label(ctx, f, 'Z TWIST', z.R, z.b + 30, 13, KU.w, 'right'); }
+    if (G.twist > 0) { var z = this.zbox(f); label(ctx, f, 'Z TWIST', z.R - 16, z.b + 30, 13, KU.w, 'right'); }
     f.falls.forEach(function (c) { strokeChain(ctx, c, KU.b, 5); });
     var tr = f.s.trail.filter(function (q) { return f.t - q.t < .35; });
     if (tr.length > 1) { ctx.strokeStyle = KU.y; ctx.lineWidth = 4; ctx.lineCap = 'round'; ctx.beginPath(); tr.forEach(function (q, i) { ctx[i ? 'lineTo' : 'moveTo'](q.x, q.y); }); ctx.stroke(); }
@@ -1887,7 +1892,7 @@ SCENES.blend = {
     $('bl-off').addEventListener('click', function () { self.wrap(f, 'none'); });
   },
   wrap: function (f, p, at) {
-    G.partner = p === 'cotton' || p === 'wool' ? p : null; G.elastane = p === 'elastane'; G.stripped = null; f.s.wt = f.t; f.s.wAt = at == null ? (f.chain.n * .5) | 0 : at; f.chain.kick(5, 0); syncUI();
+    G.partner = p === 'cotton' || p === 'wool' ? p : null; G.elastane = p === 'elastane'; f.s.wt = f.t; f.s.wAt = at == null ? (f.chain.n * .5) | 0 : at; f.chain.kick(5, 0); syncUI();
     $('bl-off').hidden = p === 'none'; $('bl-hint').textContent = p === 'none' ? 'Drag a yarn onto the thread' : 'Try another, or unwrap it';
     if (p !== 'none') card(f, p); else SND.play('unwrap');
     f.measure();
@@ -2122,19 +2127,18 @@ SCENES.bottle = {
   k: 0.09
 };
 
-// Feed the recycler. Anything mixed into the polyester jams it. A wrap can be stripped; an elastane core can't.
+// Feed the recycler. Anything mixed into the polyester jams it, wound round or inside; only chemistry can take it apart.
 SCENES.recycle = {
   n: 180,
   init: function (f) {
     f.s.rec = false; f.s.rt = 0; f.s.done = false; var self = this;
     $('rc-coil').addEventListener('click', function () { if (!G.elastane && !G.partner) { G.elastane = true; self.reset(f); syncUI(); } });
     $('rc-ring').addEventListener('click', function () { self.recycle(f); });
-    $('rc-strip').addEventListener('click', function () { if (!G.partner) return; G.stripped = G.partner; G.partner = null; syncUI(); self.reset(f); });
   },
   blocked: function () { return G.elastane ? 'elastane' : G.partner; },
   onSeen: function (f) { if (!f.s.rec) this.reset(f); },
   demo: function (f) { var g = this.geo(f); return { kind: 'tap', pts: [pt(g.cx + g.r * .72, g.cy + g.r * .72)], dur: 1.9 }; },
-  reset: function (f) { f.s.rec = false; f.s.done = false; setBg(f, 'white'); $('rc-say').hidden = true; $('rc-strip').hidden = true; $('rc-hint').textContent = 'Tap the ring'; var b = this.blocked(); $('rc-p').textContent = b === 'elastane' ? 'Your thread has an elastane core. Predict first: will it go round?' : b ? 'Your thread has ' + b + ' wrapped round it. Predict first: will it go round?' : 'Your thread is about to go round. Predict first: will it?'; f.measure(); },
+  reset: function (f) { f.s.rec = false; f.s.done = false; setBg(f, 'white'); $('rc-say').hidden = true; $('rc-hint').textContent = 'Tap the ring'; var b = this.blocked(); $('rc-p').textContent = b === 'elastane' ? 'Your thread has an elastane core. Predict first: will it go round?' : b ? 'Your thread has ' + b + ' wrapped round it. Predict first: will it go round?' : 'Your thread is about to go round. Predict first: will it?'; f.measure(); },
   recycle: function (f) { this.reset(f); f.s.rec = true; f.s.rt = f.t; },
   geo: function (f) { var st = stage(f), W = f.w, r = Math.min(.3 * W, st.h * .3); return { cx: .5 * W, cy: st.t + st.h * .42, r: r, st: st, peg: pt(.8 * W, st.t + st.h * .66), cl: st.h * .26 }; },
   tap: function (f, x, y) { var g = this.geo(f); if (Math.hypot(x - g.cx, y - g.cy) < g.r + 20) this.recycle(f); else if (!this.blocked() && Math.abs(x - g.peg.x) < 40 && y > g.peg.y - 10 && y < g.peg.y + g.cl + 20) { G.elastane = true; this.reset(f); syncUI(); } },
@@ -2154,8 +2158,8 @@ SCENES.recycle = {
       var tired = !bad && G.rounds >= 3;
       setBg(f, bad ? 'black' : 'blue'); say($('rc-say'), bad ? 'Jammed.' : tired ? 'Weaker each time.' : 'It goes round.');
       var core = bad === 'elastane';
-      $('rc-p').textContent = core ? 'The elastane is in the core, so it can\'t be pulled out. Could chemistry get it out? Scroll on.' : bad ? 'The ' + bad + ' and the polyester would have to be separated first.' : tired ? 'Each melt breaks some links. Could chemistry rebuild them? Scroll on.' : 'One material. Melted ' + G.rounds + (G.rounds === 1 ? ' time' : ' times') + '. Go again, or tap the coil to give it an elastane core.';
-      $('rc-strip').hidden = !bad || core; if (bad && !core) $('rc-strip').textContent = 'Strip the ' + bad + ' off'; $('rc-hint').textContent = core ? 'Scroll on to unzip the chain' : bad ? 'Strip it, then tap the ring' : 'Tap the ring again'; card(f, bad ? 'jam' : tired ? 'downcycle' : 'loop');
+      $('rc-p').textContent = core ? 'The elastane is in the core, so it can\'t be pulled out. Could chemistry get it out? Scroll on.' : bad ? 'The ' + bad + ' is wound round the polyester, so they would have to be separated first. Could chemistry do it? Scroll on.' : tired ? 'Each melt breaks some links. Could chemistry rebuild them? Scroll on.' : 'One material. Melted ' + G.rounds + (G.rounds === 1 ? ' time' : ' times') + '. Go again, or tap the coil to give it an elastane core.';
+      $('rc-hint').textContent = bad ? 'Scroll on to unzip the chain' : 'Tap the ring again'; card(f, bad ? 'jam' : tired ? 'downcycle' : 'loop');
       var gr = this.geo(f); stamp(f, bad ? 'CLUNK!' : tired ? 'CRACK' : 'WHIRR', gr.cx, gr.cy - gr.r - 30); f.measure();
     }
   },
@@ -2567,7 +2571,7 @@ SCENES.check = {
   Q: [
     ['You want a light jacket fill that keeps you warm. Which fibre shape?', ['Round', 'Hollow', 'Trilobal'], 1, 'A hollow core traps air, and still air insulates.', ['Round fibres pack tight. Which shape could hold some air inside?', '', 'Trilobal fibres sparkle. Which shape could hold some air inside?']],
     ['Which yarn sheds more microfibres in the wash?', ['Fine fibres, loosely twisted', 'Thick filament, tightly twisted'], 0, 'Fine fibres and low twist leave more loose ends to break off.', ['', 'Picture the loose ends. Which yarn has more of them, held less tightly?']],
-    ['Why does a cotton wrap jam the recycler?', ['Cotton melts too soon', 'Two fibres have to be separated first', 'Cotton is too strong'], 1, 'Melting needs one material. A blend has to come apart first.', ['Cotton does not melt at all; it chars. So what is the real problem?', '', 'Strength is not the issue. What happened when you stripped the wrap off?']],
+    ['Why does a cotton wrap jam the recycler?', ['Cotton melts too soon', 'Two fibres have to be separated first', 'Cotton is too strong'], 1, 'Melting needs one material. A blend has to come apart first.', ['Cotton does not melt at all; it chars. So what is the real problem?', '', 'Strength is not the issue. What did it take to get the cotton out?']],
     ['What can chemical recycling do that melting cannot?', ['Break every link back into building blocks', 'Keep the chains long by melting gently', 'Turn the polyester into cotton'], 0, 'It runs the linking backwards, so rebuilt PET can be as good as new.', ['', 'Every melt shortens the chains. What did the flasks do instead?', 'Chemistry cannot change one fibre into another. What came out of the tank?']],
     ['A batch of PET bottles has a few PLA bottles mixed in. Does it matter?', ['No, both are polyester', 'Yes, a little PLA can spoil the batch'], 1, 'In bottle recycling, just 0.1% PLA can spoil a batch of PET.', ['Remember the fork: PLA looked just like PET. What did that mean for the recycler?', '']]
   ],
@@ -2639,7 +2643,7 @@ function renderLabel() {
   if (G.tex === 'air' && G.loops > .2) yarn.push('air-textured'); if (G.tex === 'crimp' && G.crimp > .5) yarn.push('crimped');
   if (G.ply >= 2) yarn.push(G.ply + '-ply, ' + (G.plyBal ? 'balanced' : 'snarly'));
   if (G.elastane) yarn.push('elastane core');
-  var wrapped = G.partner ? (G.reborn ? G.partner + ', removed by chemistry' : G.partner) : G.stripped ? 'nothing (' + G.stripped + ' stripped off)' : G.bi && !G.elastane ? 'nothing: built-in spring' : 'nothing';
+  var wrapped = G.partner ? (G.reborn ? G.partner + ', removed by chemistry' : G.partner) : G.bi && !G.elastane ? 'nothing: built-in spring' : 'nothing';
   var rows = [
     ['Polymer', G.pla ? 'PET + PLA splice' : 'PET'],
     ['Fibre', fibre],
@@ -2661,7 +2665,7 @@ function renderLabel() {
   $('end-p').textContent = clean
     ? (G.reborn ? 'Rebuilt from its building blocks, so it can go round again, if a plant exists and its energy is clean.' : 'One material, so in principle it can go round again. In practice, under 1% of fibre does today.' + (G.colour ? ' Your dye will still have to come out.' : ''))
     : G.elastane ? 'The elastane in its core jams the loop, and it can\'t be pulled out. Scroll up and unzip the chain.'
-    : G.partner && !G.reborn ? 'The ' + G.partner + ' wrapped round it has to be separated first. Scroll up: strip it in the recycler, or unzip the chain.'
+    : G.partner && !G.reborn ? 'The ' + G.partner + ' wound round it has to be separated first. Scroll up and unzip the chain.'
     : 'PLA in a PET batch spoils it. Scroll up to Spot the PET and try again.';
 }
 

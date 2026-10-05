@@ -74,6 +74,7 @@ body { margin: 0; padding-inline: 0; background: #121211; color: var(--k); font-
 #guess-a .big { font-size: clamp(56px, 17vw, 76px); }
 
 /* Spin: the draw ratio, big, stretching as the fibre does */
+.frame .drawn-cap { position: absolute; z-index: 2; left: 6%; margin: 0; font-size: 13px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; pointer-events: none; transition: top .2s; }
 .drawn { position: absolute; z-index: 2; left: 6%; font-weight: 700; line-height: 1; letter-spacing: -0.03em; white-space: nowrap; transform-origin: 0 0; pointer-events: none; font-variant-numeric: tabular-nums; transition: transform .2s; }
 
 /* Controls */
@@ -274,6 +275,7 @@ body { margin: 0; padding-inline: 0; background: #121211; color: var(--k); font-
     <label class="sr">Stretch the fibre <input type="range" id="spin-r" min="1" max="5" step="0.1" value="1"></label>
   </div>
   <div class="drawn" id="spin-out" data-avoid="drawn" aria-hidden="true">×1.0</div>
+  <p class="drawn-cap" id="spin-cap" aria-hidden="true">stretching…</p>
   <div class="card bl reserve" data-avoid="card"><p class="cl"></p><p class="ct"></p></div>
 </section>
 
@@ -1205,11 +1207,15 @@ SCENES.cover = {
   // the studio's name sits beside the spool; the title hangs below it; the hint sits under the title's loop
   layout: function (f) {
     var sp = this.spool(f), pl = f.el.querySelector('.pill'), ti = f.el.querySelector('.copy.title'), un = f.el.querySelector('.copy.under');
-    var right = sp.x - sp.w / 2 - 9 - 30;
+    var right = sp.x - sp.w / 2 - 9 - 36, pb = sp.y + pl.offsetHeight / 2, A = this.hiAt(f);
     pl.style.left = Math.round(Math.max(.06 * f.w, right - pl.offsetWidth)) + 'px'; pl.style.top = Math.round(sp.y - pl.offsetHeight / 2) + 'px';
-    ti.style.top = Math.round(sp.y + pl.offsetHeight / 2 + 50) + 'px';
-    f.measure(); var e = this.loop(f); if (e && un) { un.style.top = Math.round(e.cy + e.ry + 22) + 'px'; f.measure(); }
+    // room to breathe: the spare height is shared between the gaps, within limits, so the hint never meets the "hi"
+    var g = clamp((A.top - pb - ti.offsetHeight - (un ? un.offsetHeight : 0)) / 2.5, 36, 72);
+    ti.style.top = Math.round(pb + g) + 'px';
+    f.measure(); var e = this.loop(f); if (e && un) { un.style.top = Math.round(e.cy + e.ry + Math.max(22, g * .5)) + 'px'; f.measure(); }
   },
+  // where the "hi" sits along the bottom
+  hiAt: function (f) { var H = clamp(f.w * .08, 24, 32), yb = f.h - clamp(f.h * .075, 52, 70); return { H: H, x0: .74 * f.w, yb: yb, top: yb - 2.12 * H }; },
   // the big loop round the title; its top runs just under the studio's name
   loop: function (f) {
     var t = f.named.title, pl = f.named.pill, W = f.w; if (!t || !pl) return null;
@@ -1227,7 +1233,7 @@ SCENES.cover = {
     var shown = f.cardEl && f.cardEl.classList.contains('show');
     if (shown) { var hb = (f.named.card ? f.named.card.t : f.h * .85) - 18; f.s.dot = null; return o.concat([pt(.05 * W, hb), pt(.87 * W, hb)]); }
     // along the bottom the thread writes "hi"; the dot on the i is The Dot
-    var H = clamp(W * .08, 24, 32), x0 = .74 * W, yb = f.h - clamp(f.h * .075, 52, 70), u = RM ? 1 : ease((f.t - .6) / 1.4);
+    var A = this.hiAt(f), H = A.H, x0 = A.x0, yb = A.yb, u = RM ? 1 : ease((f.t - .6) / 1.4);
     f.s.dot = pt(x0 + 1.32 * H, yb - 1.62 * H); f.s.dotU = u;
     return o.concat([pt(.05 * W, yb - 16), pt(.12 * W, yb)]).concat(this.hi(x0, yb, H, u)).concat([pt(.87 * W, yb + 8)]);
   },
@@ -1330,9 +1336,9 @@ SCENES.oil = {
   init: function (f) { f.s.links = 0; f.s.fly = []; f.s.next = .5; },
   surf: function (f) { return (f.named.top ? f.named.top.b : f.h * .35) + 28; },
   // the word sits at the foot of the stage; the links attach to the rising chain above it
-  pet: function (f) { var st = stage(f), H = clamp(st.h * .17, 38, 66), ww = wordW('PET', H); return { H: H, x0: .5 * f.w - ww / 2, y0: st.b - H - 22, w: ww }; },
+  pet: function (f) { var st = stage(f), H = clamp(st.h * .17, 38, 66), ww = wordW('PET', H); return { H: H, x0: .58 * f.w - ww / 2, y0: st.b - H - 22, w: ww }; },
   path: function (f) {
-    var W = f.w, sy = this.surf(f), st = stage(f), a = pt(.87 * W, sy - 24), b = pt(.5 * W, sy + 14), pw = this.pet(f), c = pt(pw.x0 - 16, pw.y0 + pw.H * .35), spine = [];
+    var W = f.w, sy = this.surf(f), st = stage(f), a = pt(.87 * W, sy - 24), b = pt(.5 * W, sy + 14), pw = this.pet(f), c = pt(pw.x0 - .12 * W, pw.y0 + pw.H * .35), spine = [];
     for (var i = 1; i <= 30; i++) { var u = i / 30; spine.push(pt(b.x + (c.x - b.x) * ease(u) + Math.sin(u * Math.PI * 3) * .07 * W * Math.sin(u * Math.PI), b.y + (c.y - b.y) * u)); }
     var letters = word('PET', pw.x0, pw.y0, pw.H), end = letters[letters.length - 1], out = swing(end, pt(.87 * W, st.b - 6), 'ogee', true);
     // the chain goes behind the cloth just below its last link, and comes back out clear of the T
@@ -1402,6 +1408,7 @@ SCENES.spin = {
   stretch: function (f) {
     if (!f.s.F) return; var el = $('spin-out'), F = f.s.F, d = G.draw, sy = Math.max(1, f.s.mh * (.45 + .075 * (d - 1)) / (.716 * F)), sx = Math.pow(d, -.25);
     el.style.top = Math.round(f.s.ft - .131 * F * sy) + 'px'; el.style.transform = 'scale(' + sx.toFixed(3) + ',' + sy.toFixed(3) + ')';
+    $('spin-cap').style.top = Math.round(f.s.ft + (.847 - .131) * F * sy + 10) + 'px';
   },
   // the thread goes in thick and comes out thinner; the harder you pull, the thinner it gets
   split: function (f) { return { y: this.geo(f).ry, above: { w: 11 }, below: { w: clamp(7.4 - .6 * (G.draw - 1), 4.8, 7.4) } }; },

@@ -6,6 +6,8 @@ The look is a 1-bit fibre lab: every shade is woven, drawn with point-paper weav
 
 The cover asks one question: polyester has memory, but can it be recycled, or decompose? The exhibits answer it in parts. Turn up the heat shows the memory (heat-setting, as in Issey Miyake's Pleats Please). Bury it answers the last part: microbes eat cotton, polyester stays whole underground, and in the sun it breaks up into microplastics instead of breaking down.
 
+Sound is synthesised in the page with the Web Audio API, so there are no audio files: every comic word on screen (CLICK, ZIP!, HISSS, MUNCH and the rest) has a matching sound effect, discoveries chime, and the air jet whooshes while it is held. A Sound button in the top bar switches it off, and the choice is remembered on that device.
+
 One Verlet-simulated thread runs through every exhibit and is the controller. It keeps what you do to it, so its shape, filament count, texture, form, plies, wrap, colour and recycling history carry forward. The care label at the end reads the thread back and decides whether the loop can close. Text blocks are solid: the thread routes round them.
 
 Exhibits:
@@ -16,11 +18,11 @@ Exhibits:
   - Pick a nozzle (round, trilobal, hollow or channelled), then drag a torch, an ice cube or a sweat drop onto the microscope lens.
   - One strand or hundreds (mono-, multi- and microfilament).
 - **Yarn:**
-  - Puff it up: hold the air jet to blow loops into the filaments (air-jet texturing), or tap the heater to crimp them (false-twist texturing). One thick filament won't texture.
+  - Puff it up: hold the air jet to blow loops into the filaments (air-jet texturing), or tap the heater to crimp them (false-twist texturing). A feel meter fills from slick to soft. One thick filament won't texture.
   - Cut it and spin it (staple fibre and twist): the thread draws a Z, the direction most single yarns are spun.
   - Ply it: add bobbins and turn the twist dial. The hanging loop snarls until the ply twist balances the twist in each strand.
 - **Combine:**
-  - Wrap it: pull a cotton, wool or elastane yarn off the rail and drop it on the thread (core-spun).
+  - Wrap it: pull a cotton, wool or elastane yarn off the rail and bring it to the thread, which leans towards it; it snaps on and the wrap spreads out from where it landed (core-spun). Miss, and the yarn swings back to its hook.
   - Colour it (a dye bath that only works at about 130°C, or pigment into the melt). Blends reveal that only the polyester takes the dye.
 - **For and against:** a tug-of-war.
 - **Wear:** the washing machine is the interface. Fine, staple and loose yarns shed more.

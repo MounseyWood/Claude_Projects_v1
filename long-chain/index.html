@@ -77,6 +77,11 @@ body { margin: 0; padding-inline: 0; background: #121211; color: var(--k); font-
 .frame .drawn-cap { position: absolute; z-index: 2; left: 6%; margin: 0; font-size: 13px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; pointer-events: none; transition: top .2s; }
 .drawn { position: absolute; z-index: 2; left: 6%; font-weight: 700; line-height: 1; letter-spacing: -0.03em; white-space: nowrap; transform-origin: 0 0; pointer-events: none; font-variant-numeric: tabular-nums; transition: transform .2s; }
 
+/* Pick a nozzle: four nozzles in a two-by-two block */
+#nozzles { display: grid; grid-template-columns: repeat(2, max-content); gap: 10px; }
+/* One strand or hundreds: a big number */
+#fil-n small { font-size: 16px; letter-spacing: .14em; }
+
 /* Controls */
 .row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
 .btn, .opt { font: 700 16px/1.1 var(--font); border: 0; border-radius: 999px; padding: 13px 18px; min-height: 48px; cursor: pointer; background: var(--k); color: var(--w); }
@@ -287,8 +292,8 @@ body { margin: 0; padding-inline: 0; background: #121211; color: var(--k); font-
     <div class="row" role="group" aria-label="Nozzle shapes" id="nozzles">
       <button class="opt" type="button" data-shape="round" aria-pressed="true">Round</button>
       <button class="opt" type="button" data-shape="trilobal" aria-pressed="false">Trilobal</button>
-      <button class="opt" type="button" data-shape="hollow" aria-pressed="false">Hollow</button>
       <button class="opt" type="button" data-shape="channel" aria-pressed="false">Channelled</button>
+      <button class="opt" type="button" data-shape="hollow" aria-pressed="false">Hollow</button>
     </div>
   </div>
   <button class="hit kb" type="button" data-test="light" aria-label="Test it: shine a light"></button>
@@ -544,6 +549,7 @@ body { margin: 0; padding-inline: 0; background: #121211; color: var(--k); font-
 <button class="tally" id="tally" type="button" aria-label="Discoveries: 0 found. Open your collection.">0/42</button>
 <button class="fs" id="fs" type="button" hidden>Full screen</button>
 <a class="fs" id="fs-tab" target="_blank" rel="noopener" href="#" hidden>Open in new tab</a>
+<button class="fs" id="snd" type="button" aria-pressed="true">Sound on</button>
 <div class="sheet" id="coll" role="dialog" aria-modal="true" aria-label="Your discoveries" hidden>
   <button class="btn close" type="button" id="close-coll">Close</button>
   <h2>Discoveries</h2>
@@ -971,7 +977,7 @@ function strokeP(ctx, p, col, w, dash, a, b) {
 }
 function strokeChain(ctx, c, col, w, dash, a, b) { strokeP(ctx, c.p, col, w, dash, a, b); }
 function cased(ctx, c, ink, casing, w, dash, a, b) { strokeChain(ctx, c, casing, w + 3.2, null, a, b); strokeChain(ctx, c, ink, w, dash, a, b); }
-function drawSquiggle(ctx, c, t, col, mask) {
+function drawSquiggle(ctx, c, t, col, mask, wm) {
   var fr = Math.floor(t * 12), p = c.p, s, i;
   ctx.strokeStyle = col; ctx.lineCap = 'round';
   for (s = 0; s < 4; s++) {
@@ -981,9 +987,9 @@ function drawSquiggle(ctx, c, t, col, mask) {
       var x = p[i].x + (hash(i + fr * 7, s) - 0.5) * 3.6, y = p[i].y + (hash(i * 3 + fr, s + 9) - 0.5) * 3.6;
       if (pen) ctx.lineTo(x, y); else { ctx.moveTo(x, y); pen = true; }
     }
-    ctx.lineWidth = s ? 1.2 : 3.4; ctx.globalAlpha = s ? 0.75 : 1; ctx.stroke();
+    ctx.lineWidth = (s ? 1.2 : 3.4) * (wm || 1); ctx.globalAlpha = s ? 0.75 : 1; ctx.stroke();
   }
-  ctx.globalAlpha = 1; ctx.lineWidth = 1.2; ctx.beginPath();
+  ctx.globalAlpha = 1; ctx.lineWidth = 1.2 * (wm || 1); ctx.beginPath();
   for (i = 0; i < p.length; i += 2) {
     if (mask && !mask(i)) continue;
     var a = hash(i, fr) * Math.PI * 2, L = 3 + hash(fr, i) * 6;
@@ -1037,7 +1043,7 @@ function card(f, kind, text) {
   var c = f.el.querySelector('.card'); if (!c) return;
   var head;
   if (kind && DISC[kind]) {
-    if (!FOUND[kind]) { FOUND[kind] = true; NFOUND++; renderLabel(); tallyUp(); }
+    if (!FOUND[kind]) { FOUND[kind] = true; NFOUND++; renderLabel(); tallyUp(); SND.play('found'); }
     head = 'Discovery · ' + NFOUND + ' of ' + NDISC; text = DISC[kind];
   } else head = kind || 'Try this';
   c.querySelector('.cl').textContent = head; c.querySelector('.ct').textContent = text;
@@ -1104,7 +1110,90 @@ function wFade(c, col, x, y, w, h, a, b) { var n = Math.abs(b - a) + 1, bh = h /
 function shadeOf(f) { return f.bg === 'black' ? null : KU.k; }
 
 // comic sound words pop where things happen
-function stamp(f, s, x, y) { if (!f.stamps) f.stamps = []; if (f.stamps.length > 3) f.stamps.shift(); f.stamps.push({ s: s, x: clamp(x, 70, f.w - 70), y: clamp(y, 40, f.h - 40), t: f.t, r: (Math.random() - .5) * .34 }); }
+// ---------- sound: small synthesised effects, no audio files; every comic word on screen has a sound ----------
+var SND = (function () {
+  var ac = null, out = null, on = true, nb = null, held = {};
+  try { on = localStorage.getItem('ttl-sound') !== 'off'; } catch (e) {}
+  function ctx() {
+    if (!on) return null;
+    if (!ac) { var A = window.AudioContext || window.webkitAudioContext; if (!A) return null; try { ac = new A(); out = ac.createGain(); out.gain.value = .3; out.connect(ac.destination); } catch (e) { ac = null; return null; } }
+    if (ac.state === 'suspended') { try { ac.resume(); } catch (e) {} }
+    return ac;
+  }
+  function noiseBuf(c) { if (!nb) { nb = c.createBuffer(1, c.sampleRate, c.sampleRate); var d = nb.getChannelData(0); for (var i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1; } return nb; }
+  function env(g, t, peak, len) { g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(peak, t + .006); g.gain.exponentialRampToValueAtTime(.0001, t + len); }
+  // a pitched blip sliding from f0 to f1
+  function tone(type, f0, f1, len, vol, dl) {
+    var c = ctx(); if (!c) return; var t = c.currentTime + (dl || 0), o = c.createOscillator(), g = c.createGain();
+    o.type = type; o.frequency.setValueAtTime(f0, t); o.frequency.exponentialRampToValueAtTime(Math.max(30, f1), t + len);
+    env(g, t, vol, len); o.connect(g); g.connect(out); o.start(t); o.stop(t + len + .05);
+  }
+  // a burst of filtered noise, the filter sweeping from f0 to f1
+  function noise(type, f0, f1, len, vol, dl, q) {
+    var c = ctx(); if (!c) return; var t = c.currentTime + (dl || 0), sr = c.createBufferSource(), fl = c.createBiquadFilter(), g = c.createGain();
+    sr.buffer = noiseBuf(c); sr.loop = true; fl.type = type; fl.Q.value = q || 1; fl.frequency.setValueAtTime(f0, t); fl.frequency.exponentialRampToValueAtTime(Math.max(40, f1), t + len);
+    env(g, t, vol, len); sr.connect(fl); fl.connect(g); g.connect(out); sr.start(t); sr.stop(t + len + .05);
+  }
+  var FX = {
+    pop: function () { tone('sine', 640, 170, .09, .45); },
+    click: function () { tone('square', 1900, 1300, .03, .14); },
+    click2: function () { tone('square', 1900, 1300, .03, .14); tone('square', 2100, 1400, .03, .14, .1); },
+    crunch: function () { noise('bandpass', 1200, 500, .2, .5, 0, .8); },
+    thud: function () { tone('sine', 150, 45, .2, .7); },
+    zip: function () { noise('bandpass', 500, 4200, .22, .35, 0, 2); },
+    whirr: function () { tone('sawtooth', 90, 240, .55, .12); noise('lowpass', 500, 1400, .55, .15); },
+    twang: function () { tone('triangle', 330, 290, .45, .35); },
+    chime: function () { tone('sine', 880, 870, .3, .3); tone('sine', 1320, 1310, .35, .25, .08); },
+    found: function () { tone('square', 1047, 1047, .09, .1); tone('square', 1568, 1568, .16, .1, .08); },
+    stretch: function () { tone('triangle', 180, 640, .35, .3); },
+    snip: function () { noise('highpass', 3200, 2600, .04, .4); noise('highpass', 3600, 3000, .04, .35, .07); },
+    slosh: function () { noise('lowpass', 300, 1100, .45, .35); },
+    phew: function () { noise('bandpass', 900, 300, .5, .25, 0, 1.5); },
+    nope: function () { tone('square', 180, 150, .12, .14); tone('square', 160, 130, .14, .14, .14); },
+    munch: function () { for (var i = 0; i < 3; i++) noise('bandpass', 700, 400, .07, .4, i * .12, 2); },
+    knot: function () { tone('triangle', 500, 950, .12, .3); tone('square', 1600, 1200, .03, .1, .12); },
+    kink: function () { tone('square', 620, 300, .13, .14); },
+    hiss: function () { noise('highpass', 3800, 5200, .9, .22); },
+    heave: function () { tone('sine', 120, 85, .4, .45); },
+    glug: function () { tone('sine', 320, 150, .13, .4); tone('sine', 280, 130, .13, .4, .17); },
+    whoosh: function () { noise('bandpass', 380, 1900, .45, .4, 0, .9); },
+    drip: function () { tone('sine', 1500, 480, .12, .35); },
+    crack: function () { noise('highpass', 1600, 900, .08, .55); tone('square', 220, 60, .08, .15); },
+    boop: function () { tone('sine', 660, 420, .14, .4); },
+    boing: function () { tone('sine', 170, 420, .28, .35); },
+    glint: function () { tone('triangle', 1800, 2700, .14, .2); tone('triangle', 2700, 3400, .12, .14, .08); },
+    brrr: function () { noise('lowpass', 520, 380, .45, .3); tone('square', 70, 62, .42, .06); },
+    oops: function () { tone('square', 440, 210, .3, .13); },
+    yes: function () { tone('square', 660, 660, .09, .12); tone('square', 990, 990, .14, .12, .1); },
+    bloop: function () { tone('sine', 260, 900, .18, .35); },
+    clunk: function () { tone('square', 160, 55, .15, .2); noise('lowpass', 500, 200, .1, .35); },
+    pick: function () { tone('triangle', 520, 780, .07, .25); },
+    unwrap: function () { noise('bandpass', 3000, 600, .25, .3, 0, 2); }
+  };
+  // a held sound (the air jet) plays while it is refreshed every frame, and fades when the refreshing stops
+  function hold(k) {
+    var c = ctx(); if (!c) return; var h = held[k];
+    if (!h) {
+      var sr = c.createBufferSource(), fl = c.createBiquadFilter(), g = c.createGain();
+      sr.buffer = noiseBuf(c); sr.loop = true; fl.type = 'bandpass'; fl.frequency.value = 1100; fl.Q.value = .7;
+      g.gain.setValueAtTime(.0001, c.currentTime); g.gain.exponentialRampToValueAtTime(.2, c.currentTime + .08);
+      sr.connect(fl); fl.connect(g); g.connect(out); sr.start(); h = held[k] = { sr: sr, g: g, fl: fl };
+    }
+    h.until = performance.now() + 180; h.fl.frequency.setTargetAtTime(900 + Math.random() * 600, c.currentTime, .05);
+  }
+  function stop(k) { var h = held[k]; if (!h || !ac) return; delete held[k]; try { h.g.gain.setTargetAtTime(.0001, ac.currentTime, .06); h.sr.stop(ac.currentTime + .4); } catch (e) {} }
+  setInterval(function () { var now = performance.now(); for (var k in held) if (held[k].until < now) stop(k); }, 120);
+  return {
+    play: function (k) { if (!on || !FX[k]) return; try { FX[k](); } catch (e) {} },
+    hold: function (k) { if (on) try { hold(k); } catch (e) {} },
+    stop: stop,
+    on: function () { return on; },
+    set: function (v) { on = !!v; try { localStorage.setItem('ttl-sound', on ? 'on' : 'off'); } catch (e) {} if (!on) for (var k in held) stop(k); },
+    wake: function () { if (on) ctx(); }
+  };
+})();
+var STAMP_FX = { 'CLICK': 'click', 'CLICK CLICK': 'click2', 'POP': 'pop', 'CRUNCH': 'crunch', 'THUD': 'thud', 'ZIP!': 'zip', 'WHIRR': 'whirr', 'TWANG': 'twang', 'THREADED': 'chime', 'STRETCH': 'stretch', 'SNIP!': 'snip', 'SLOSH': 'slosh', 'PHEW': 'phew', 'NOPE': 'nope', 'MUNCH': 'munch', 'KNOT!': 'knot', 'KINK!': 'kink', 'HISSS': 'hiss', 'HEAVE': 'heave', 'GLUG GLUG': 'glug', 'BLUB': 'glug', 'FWOOSH': 'whoosh', 'DRIP': 'drip', 'PLIP': 'drip', 'CRACK': 'crack', 'BOOP': 'boop', 'BOING': 'boing', 'GLINT': 'glint', 'BRRR': 'brrr', 'OOPS': 'oops', 'YES!': 'yes', 'BLOOP': 'bloop', 'GLOOP': 'bloop', 'CLUNK!': 'clunk' };
+function stamp(f, s, x, y) { SND.play(STAMP_FX[s] || 'pop'); if (!f.stamps) f.stamps = []; if (f.stamps.length > 3) f.stamps.shift(); f.stamps.push({ s: s, x: clamp(x, 70, f.w - 70), y: clamp(y, 40, f.h - 40), t: f.t, r: (Math.random() - .5) * .34 }); }
 function drawStamps(c, f) {
   if (!f.stamps || !f.stamps.length) return;
   f.stamps = f.stamps.filter(function (o) { return f.t - o.t < 1.25; });
@@ -1464,11 +1553,16 @@ SCENES.shape = {
       else card(f, 'Not quite', { light: 'Some shine, but no sparkle. Which shape might act like a prism?', cold: 'The cold gets straight through. Which shape could hold a pocket of air?', sweat: 'The drop just sits there. Which shape has grooves to pull it along?' }[t]);
     }, 1500);
   },
-  T: ['light', 'cold', 'sweat'],
-  demo: function (f) { var g = this.geo(f); return { kind: 'drag', pts: [pt(g.tx[0], g.ty), pt(g.cx, g.cy)], dur: 2.6 }; },
-  geo: function (f) { var st = stage(f), W = f.w, ty = st.b - 40, t = st.t, b = ty - 40, R = Math.min(.3 * W, (b - t) * .42); return { cx: .44 * W, cy: (t + b) / 2, R: R, t: t, b: b, ty: ty, tx: [.16 * W, .38 * W, .6 * W] }; },
+  T: ['cold', 'light', 'sweat'],
+  demo: function (f) { var g = this.geo(f); return { kind: 'drag', pts: [g.tp[0], pt(g.cx, g.cy)], dur: 2.6 }; },
+  // the lens sits right; the three tests wait on an arc round its left side
+  geo: function (f) {
+    var st = stage(f), W = f.w, top = st.t + 8, bot = st.b - 40, R = Math.max(40, Math.min(.25 * W, (bot - top - 40) / 2.48, (.52 * W - 30) / 1.85)), cx = .58 * W, cy = top + R + 6;
+    var tp = [[200, 1.85], [158, 1.8], [118, 1.62]].map(function (a) { return pt(cx + Math.cos(a[0] * D) * a[1] * R, cy + Math.sin(a[0] * D) * a[1] * R); });
+    return { cx: cx, cy: cy, R: R, t: st.t, b: bot, tp: tp, sc: clamp(R / 60, 1, 1.7) };
+  },
   tool: function (f, k) {
-    var g = this.geo(f), o = f.s.tl[k] || (f.s.tl[k] = {}), home = pt(g.tx[k], g.ty);
+    var g = this.geo(f), o = f.s.tl[k] || (f.s.tl[k] = {}), home = g.tp[k];
     if (o.held) return pt(o.x, o.y);
     if (o.back != null) { var u = ease((f.t - o.back) / .35); if (u >= 1) o.back = null; else return pt(o.x + (home.x - o.x) * u, o.y + (home.y - o.y) * u); }
     return home;
@@ -1476,13 +1570,13 @@ SCENES.shape = {
   // pick a test up and drop it on the lens; a tap works too
   hitTest: function (f, x, y) {
     var self = this, g = this.geo(f);
-    for (var k = 0; k < 3; k++) { var q = this.tool(f, k); if (Math.hypot(q.x - x, q.y - y) < 30) { (function (k) { var o = f.s.tl[k]; o.held = true; o.x = q.x; o.y = q.y; self.grabbed = k; })(k);
+    for (var k = 0; k < 3; k++) { var q = this.tool(f, k); if (Math.hypot(q.x - x, q.y - y) < 30 * g.sc) { (function (k) { var o = f.s.tl[k]; o.held = true; o.x = q.x; o.y = q.y; self.grabbed = k; })(k);
       return { move: function (mx, my) { var o = f.s.tl[self.grabbed]; o.x = mx; o.y = my; }, end: function () { var o = f.s.tl[self.grabbed]; o.held = false; o.back = f.t; if (Math.hypot(o.x - g.cx, o.y - g.cy) < g.R + 14) self.run(f, self.T[self.grabbed]); } }; } }
     return null;
   },
-  tap: function (f, x, y) { var g = this.geo(f); for (var k = 0; k < 3; k++) if (Math.hypot(g.tx[k] - x, g.ty - y) < 30) this.run(f, this.T[k]); },
-  back: function (ctx, f) { var g = this.geo(f), self = this; this.T.forEach(function (t, k) { place(f.el.querySelector('[data-test="' + t + '"]'), g.tx[k] - 28, g.ty - 28, 56, 56); }); },
-  path: function (f) { var g = this.geo(f), W = f.w, a = pt(.87 * W, g.t + 4), c = pt(g.cx, g.cy + g.R + 10); return [a].concat(swing(a, pt(g.cx, g.cy - g.R - 10), 'ogee'), [c], swing(c, pt(.87 * W, g.b - 4), 'wave', true)); },
+  tap: function (f, x, y) { var g = this.geo(f); for (var k = 0; k < 3; k++) if (Math.hypot(g.tp[k].x - x, g.tp[k].y - y) < 30 * g.sc) this.run(f, this.T[k]); },
+  back: function (ctx, f) { var g = this.geo(f), self = this; this.T.forEach(function (t, k) { place(f.el.querySelector('[data-test="' + t + '"]'), g.tp[k].x - 28 * g.sc, g.tp[k].y - 28 * g.sc, 56 * g.sc, 56 * g.sc); }); },
+  path: function (f) { var g = this.geo(f), W = f.w, a = pt(.87 * W, g.t + 4), c = pt(g.cx, g.cy + g.R + 8); return [a].concat(swing(a, pt(g.cx, g.cy - g.R - 10), 'ogee'), [c], swing(c, pt(.87 * W, g.cy + g.R + 30), 'wave', true)); },
   k: 0.1,
   front: function (ctx, f) {
     var g = this.geo(f), u = f.s.test ? clamp((f.t - f.s.tt) / 1.4, 0, 1) : 0, ink = KU.b, s = G.shape, i;
@@ -1500,16 +1594,16 @@ SCENES.shape = {
       var spread = s === 'channel' ? 1 + u * 3.2 : 1 + u * .3; ctx.fillStyle = KU.y; ctx.beginPath(); ctx.ellipse(g.cx, g.cy + L.r * 2.4, L.r * .7 * spread, L.r * .7 / Math.sqrt(spread), 0, 0, Math.PI * 2); ctx.fill();
     }
     ctx.restore();
-    label(ctx, f, '×1,000', g.cx - g.R * .72, g.cy + g.R + 22, 14, KU.k, 'right');
+    label(ctx, f, '×1,000', Math.max(g.cx, g.tp[2].x + 72), g.cy + g.R + 54, 14, KU.k, 'center');
     var self = this;
     this.T.forEach(function (t, k) {
       var q = self.tool(f, k), on = f.s.test === t && u < 1;
-      ctx.save(); ctx.translate(q.x, q.y);
+      ctx.save(); ctx.translate(q.x, q.y); ctx.scale(g.sc, g.sc);
       if (t === 'light') { ctx.rotate(-.6); ctx.fillStyle = KU.k; ctx.fillRect(-18, -7, 24, 14); ctx.beginPath(); ctx.moveTo(6, -7); ctx.lineTo(16, -12); ctx.lineTo(16, 12); ctx.lineTo(6, 7); ctx.closePath(); ctx.fill(); ctx.fillStyle = KU.y; ctx.fillRect(15, -10, 4, 20); }
       else if (t === 'cold') { ctx.rotate(.15); ctx.fillStyle = KU.w; ctx.fillRect(-13, -13, 26, 26); ctx.strokeStyle = KU.b; ctx.lineWidth = 3; ctx.strokeRect(-13, -13, 26, 26); ctx.beginPath(); ctx.moveTo(-7, -6); ctx.lineTo(-1, -9); ctx.stroke(); }
       else drop(ctx, 0, 4, 10, KU.b);
       ctx.restore();
-      if (!f.s.tl[k] || !f.s.tl[k].held) label(ctx, f, t === 'light' ? 'LIGHT' : t === 'cold' ? 'COLD' : 'SWEAT', f.s.tl[k] && f.s.tl[k].back != null ? q.x : g.tx[k], g.ty + 34, 11, KU.k, 'center');
+      if (!f.s.tl[k] || !f.s.tl[k].held) label(ctx, f, t === 'light' ? 'LIGHT' : t === 'cold' ? 'COLD' : 'SWEAT', f.s.tl[k] && f.s.tl[k].back != null ? q.x : g.tp[k].x, g.tp[k].y + 30 * g.sc + 6, 13, KU.k, 'center');
     });
   }
 };
@@ -1520,21 +1614,27 @@ SCENES.count = {
   demo: function (f) { var a = domPt(f, $('fil-n')); return { kind: 'drag', pts: [a, pt(a.x, a.y - 110)], dur: 2.6 }; },
   init: function (f) {
     scrub($('fil-n'), { value: 1, snap: [1, 2, 6, 12, 24, 48, 96, 144, 300], fmt: function (v) { return String(v); }, cap: function (v) { return v === 1 ? 'filament' : 'filaments'; },
-      onChange: function (v) { G.fil = v; f.chain.kick(3, 0); if (v >= 144) card(f, 'micro'); else if (v >= 24) card(f, 'multi'); } });
+      onChange: function (v) { G.fil = v; SCENES.count.fit(f); f.chain.kick(3, 0); if (v >= 144) card(f, 'micro'); else if (v >= 24) card(f, 'multi'); } });
   },
   tick: function (f) { if (f.vt > 2 && !f.s.told && G.fil === 1) { f.s.told = true; card(f, 'mono'); } },
-  layout: function (f) { var el = $('fil-n'), st = stage(f); el.style.left = '6%'; el.style.top = Math.round(st.m - el.offsetHeight / 2) + 'px'; f.measure(); },
+  layout: function (f) { $('fil-n').style.left = '6%'; this.fit(f); },
+  // the number is big, and gives way only as far as it must to clear the lens
+  fit: function (f) {
+    var el = $('fil-n'), g = this.geo(f), room = (g.cx - g.R - 18) - .06 * f.w, d = String(G.fil).length;
+    el.style.fontSize = Math.round(clamp(room / (d * .6), 56, 132)) + 'px'; el.style.top = Math.round(g.cy - el.offsetHeight / 2) + 'px'; f.measure();
+  },
   geo: function (f) { var st = stage(f), R = Math.min(.22 * f.w, st.h * .3); return { cx: .66 * f.w, cy: st.m, R: R, st: st }; },
-  path: function (f) { var g = this.geo(f), W = f.w, a = pt(.87 * W, g.st.t + 4), c = pt(g.cx, g.cy + g.R + 10); return [a].concat(swing(a, pt(g.cx, g.cy - g.R - 10), 'loop'), [c], swing(c, pt(.87 * W, g.st.b - 4), 'ogee', true)); },
+  // a loop on the way in and another on the way out, the thread dropping straight into the lens
+  path: function (f) { var g = this.geo(f), W = f.w, a = pt(.87 * W, Math.max(g.st.t + 4, g.cy - g.R - 140)), b = pt(g.cx + 4, g.cy - g.R - 32), c = pt(g.cx, g.cy + g.R + 10); return [a].concat(swing(a, b, 'loop'), [pt(g.cx, g.cy - g.R - 10), c], swing(c, pt(.87 * W, g.st.b - 4), 'loop', true)); },
   k: 0.1,
-  front: function (ctx, f) { var g = this.geo(f); lens(ctx, g.cx, g.cy, g.R, G.shape, G.fil, KU.b); label(ctx, f, 'cut end', g.cx, g.cy + g.R + 24, 14, KU.k, 'center'); }
+  front: function (ctx, f) { var g = this.geo(f); lens(ctx, g.cx, g.cy, g.R, G.shape, G.fil, KU.b); label(ctx, f, 'cut end', g.cx + g.R * .62, g.cy - g.R - 8, 14, KU.k, 'center'); }
 };
 
 // Two ways to texture filament: hold the air jet to blow loops, or twist and heat it to crimp it.
 SCENES.texture = {
-  n: 210,
+  n: 230,
   init: function (f) {
-    var self = this, jet = $('tx-jet'); f.s.blow = false; f.s.until = 0; f.s.held = 0; f.s.ht = -9; f.parts = [];
+    var self = this, jet = $('tx-jet'); f.s.blow = false; f.s.until = 0; f.s.held = 0; f.s.ht = -9; f.parts = []; f.s.puffs = []; f.s.steam = []; f.s.feel = 0;
     jet.addEventListener('pointerdown', function (e) { f.s.blow = true; try { jet.setPointerCapture(e.pointerId); } catch (x) {} e.preventDefault(); });
     ['pointerup', 'pointercancel', 'lostpointercapture'].forEach(function (t) { jet.addEventListener(t, function () { f.s.blow = false; }); });
     jet.addEventListener('click', function () { f.s.until = f.t + 1.4; });
@@ -1544,23 +1644,31 @@ SCENES.texture = {
   demo: function (f) { var g = this.geo(f); return { kind: 'hold', pts: [pt((g.j0 + g.jt) / 2, g.jy)], dur: 3 }; },
   few: function (f, how) { if (f.s.toldM) return; f.s.toldM = true; card(f, 'One filament', how === 'air' ? 'One thick filament just bends in the wind. Loops need lots of fine filaments. Scroll up and add some?' : 'One thick filament just kinks. Bulk needs lots of fine filaments. Scroll up and add some?'); },
   heat: function (f) {
-    f.s.ht = f.t; f.chain.kick(0, 3); var g = this.geo(f); stamp(f, 'HISSS', g.hx + g.hw / 2, g.hy - 26);
+    f.s.ht = f.t; f.chain.kick(0, 3); var g = this.geo(f); stamp(f, 'HISSS', g.hx + g.hw / 2, g.hy - 26); SND.play('whirr');
     if (!this.multi()) { this.few(f, 'heat'); return; }
     if (G.tex !== 'crimp') { G.tex = 'crimp'; G.crimp = 0; G.loops = 0; renderLabel(); }
   },
+  // bigger kit: the jet on the left, the heater on the right, the false-twist spindle below; the thread runs down between them
   geo: function (f) {
-    var st = stage(f), W = f.w, x = .5 * W, jy = st.t + st.h * .28, hh = clamp(st.h * .26, 60, 120), hy = st.t + st.h * .52;
-    return { st: st, x: x, jy: jy, jt: x - 30, j0: .06 * W, hx: x + 12, hy: hy, hw: .24 * W, hh: hh, sy: hy + hh + 30 };
+    var st = stage(f), W = f.w, x = .5 * W, jh = clamp(.075 * W, 26, 36), jy = st.t + jh + 26, sr = clamp(.07 * W, 22, 34), hw = .33 * W, hy = jy + jh + 34;
+    var hh = clamp(st.h - (hy - st.t) - 2 * sr - 96, 56, hw), sy = hy + hh + sr + 22;
+    return { st: st, x: x, jy: jy, jh: jh, jt: x - 26, j0: .06 * W, hx: x + 14, hy: hy, hw: hw, hh: hh, sy: sy, sr: sr };
   },
-  path: function (f) { var g = this.geo(f), W = f.w, a = pt(.87 * W, g.st.t + 4), c = pt(g.x, g.st.b - g.st.h * .03); return [a].concat(swing(a, pt(g.x, g.st.t + g.st.h * .1), 'coil'), [pt(g.x, g.hy - 8), pt(g.hx - 7, g.hy + 12), pt(g.hx - 7, g.hy + g.hh - 12), pt(g.x, g.sy), c], swing(c, pt(.87 * W, g.st.b - 4), 'wave', true)); },
+  // a curl on the way in, straight down past the kit, and the same curl on the way out
+  path: function (f) {
+    var g = this.geo(f), W = f.w, a = pt(.87 * W, g.st.t + 4), b = pt(g.x, g.st.t + 30), c = pt(g.x, g.sy + g.sr + 16), d = pt(.87 * W, c.y + 46);
+    return [a].concat(swing(a, b, 'coil'), [pt(g.x, g.hy - 8), pt(g.hx - 7, g.hy + 12), pt(g.hx - 7, g.hy + g.hh - 12), pt(g.x, g.sy - g.sr - 6), c], swing(c, d, 'coil', true));
+  },
   k: 0.1,
   tick: function (f) {
     var g = this.geo(f), blowing = f.s.blow || f.t < f.s.until, c = f.chain, i;
-    if (blowing && !f.s.was) stamp(f, 'FWOOSH', g.jt + 70, g.jy - 46); f.s.was = blowing;
+    if (blowing && !f.s.was) stamp(f, 'FWOOSH', g.jt + 70, g.jy - 46);
+    f.s.was = blowing;
     if (blowing) {
-      f.s.held += 1 / 60;
-      for (i = 0; i < c.n; i++) { var q = c.p[i], d = Math.abs(q.y - g.jy); if (d < 50 && q.x > g.jt) q.x += 2.6 * (1 - d / 50); }
-      for (i = 0; i < 3; i++) f.parts.push({ x: g.jt, y: g.jy + (Math.random() - .5) * 24, v: 5 + Math.random() * 4 });
+      f.s.held += 1 / 60; SND.hold('jet');
+      for (i = 0; i < c.n; i++) { var q = c.p[i], dd = Math.abs(q.y - g.jy); if (dd < 60 && q.x > g.jt) q.x += 3 * (1 - dd / 60); }
+      for (i = 0; i < 3; i++) f.parts.push({ x: g.jt, y: g.jy + (Math.random() - .5) * g.jh, v: 5 + Math.random() * 4 });
+      if (Math.random() < .3) f.s.puffs.push({ x: g.x + 8 + Math.random() * 26, y: g.jy + (Math.random() - .5) * 44, t: f.t });
       if (this.multi()) {
         if (G.tex !== 'air') { G.tex = 'air'; G.loops = 0; G.crimp = 0; }
         G.loops = Math.min(1, G.loops + 1 / 60 / 2.2);
@@ -1568,30 +1676,50 @@ SCENES.texture = {
       } else if (f.s.held > 1.2) this.few(f, 'air');
     }
     if (G.tex === 'crimp' && G.crimp < 1) { G.crimp = Math.min(1, G.crimp + 1 / 60 / 1.6); if (G.crimp >= 1 && !f.s.toldC) { f.s.toldC = true; card(f, 'dty'); renderLabel(); } }
+    // steam off the hot plate
+    if (f.t - f.s.ht < 1.8 && Math.random() < .3) f.s.steam.push({ x: g.hx + 14 + Math.random() * (g.hw - 28), y: g.hy - 4, t: f.t });
+    // the feel meter fills a block at a time, with a pop
+    var feel = this.multi() ? Math.floor(Math.max(G.loops, G.crimp) * 5 + .001) : 0;
+    if (feel > f.s.feel) SND.play('pop'); f.s.feel = feel;
     f.parts = f.parts.filter(function (o) { o.x += o.v; o.y += (Math.random() - .5) * 1.4; return o.x < f.w + 20; });
+    f.s.puffs = f.s.puffs.filter(function (o) { return f.t - o.t < .7; });
+    f.s.steam = f.s.steam.filter(function (o) { return f.t - o.t < 1.2; });
   },
   back: function (ctx, f) {
-    var g = this.geo(f), on = f.t - f.s.ht < 2.2, i;
-    // the heater plate
-    wRect(ctx, KU.k, 2, g.hx + 8, g.hy + 8, g.hw, g.hh); if (on) wFade(ctx, KU.y, g.hx, g.hy - 46, g.hw, 46, 1, 3);
-    ctx.fillStyle = KU.k; ctx.fillRect(g.hx, g.hy, g.hw, g.hh);
-    ctx.fillStyle = on ? KU.y : KU.g; ctx.fillRect(g.hx + 6, g.hy + 6, g.hw - 12, g.hh - 12);
-    if (on) { ctx.strokeStyle = KU.k; ctx.lineWidth = 2; for (i = 0; i < 3; i++) { var hx = g.hx + g.hw * (.3 + i * .2), o = Math.sin(f.t * 8 + i) * 3; ctx.beginPath(); ctx.moveTo(hx, g.hy + g.hh - 14); ctx.quadraticCurveTo(hx + 6 + o, g.hy + g.hh / 2, hx, g.hy + 14); ctx.stroke(); } }
-    // the twister under it, spinning while the heater is on
-    disc(ctx, g.x, g.sy, 17, KU.k); var a = on ? f.t * 14 : 0; ctx.strokeStyle = KU.w; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(g.x - Math.cos(a) * 12, g.sy - Math.sin(a) * 12); ctx.lineTo(g.x + Math.cos(a) * 12, g.sy + Math.sin(a) * 12); ctx.stroke();
+    var g = this.geo(f), on = f.t - f.s.ht < 2.2, i, hx = g.hx + (f.t - f.s.ht < .35 ? Math.sin(f.t * 70) * 2.5 : 0);
+    // the heater plate, judders as it clicks on, then glows
+    wRect(ctx, KU.k, 2, hx + 8, g.hy + 8, g.hw, g.hh); if (on) wFade(ctx, KU.y, hx, g.hy - 46, g.hw, 46, 1, 3);
+    ctx.fillStyle = KU.k; ctx.fillRect(hx, g.hy, g.hw, g.hh);
+    ctx.fillStyle = on ? KU.y : KU.g; ctx.fillRect(hx + 7, g.hy + 7, g.hw - 14, g.hh - 14);
+    if (on) { ctx.strokeStyle = KU.k; ctx.lineWidth = 2.4; for (i = 0; i < 4; i++) { var cx = hx + g.hw * (.2 + i * .2), o = Math.sin(f.t * 8 + i) * 4; ctx.beginPath(); ctx.moveTo(cx, g.hy + g.hh - 16); ctx.quadraticCurveTo(cx + 7 + o, g.hy + g.hh / 2, cx, g.hy + 16); ctx.stroke(); } }
+    ctx.strokeStyle = KU.w; ctx.lineWidth = 2; ctx.lineCap = 'round';
+    f.s.steam.forEach(function (o) { var a = (f.t - o.t) / 1.2, y = o.y - a * 50; ctx.globalAlpha = 1 - a; ctx.beginPath(); ctx.moveTo(o.x, y); ctx.quadraticCurveTo(o.x + 7 * Math.sin(f.t * 6 + o.x), y - 10, o.x, y - 20); ctx.stroke(); });
+    ctx.globalAlpha = 1;
     place($('tx-heat'), g.hx - 4, g.hy - 8, g.hw + 12, g.hh + 16);
-    // the air jet
-    var bl = f.s.blow || f.t < f.s.until, kick = bl ? Math.sin(f.t * 60) * 1.2 : 0;
-    wRect(ctx, KU.k, 2, g.j0 + 6, g.jy - 14, g.jt - g.j0 - 6, 42);
-    ctx.fillStyle = KU.k; ctx.beginPath(); ctx.moveTo(g.j0, g.jy - 22 + kick); ctx.lineTo(g.jt - 14, g.jy - 22 + kick); ctx.lineTo(g.jt, g.jy - 7); ctx.lineTo(g.jt, g.jy + 7); ctx.lineTo(g.jt - 14, g.jy + 22 - kick); ctx.lineTo(g.j0, g.jy + 22 - kick); ctx.closePath(); ctx.fill();
-    ctx.fillStyle = bl ? KU.y : KU.w; ctx.fillRect(g.j0 + 10, g.jy - 7, 26, 14);
-    place($('tx-jet'), g.j0 - 6, g.jy - 34, g.jt - g.j0 + 12, 68);
+    // the air jet, juddering while it blows
+    var bl = f.s.blow || f.t < f.s.until, kick = bl ? Math.sin(f.t * 60) * 1.6 : 0, h = g.jh;
+    wRect(ctx, KU.k, 2, g.j0 + 7, g.jy - h * .6, g.jt - g.j0 - 6, h * 1.9);
+    ctx.fillStyle = KU.k; ctx.beginPath(); ctx.moveTo(g.j0, g.jy - h + kick); ctx.lineTo(g.jt - 18, g.jy - h + kick); ctx.lineTo(g.jt, g.jy - h * .35); ctx.lineTo(g.jt, g.jy + h * .35); ctx.lineTo(g.jt - 18, g.jy + h - kick); ctx.lineTo(g.j0, g.jy + h - kick); ctx.closePath(); ctx.fill();
+    ctx.fillStyle = bl ? KU.y : KU.w; ctx.fillRect(g.j0 + 12, g.jy - h * .32, h * 1.2, h * .64);
+    place($('tx-jet'), g.j0 - 6, g.jy - h - 12, g.jt - g.j0 + 12, 2 * h + 24);
   },
   front: function (ctx, f) {
-    var g = this.geo(f); ctx.strokeStyle = KU.w; ctx.lineWidth = 2.4; ctx.lineCap = 'round';
-    f.parts.forEach(function (o) { ctx.beginPath(); ctx.moveTo(o.x, o.y); ctx.lineTo(o.x + 10, o.y); ctx.stroke(); });
-    label(ctx, f, 'AIR JET', g.j0, g.jy + 44, 14, KU.k, 'left');
-    label(ctx, f, 'HEATER', g.hx + g.hw, g.hy + g.hh + 24, 14, KU.k, 'right');
+    var g = this.geo(f), on = f.t - f.s.ht < 2.2, i;
+    // air: streaks, and puffs where it hits the yarn
+    ctx.strokeStyle = KU.w; ctx.lineWidth = 2.6; ctx.lineCap = 'round';
+    f.parts.forEach(function (o) { ctx.beginPath(); ctx.moveTo(o.x, o.y); ctx.lineTo(o.x + 12, o.y); ctx.stroke(); });
+    f.s.puffs.forEach(function (o) { var a = (f.t - o.t) / .7; wDisc(ctx, KU.w, 2, o.x + a * 22, o.y, 6 + a * 14); });
+    // the false-twist spindle: the yarn runs through it, and it spins while the heater is on
+    disc(ctx, g.x, g.sy, g.sr + 3, KU.k); disc(ctx, g.x, g.sy, g.sr, KU.w);
+    var a = on ? f.t * 16 : 0, r = g.sr - 6; ctx.strokeStyle = KU.k; ctx.lineWidth = 6; ctx.lineCap = 'butt'; ctx.beginPath(); ctx.moveTo(g.x - Math.cos(a) * r, g.sy - Math.sin(a) * r); ctx.lineTo(g.x + Math.cos(a) * r, g.sy + Math.sin(a) * r); ctx.stroke();
+    if (on) { ctx.lineWidth = 1.6; for (i = 0; i < 2; i++) { ctx.beginPath(); ctx.arc(g.x, g.sy, g.sr + 9 + i * 5, a + i, a + i + 1.4); ctx.stroke(); } }
+    label(ctx, f, 'AIR JET', g.j0, g.jy + g.jh + 32, 16, KU.k, 'left');
+    label(ctx, f, 'HEATER', g.hx + g.hw, g.hy + g.hh + 24, 16, KU.k, 'right');
+    // how it feels, slick to soft, filling a woven block at a time
+    var mx = g.j0, my = g.jy + g.jh + 70, bw = 16;
+    label(ctx, f, 'FEEL', mx, my - 12, 11, KU.k, 'left');
+    for (i = 0; i < 5; i++) { var bx = mx + i * (bw + 3); if (i < f.s.feel) { ctx.fillStyle = KU.y; ctx.fillRect(bx, my - 4, bw, 16); } else wRect(ctx, KU.k, 1, bx, my - 4, bw, 16); ctx.strokeStyle = KU.k; ctx.lineWidth = 1.5; ctx.strokeRect(bx, my - 4, bw, 16); }
+    label(ctx, f, 'SLICK', mx, my + 28, 10, KU.k, 'left'); label(ctx, f, 'SOFT', mx + 5 * (bw + 3) - 3, my + 28, 10, KU.k, 'right');
   }
 };
 
@@ -1663,7 +1791,7 @@ SCENES.ply = {
   },
   geo: function (f) {
     var st = stage(f), W = f.w, rb = clamp(.055 * W, 16, 24), by = st.t + rb + 14, R = clamp(.1 * W, 30, 42), cy = by + rb + R + 22 + st.h * .03;
-    return { st: st, rb: rb, by: by, bx: [.78 * W, .56 * W, .34 * W], cx: .5 * W, cy: cy, R: R, top: cy + R + 8, bot: st.b - 10, hw: .17 * W };
+    return { st: st, rb: rb, by: by, bx: [.72 * W, .5 * W, .28 * W], cx: .5 * W, cy: cy, R: R, top: cy + R + 8, bot: st.b - 10, hw: .17 * W };
   },
   strands: function (f) { var g = this.geo(f), o = []; for (var k = 1; k < G.ply; k++) { var c = new Chain([pt(g.bx[k], g.by + g.rb + 2), pt(g.cx, g.cy)], 30, { wind: .02, iter: 8 }); c.grabbable = false; o.push(c); } f.extras = o; },
   layout: function (f) { this.strands(f); },
@@ -1709,68 +1837,82 @@ SCENES.ply = {
 
 // Pick a partner fibre: it flies in and wraps the core.
 SCENES.blend = {
-  n: 130,
+  n: 140,
   Y: ['cotton', 'wool', 'elastane'],
-  demo: function (f) { var c = f.extras[0], m = f.chain.p[(f.chain.n * .5) | 0]; if (!c || c.zip) return null; var a = c.p[(c.n * .6) | 0]; return { kind: 'drag', pts: [pt(a.x, a.y), pt(m.x - 8, m.y)], dur: 2.8 }; },
+  demo: function (f) { var c = f.extras[0], g = this.geo(f); if (!c || c.zip) return null; var a = c.p[(c.n * .6) | 0]; return { kind: 'drag', pts: [pt(a.x, a.y), pt(g.tx - 10, a.y + 30)], dur: 2.8 }; },
   init: function (f) {
-    var self = this; f.s.wt = -9;
+    var self = this; f.s.wt = -9; f.s.near = null;
     f.el.querySelectorAll('[data-p]').forEach(function (b) { b.addEventListener('click', function () { var k = self.Y.indexOf(b.dataset.p); self.absorb(f, f.extras[k]); }); });
     $('bl-off').addEventListener('click', function () { self.wrap(f, 'none'); });
   },
-  wrap: function (f, p) {
-    G.partner = p === 'cotton' || p === 'wool' ? p : null; G.elastane = p === 'elastane'; G.stripped = null; f.s.wt = f.t; f.chain.kick(5, 0); syncUI();
+  wrap: function (f, p, at) {
+    G.partner = p === 'cotton' || p === 'wool' ? p : null; G.elastane = p === 'elastane'; G.stripped = null; f.s.wt = f.t; f.s.wAt = at == null ? (f.chain.n * .5) | 0 : at; f.chain.kick(5, 0); syncUI();
     $('bl-off').hidden = p === 'none'; $('bl-hint').textContent = p === 'none' ? 'Drag a yarn onto the thread' : 'Try another, or unwrap it';
-    if (p !== 'none') card(f, p); f.measure();
+    if (p !== 'none') card(f, p); else SND.play('unwrap');
+    f.measure();
   },
-  geo: function (f) { var st = stage(f), W = f.w; return { st: st, ry: st.t + 30, xs: [.1 * W, .26 * W, .42 * W], L: clamp(st.h * .4, 90, 200), x0: .03 * W, x1: .5 * W }; },
+  // a long rail of bigger yarns; the thread runs straight down the right-hand side
+  geo: function (f) { var st = stage(f), W = f.w; return { st: st, ry: st.t + 34, xs: [.22 * W, .45 * W, .68 * W], L: clamp(st.h * .32, 100, 180), x0: .1 * W, x1: .78 * W, tx: .87 * W }; },
   yarn: function (f, k) { var g = this.geo(f), x = g.xs[k], c = new Chain([pt(x, g.ry), pt(x + 1, g.ry + g.L)], 26, { pinBot: false, g: .1, wind: .025, iter: 10 }); c.kind = this.Y[k]; c.home = k; c.born = f.t; return c; },
   layout: function (f) { var self = this; f.extras = this.Y.map(function (y, k) { return self.yarn(f, k); }); },
-  // a yarn dropped on the thread zips onto it, and a fresh one hangs back on the rail
+  // a yarn that reaches the thread zips onto it there, and a fresh one hangs back on the rail
   absorb: function (f, c, at) {
-    if (!c || c.zip) return; var m = f.chain.p[(f.chain.n * .5) | 0];
-    c.zip = f.t; c.at = at || pt(m.x, m.y); c.pinTop = false; c.grab = -1; c.grabbable = false; c.g = 0; stamp(f, 'ZIP!', c.at.x - 70, c.at.y - 30);
-    this.wrap(f, c.kind);
+    if (!c || c.zip) return; var cp = f.chain.p, i0 = (f.chain.n * .5) | 0, bd = 1e9;
+    if (at) for (var i = 0; i < f.chain.n; i++) { var d = Math.abs(cp[i].y - at.y); if (d < bd) { bd = d; i0 = i; } }
+    var m = cp[i0];
+    c.zip = f.t; c.at = pt(m.x, m.y); c.pinTop = false; c.grab = -1; c.grabbable = false; c.g = 0; c.held = false; f.s.near = null; stamp(f, 'ZIP!', m.x - 70, m.y - 30);
+    this.wrap(f, c.kind, i0);
   },
+  // as a yarn comes near, the thread leans towards it and the drop zone glows; close enough, it snaps on
   onDrag: function (f, d) {
-    var c = d.chain; if (!c || !c.kind) return;
-    var q = c.p[c.grab]; if (!q) return;
-    for (var i = 2; i < f.chain.n - 2; i += 2) { var m = f.chain.p[i]; if (Math.hypot(m.x - q.x, m.y - q.y) < 24) { drag = null; this.absorb(f, c, pt(m.x, m.y)); return; } }
+    var c = d.chain; if (!c || !c.kind || c.zip) return;
+    var q = c.p[c.grab]; if (!q) return; var g = this.geo(f), dist = Math.abs(q.x - g.tx);
+    f.s.near = dist < 96 && q.y > g.st.t && q.y < g.st.b ? { y: q.y, u: 1 - dist / 96 } : null;
+    if (dist < 34) { drag = null; this.absorb(f, c, pt(q.x, q.y)); }
   },
-  tap: function (f, x, y) { var self = this; f.extras.forEach(function (c) { if (c.zip) return; for (var i = 0; i < c.n; i += 2) if (Math.hypot(c.p[i].x - x, c.p[i].y - y) < 24) { self.absorb(f, c); return; } }); },
+  tap: function (f, x, y) { var self = this; f.extras.forEach(function (c) { if (c.zip) return; for (var i = 0; i < c.n; i += 2) if (Math.hypot(c.p[i].x - x, c.p[i].y - y) < 26) { self.absorb(f, c); return; } }); },
   tick: function (f) {
     var g = this.geo(f), self = this, slide = 1 - ease((f.vt - .2) / .9);
     f.extras = f.extras.map(function (c) {
       if (c.zip) { var u = (f.t - c.zip) / .5; c.p.forEach(function (q) { q.x += (c.at.x - q.x) * .22; q.y += (c.at.y - q.y) * .22; }); return u > 1 ? self.yarn(f, c.home) : c; }
-      c.top.x = g.xs[c.home] - slide * .6 * f.w; c.top.y = g.ry; return c;
+      var hx = g.xs[c.home] - slide * .6 * f.w;
+      // picked up, it comes off the rail and dangles from your finger
+      if (c.grab >= 0 && c.pinTop) { c.pinTop = false; c.held = true; c.ret = null; SND.play('pick'); }
+      // let go away from the thread, it swings back to its hook
+      if (c.held && c.grab < 0) { c.held = false; c.ret = f.t; f.s.near = null; SND.play('boing'); }
+      if (c.ret != null) { var r = ease((f.t - c.ret) / .45), p0 = c.p[0]; p0.x += (hx - p0.x) * (.15 + .5 * r); p0.y += (g.ry - p0.y) * (.15 + .5 * r); if (r >= 1) { c.ret = null; c.pinTop = true; } }
+      c.top.x = hx; c.top.y = g.ry; return c;
     });
+    if (!drag) f.s.near = null;
   },
   path: function (f) {
-    var st = stage(f), W = f.w, a = pt(.87 * W, st.t + 6), b = pt(.68 * W, st.t + st.h * .12), c = pt(.68 * W, st.b - st.h * .12), bow = [];
-    for (var i = 1; i <= 20; i++) bow.push(qbz(b, pt(.46 * W, (b.y + c.y) / 2), c, i / 20));
-    return [a].concat(swing(a, b, 'drape'), bow, swing(c, pt(.87 * W, st.b - 6), 'loop', true));
+    var g = this.geo(f), st = g.st, n = f.s.near;
+    if (!n) return [pt(g.tx, st.t), pt(g.tx, st.b)];
+    return [pt(g.tx, st.t), pt(g.tx, n.y - 90), pt(g.tx - 34 * n.u, n.y), pt(g.tx, n.y + 90), pt(g.tx, st.b)];
   },
   k: 0.08,
   back: function (ctx, f) {
-    var g = this.geo(f), self = this, slide = 1 - ease((f.vt - .2) / .9);
-    ctx.fillStyle = KU.k; ctx.fillRect(g.x0 - slide * .6 * f.w, g.ry - 7, g.x1 - g.x0, 7);
-    f.extras.forEach(function (c) { var q = c.p[(c.n * .6) | 0]; place(f.el.querySelector('[data-p="' + c.kind + '"]'), q.x - 22, c.p[0].y, 44, Math.max(40, q.y - c.p[0].y + 40)); });
+    var g = this.geo(f), slide = 1 - ease((f.vt - .2) / .9);
+    ctx.fillStyle = KU.k; ctx.fillRect(g.x0 - slide * .6 * f.w, g.ry - 10, g.x1 - g.x0, 10);
+    f.extras.forEach(function (c) { var q = c.p[(c.n * .6) | 0]; place(f.el.querySelector('[data-p="' + c.kind + '"]'), q.x - 26, c.p[0].y, 52, Math.max(44, q.y - c.p[0].y + 44)); });
+    if (f.s.near) { var n = f.s.near; ctx.globalAlpha = .35 + .55 * n.u; wRect(ctx, KU.y, 3, g.tx - 24, n.y - 70, 48, 140); ctx.globalAlpha = 1; }
   },
   front: function (ctx, f) {
     var g = this.geo(f), slide = 1 - ease((f.vt - .2) / .9);
     f.extras.forEach(function (c) {
       var a = c.zip ? clamp(1 - (f.t - c.zip) / .5, 0, 1) : clamp((f.t - c.born) / .4, 0, 1), p = c.p, nm = normals(p), i;
       ctx.globalAlpha = a;
-      if (c.kind === 'elastane') drawSquiggle(ctx, c, f.t, KU.k);
+      if (c.kind === 'elastane') drawSquiggle(ctx, c, f.t, KU.k, null, 1.7);
       else {
-        var wool = c.kind === 'wool', col = wool ? KU.w : '#f3ecd9', pts = wool ? offsetBy(p, nm, function (j) { return Math.sin(j * 1.6) * 2.4; }) : p;
-        strokeP(ctx, pts, KU.k, wool ? 10 : 9); strokeP(ctx, pts, col, wool ? 7 : 6);
-        ctx.strokeStyle = col; ctx.lineWidth = 1.3; ctx.beginPath();
-        for (i = 1; i < c.n; i++) { var sd = hash(i, 51) > .5 ? 1 : -1, ln = (wool ? 7 : 4) + hash(i, 52) * (wool ? 6 : 5), q = p[i]; ctx.moveTo(q.x + nm[i].x * sd * 3.5, q.y + nm[i].y * sd * 3.5); if (wool) ctx.lineTo(q.x + nm[i].x * sd * ln * .6 + 3, q.y + nm[i].y * sd * ln * .6 - 3); ctx.lineTo(q.x + nm[i].x * sd * ln, q.y + nm[i].y * sd * ln); }
+        var wool = c.kind === 'wool', col = wool ? KU.w : '#f3ecd9', pts = wool ? offsetBy(p, nm, function (j) { return Math.sin(j * 1.6) * 3.2; }) : p;
+        strokeP(ctx, pts, KU.k, wool ? 15 : 14); strokeP(ctx, pts, col, wool ? 11 : 10);
+        ctx.strokeStyle = col; ctx.lineWidth = 1.6; ctx.beginPath();
+        for (i = 1; i < c.n; i++) { var sd = hash(i, 51) > .5 ? 1 : -1, ln = (wool ? 10 : 6) + hash(i, 52) * (wool ? 8 : 6), q = p[i]; ctx.moveTo(q.x + nm[i].x * sd * 5.5, q.y + nm[i].y * sd * 5.5); if (wool) ctx.lineTo(q.x + nm[i].x * sd * ln * .6 + 3, q.y + nm[i].y * sd * ln * .6 - 3); ctx.lineTo(q.x + nm[i].x * sd * ln, q.y + nm[i].y * sd * ln); }
         ctx.stroke();
       }
       ctx.globalAlpha = 1;
     });
-    this.Y.forEach(function (y, k) { label(ctx, f, y.toUpperCase(), g.xs[k] - slide * .6 * f.w, g.ry - 14, 11, KU.k, 'center'); });
+    this.Y.forEach(function (y, k) { label(ctx, f, y.toUpperCase(), g.xs[k] - slide * .6 * f.w, g.ry - 18, 14, KU.k, 'center'); });
   }
 };
 
@@ -2484,7 +2626,7 @@ function renderLabel() {
 }
 
 // ---------- frames ----------
-var feed = $('feed'), cv = $('ink'), ctx = cv.getContext('2d'), fxc = $('fx'), fx = fxc.getContext('2d'), bar = $('bar'), tally = $('tally');
+var feed = $('feed'), cv = $('ink'), ctx = cv.getContext('2d'), fxc = $('fx'), fx = fxc.getContext('2d'), bar = $('bar'), tally = $('tally'), sndEl = $('snd');
 var frames = Array.prototype.slice.call(document.querySelectorAll('.frame')).map(function (el, i) {
   var name = el.dataset.scene, f = { el: el, i: i, name: name, sc: SCENES[name], s: {}, t: 0, vt: 0, extras: [], parts: [], rects: [], named: {}, dyn: [], bg: (el.className.match(/bg-(\w+)/) || [])[1] || (el.classList.contains('split') ? 'split' : 'white') };
   f.measure = function () {
@@ -2606,6 +2748,12 @@ var fsEl = null;
   fsEl.style.left = (colLeft + 8) + 'px';
 })();
 
+// the sound switch; browsers only allow sound after a first tap, so wake it then
+function sndSync() { var on = SND.on(); sndEl.textContent = on ? 'Sound on' : 'Sound off'; sndEl.setAttribute('aria-pressed', on); }
+sndEl.addEventListener('click', function () { SND.set(!SND.on()); sndSync(); SND.play('pop'); });
+sndSync();
+['pointerdown', 'keydown', 'touchstart'].forEach(function (t) { document.addEventListener(t, function () { SND.wake(); }, { once: true, passive: true, capture: true }); });
+
 // the collection: what you found, and where the rest are hiding
 function tallyUp() {
   tally.textContent = NFOUND + '/' + NDISC; tally.setAttribute('aria-label', 'Discoveries: ' + NFOUND + ' of ' + NDISC + ' found. Open your collection.');
@@ -2678,7 +2826,7 @@ function loop(now) {
   bumpText(now);
   draw(sy);
   var max = document.documentElement.scrollHeight - VH, bw = max > 0 ? sy / max * W0 : 0; bar.style.width = bw + 'px';
-  var tw = tally.offsetWidth || 60, lo = fsEl ? 16 + fsEl.offsetWidth : 8; tally.style.transform = 'translateX(' + Math.round(colLeft + clamp(bw - tw / 2, lo, Math.max(lo, W0 - tw - 8))) + 'px)';
+  var tw = tally.offsetWidth || 60, sl = fsEl ? 16 + fsEl.offsetWidth : 8, lo = sl + (sndEl.offsetWidth || 74) + 8, sx = Math.round(colLeft + sl) + 'px'; if (sndEl.style.left !== sx) sndEl.style.left = sx; tally.style.transform = 'translateX(' + Math.round(colLeft + clamp(bw - tw / 2, lo, Math.max(lo, W0 - tw - 8))) + 'px)';
   frames.forEach(function (f) {
     if (!f.vis || f.touched || f.demo || !f.sc.demo || (f.demoN || 0) >= 2 || Math.abs(f.top - sy) > VH * .2 || f.vt < (f.demoN ? 12 : 3.8) || !$('sheet').hidden || !$('coll').hidden || !$('reflect').hidden) return;
     var d = f.sc.demo(f); if (!d) return; d.t = f.t; d.dur = d.dur || 2.6; f.demo = d; f.demoN = (f.demoN || 0) + 1;
@@ -2715,7 +2863,8 @@ function look(f) {
     partner: i >= IDX.blend && !rb ? G.partner : null,
     colour: rb ? null : i > IDX.colour ? G.colour : i === IDX.colour ? G.mix : null,
     rounds: i >= IDX.recycle && !rb ? G.rounds : 0,
-    fresh: i === IDX.blend ? ease((f.t - f.s.wt) / 1) : 1
+    fresh: i === IDX.blend ? ease((f.t - f.s.wt) / 1) : 1,
+    from: i === IDX.blend && f.s.wAt != null ? f.s.wAt : null
   };
 }
 function drawMain(ctx, f, cum, flow, over) {
@@ -2728,12 +2877,14 @@ function drawMain(ctx, f, cum, flow, over) {
   w += 1.8 * L.crimp + L.loops;
   if (f.sc.alpha) ctx.globalAlpha = f.sc.alpha(f);
   var nm = normals(p);
-  // natural-fibre sheath, under everything
+  // natural-fibre sheath, under everything; while it is going on, it spreads out from where the yarn landed
+  var wa = 0, wb = n - 1, wu = L.fresh;
+  if (L.partner && L.from != null && wu < 1) { var spr = Math.round(wu * n * .75) + 2; wa = Math.max(0, L.from - spr); wb = Math.min(n - 1, L.from + spr); wu = 1; }
   if (L.partner) {
-    var sheath = f.bg === 'white' ? '#e8e1cf' : 'rgba(255,255,255,0.92)', u = L.fresh;
-    strokeP(ctx, p, sheath, (w + 14) * u + 0.1);
+    var sheath = f.bg === 'white' ? '#e8e1cf' : 'rgba(255,255,255,0.92)', u = wu;
+    strokeP(ctx, p, sheath, (w + 14) * u + 0.1, null, wa, wb);
     ctx.strokeStyle = sheath; ctx.lineWidth = 1.4; ctx.beginPath();
-    for (i = 1; i < n - 1; i += 1) { if (hash(i, 7) > .75 * u) continue; var side = hash(i, 8) > .5 ? 1 : -1, len = (w / 2 + 7 + hash(i, 9) * 9) * u, q = p[i]; ctx.moveTo(q.x + nm[i].x * side * (w / 2 + 4), q.y + nm[i].y * side * (w / 2 + 4)); if (L.partner === 'wool') { ctx.lineTo(q.x + nm[i].x * side * len * .6 + 3, q.y + nm[i].y * side * len * .6 - 3); ctx.lineTo(q.x + nm[i].x * side * len, q.y + nm[i].y * side * len); } else ctx.lineTo(q.x + nm[i].x * side * len + (hash(i, 10) - .5) * 6, q.y + nm[i].y * side * len + (hash(i, 11) - .5) * 6); }
+    for (i = Math.max(1, wa); i < Math.min(n - 1, wb); i += 1) { if (hash(i, 7) > .75 * u) continue; var side = hash(i, 8) > .5 ? 1 : -1, len = (w / 2 + 7 + hash(i, 9) * 9) * u, q = p[i]; ctx.moveTo(q.x + nm[i].x * side * (w / 2 + 4), q.y + nm[i].y * side * (w / 2 + 4)); if (L.partner === 'wool') { ctx.lineTo(q.x + nm[i].x * side * len * .6 + 3, q.y + nm[i].y * side * len * .6 - 3); ctx.lineTo(q.x + nm[i].x * side * len, q.y + nm[i].y * side * len); } else ctx.lineTo(q.x + nm[i].x * side * len + (hash(i, 10) - .5) * 6, q.y + nm[i].y * side * len + (hash(i, 11) - .5) * 6); }
     ctx.stroke();
   }
   strokeP(ctx, p, casing, w + 3.4);
@@ -2759,7 +2910,7 @@ function drawMain(ctx, f, cum, flow, over) {
     if (L.twist > 0) { ctx.strokeStyle = casing; ctx.lineWidth = 1.2; ctx.beginPath(); var step = Math.max(2, Math.round(9 - L.twist * .7)); for (i = 2; i < n - 2; i += step) { var a = p[i], na = nm[i]; ctx.moveTo(a.x - na.x * w * .45 - (p[i+1].x - a.x) * .8, a.y - na.y * w * .45 - (p[i+1].y - a.y) * .8); ctx.lineTo(a.x + na.x * w * .45 + (p[i+1].x - a.x) * .8, a.y + na.y * w * .45 + (p[i+1].y - a.y) * .8); } ctx.stroke(); }
   }
   // the natural fibre wraps round the core
-  if (L.partner) { var su = L.fresh; ctx.strokeStyle = f.bg === 'white' ? '#bfb6a0' : 'rgba(255,255,255,.95)'; ctx.lineWidth = 2; ctx.beginPath(); for (i = 2; i < n - 2; i += 3) { if (hash(i, 31) > su) continue; var b0 = p[i], nb = nm[i]; ctx.moveTo(b0.x - nb.x * (w / 2 + 5), b0.y - nb.y * (w / 2 + 5)); ctx.lineTo(p[i + 2].x + nm[i + 2].x * (w / 2 + 5), p[i + 2].y + nm[i + 2].y * (w / 2 + 5)); } ctx.stroke(); }
+  if (L.partner) { var su = wu; ctx.strokeStyle = f.bg === 'white' ? '#bfb6a0' : 'rgba(255,255,255,.95)'; ctx.lineWidth = 2; ctx.beginPath(); for (i = Math.max(2, wa); i < Math.min(n - 2, wb); i += 3) { if (hash(i, 31) > su) continue; var b0 = p[i], nb = nm[i]; ctx.moveTo(b0.x - nb.x * (w / 2 + 5), b0.y - nb.y * (w / 2 + 5)); ctx.lineTo(p[i + 2].x + nm[i + 2].x * (w / 2 + 5), p[i + 2].y + nm[i + 2].y * (w / 2 + 5)); } ctx.stroke(); }
   // trilobal fibres sparkle
   if (L.shape === 'trilobal') { var fr = Math.floor(f.t * 3); for (i = 3; i < n - 3; i += 5) { if (hash(i, fr) < .78) continue; var tw = .6 + .4 * Math.sin(f.t * 10 + i); star(ctx, p[i].x + nm[i].x * w * .3, p[i].y + nm[i].y * w * .3, 6 * tw, KU.w); star(ctx, p[i].x + nm[i].x * w * .3, p[i].y + nm[i].y * w * .3, 3 * tw, KU.y); } }
   var bi = f.sc.bi || (G.bi && f.i >= IDX.bend);

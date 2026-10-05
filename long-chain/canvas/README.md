@@ -23,6 +23,7 @@
 - **Laptop:** the app runs in the frame. A **Full screen** button at the top left fills the screen; press it again or Esc to leave.
 - **Phone:** the frame works but is cramped. Where the phone does not allow full screen from a frame (iPhone, the Canvas app), the button reads **Open in new tab** instead. The link under the frame does the same job from the Canvas page itself.
 - **Height:** if Canvas removes the `style` attribute, the frame falls back to 760 pixels tall. Keep it at 640 or more; each exhibit is at least 640 pixels tall.
+- **Sound:** short sound effects play as students act (each comic word on screen has one, and discoveries chime). A **Sound** button at the top switches them off; the choice is remembered on that device. Worth mentioning in the brief for students working in a library.
 - **Nothing is saved.** Discoveries and the care label last until the page is closed. At the end, **Reflect and copy** copies the care label and two reflection answers as plain text. If a browser blocks copying, the text is shown selected so students can copy it themselves.
 - **Accessibility:** keep the `title` on the iframe. Every gesture has a keyboard equivalent, and the tutor notes and discovery drawer are plain text.
 

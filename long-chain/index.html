@@ -892,6 +892,14 @@ function disc(ctx, x, y, r, col) { if (r <= 0) return; ctx.beginPath(); ctx.arc(
 function ring(ctx, x, y, r, w, col) { ctx.beginPath(); ctx.arc(x, y, Math.max(1, r), 0, Math.PI * 2); ctx.strokeStyle = col; ctx.lineWidth = w; ctx.stroke(); }
 function hexagon(ctx, x, y, r, col) { ctx.beginPath(); for (var i = 0; i < 6; i++) { var a = i * 60 * D; ctx[i ? 'lineTo' : 'moveTo'](x + r * Math.cos(a), y + r * Math.sin(a)); } ctx.closePath(); ctx.fillStyle = col; ctx.fill(); }
 function star(ctx, x, y, r, col) { ctx.fillStyle = col; ctx.beginPath(); for (var i = 0; i < 8; i++) { var a = i * Math.PI / 4, rr = i % 2 ? r * .28 : r; ctx[i ? 'lineTo' : 'moveTo'](x + Math.cos(a) * rr, y + Math.sin(a) * rr); } ctx.closePath(); ctx.fill(); }
+function waveY(x, y, f, amp) { return y + Math.sin(x / 34 + f.t * 1.5) * amp + Math.sin(x / 13 - f.t * 1.1) * amp * .45; }
+// a band between two copies of the same moving surface, so a dithered edge moves with the liquid instead of sitting still under it
+function waveBand(ctx, y0, y1, f, amp, fill) {
+  if (!fill) return; var x; ctx.fillStyle = fill; ctx.beginPath();
+  for (x = 0; x <= f.w + 8; x += 8) ctx.lineTo(x, waveY(x, y0, f, amp));
+  for (x = f.w + 8; x >= 0; x -= 8) ctx.lineTo(x, waveY(x, y1, f, amp));
+  ctx.closePath(); ctx.fill();
+}
 function wave(ctx, y, f, amp, col, top) { ctx.fillStyle = col; ctx.beginPath(); ctx.moveTo(0, top ? 0 : f.h + 10); for (var x = 0; x <= f.w + 8; x += 8) ctx.lineTo(x, y + Math.sin(x / 34 + f.t * 1.5) * amp + Math.sin(x / 13 - f.t * 1.1) * amp * .45); ctx.lineTo(f.w + 8, top ? 0 : f.h + 10); ctx.closePath(); ctx.fill(); }
 function inkFor(bg) { return bg === 'blue' ? KU.w : bg === 'yellow' ? KU.k : KU.b; }
 function casingFor(ink) { return lum(ink) > .4 ? KU.k : KU.w; }
@@ -1202,7 +1210,7 @@ SCENES.oil = {
   tap: function (f) { var n0 = f.s.links; this.addLink(f); if (f.s.links > n0) { var q = this.slot(f, f.s.links * 2 - 1); stamp(f, 'CLICK', q.x - 70, q.y - 6); } },
   topBg: function () { return 'black'; },
   demo: function (f) { return { kind: 'tap', pts: [pt(.3 * f.w, this.surf(f) - 46)], dur: 1.9 }; },
-  back: function (ctx, f) { var sy = this.surf(f); wave(ctx, sy, f, 6, KU.k, true); wFade(ctx, KU.k, 0, sy + 5, f.w, 30, 4, 1); },
+  back: function (ctx, f) { var sy = this.surf(f); wave(ctx, sy, f, 6, KU.k, true); for (var k = 0; k < 4; k++) waveBand(ctx, sy + k * 8 - 1, sy + (k + 1) * 8, f, 6, weave(KU.k, 4 - k)); },
   front: function (ctx, f) {
     var sy = this.surf(f), W = f.w, self = this;
     for (var i = 0; i < f.s.links; i++) {

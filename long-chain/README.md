@@ -33,6 +33,7 @@ Exhibits:
 
 - `index.html`: the interactive piece (KU palette, Arial, no italics; retro flat-colour style after *The Dot and the Line*, 1965).
 - `storyboard-v2.html`: the earlier 9:16 storyboard and animatic, kept for reference.
+- `canvas/the-thread-and-the-loop.html`: the Canvas (VLE) version, one self-contained file to upload and embed in an iframe. See `canvas/README.md`. Rebuild it with `python3 long-chain/tools/build_canvas.py` after changing `index.html`.
 - Published view: https://claude.ai/artifact/MG2tU9T3DhzUS1XftDt6xQ
 
 The file is written as an artifact page (no `<html>`/`<head>` wrapper); it still opens directly in a browser.

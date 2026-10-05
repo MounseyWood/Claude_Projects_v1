@@ -1,5 +1,11 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>The Thread and the Loop</title>
+<meta name="description" content="An interactive fibre lab for FN4005: make a polyester thread, then find out if it can come back.">
+<meta name="author" content="Matthew Mounsey-Wood FHEA MA (RCA) LCF Alumni">
 <style>
 /* Layout: a phone-width vertical feed of full-screen exhibits that snap like a social feed. One Verlet thread runs through every exhibit and is the controller: you pull it, cut it, shape it, wrap it, dye it, and it keeps what you do. Facts arrive as discovery cards. Text blocks are solid objects the thread cannot cross. */
 :root {
@@ -186,7 +192,8 @@ body { margin: 0; padding-inline: 0; background: #121211; color: var(--k); font-
   .aside p { margin: 0 0 10px; }
 }
 </style>
-
+</head>
+<body>
 <div class="aside" aria-hidden="true">
   <b>The Thread and the Loop</b>
   <p>Made for phones. Open it on yours, or scroll here.</p>
@@ -2392,3 +2399,5 @@ frames.forEach(function (f) {
 requestAnimationFrame(loop);
 })();
 </script>
+</body>
+</html>

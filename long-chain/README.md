@@ -1,21 +1,23 @@
 # The Thread and the Loop
 
-An interactive, phone-first fibre lab for FN4005 undergraduates about polyester and recycling. It is built like a hands-on science-museum gallery: twenty-one full-screen exhibits snap like a social feed, and there are no information-only pages. Facts arrive as numbered discovery cards when you do something (35 in all, one hidden). A wrong move gets a question back instead of the answer. A tally on the progress bar opens a drawer of what you have found, with "Go there" links to the exhibits still hiding one.
+An interactive, phone-first fibre lab from the Phygital Materials Studio about polyester and recycling. It is built like a hands-on science-museum gallery: twenty-two full-screen exhibits snap like a social feed, and there are no information-only pages. Facts arrive as numbered discovery cards when you do something (37 in all, one hidden). A wrong move gets a question back instead of the answer. A tally on the progress bar opens a drawer of what you have found, with "Go there" links to the exhibits still hiding one.
 
-The look is a 1-bit fibre lab: every shade is woven, drawn with point-paper weave structures (spot, twill, plain weave) as dithering, and each exhibit frays into the colour of the next. The thread unwinds from a spool on the first page and writes "hi" there, with The Dot as the dot on the i. Each chapter moves the thread its own way (Make steps like pipework, Fibre curves, Yarn coils, loops and stitches, Combine drapes and waves, Return zigzags and sags), so no two exhibits share a route. An original pixel hand demonstrates the gesture when an exhibit sits untouched; comic sound words pop on actions; discovery cards are taped on.
+The look is a 1-bit fibre lab: every shade is woven, drawn with point-paper weave structures (spot, twill, plain weave) as dithering, and each exhibit frays into the colour of the next. The thread unwinds from a spool on the first page and writes "hi" there, with The Dot as the dot on the i. Where a word is worth remembering, the thread writes it: PET under the chain you have just linked, a giant Z for Z twist, and rPET across a slogan tee. Elsewhere it throws a lasso round the text, as it does round the title, and it swaps sides between exhibits. Each chapter moves the thread its own way (Make steps like pipework, Fibre curves, Yarn coils, loops and stitches, Combine drapes and waves, Return zigzags and sags), so no two exhibits share a route. An original pixel hand demonstrates the gesture when an exhibit sits untouched; comic sound words pop on actions; discovery cards are taped on.
+
+The cover asks one question: polyester has memory, but can it be recycled, or decompose? The exhibits answer it in parts, and two discoveries close it: Memory (heat-setting, as in Issey Miyake's Pleats Please) and Compost (PLA composts only in industrial conditions; ordinary PET hardly breaks down).
 
 One Verlet-simulated thread runs through every exhibit and is the controller. It keeps what you do to it, so its shape, filament count, texture, form, plies, wrap, colour and recycling history carry forward. The care label at the end reads the thread back and decides whether the loop can close. Text blocks are solid: the thread routes round them.
 
 Exhibits:
 
 - **Warm-up:** guess how much fibre is polyester (59%), then how much of the world's oil goes into synthetic fibre (about 1.35%, one estimate).
-- **Make:** link the chain (PET from oil and gas; each link gives off water; 1941 Terylene); melt, push and stretch (draw the fibre).
+- **Make:** link the chain (EG and TPA from oil and gas link into PET, which the thread writes out; each link gives off water; 1941 Terylene); melt, push and stretch (draw the fibre).
 - **Fibre:**
   - Pick a nozzle (round, trilobal, hollow or channelled), then drag a torch, an ice cube or a sweat drop onto the microscope lens.
   - One strand or hundreds (mono-, multi- and microfilament).
 - **Yarn:**
   - Puff it up: hold the air jet to blow loops into the filaments (air-jet texturing), or tap the heater to crimp them (false-twist texturing). One thick filament won't texture.
-  - Cut it and spin it (staple fibre and twist).
+  - Cut it and spin it (staple fibre and twist): the thread draws a Z, the direction most single yarns are spun.
   - Ply it: add bobbins and turn the twist dial. The hanging loop snarls until the ply twist balances the twist in each strand.
 - **Combine:**
   - Wrap it: pull a cotton, wool or elastane yarn off the rail and drop it on the thread (core-spun).
@@ -23,15 +25,15 @@ Exhibits:
 - **For and against:** a tug-of-war.
 - **Wear:** the washing machine is the interface. Fine, staple and loose yarns shed more.
 - **Return:**
-  - Where recycled polyester comes from.
+  - Where recycled polyester comes from: bottle to a slogan tee that reads rPET.
   - Feed the recycler: blends jam it; strip them off. Each melt breaks links, and the thread shows it.
   - Unzip the chain: tip a flask of water, glycol or enzymes into the tank and the chain breaks into its building blocks (dye leaches out, cotton comes out whole). Then link it back up, clean.
-  - Spot the PET in a PET/PLA fork.
+  - Spot the PET in a PET/PLA fork, then find out where PLA can compost.
   - Stretch without elastane (bicomponent spring).
-  - Turn up the heat: the PLA ply melts first.
+  - Turn up the heat: the PLA ply melts first, and PET shows its memory.
 - **Promise:** tie knots.
 - **Check yourself:** five quick questions with hints for wrong answers; each right answer threads an eyelet on the thread.
-- **The end:** the care label reads the thread back. **Reflect and copy** asks two questions and copies the label and answers as plain text to paste into a Canvas discussion or journal. **Notes and sources** is written for students: outcomes, how the lab works, questions to think about, confidence ratings and 36 sources.
+- **The end:** the care label reads the thread back. **Reflect and copy** asks two questions and copies the label and answers as plain text to paste into a Canvas discussion or journal. **Notes and sources** is written for students: outcomes, how the lab works, questions to think about, confidence ratings and 40 sources.
 
 It is built for asynchronous guided independent study: the cover gives the time (about 20 minutes), a pixel hand demonstrates gestures, and nothing needs a tutor or an account. Nothing is saved when the page closes, so the copy step is the record.
 

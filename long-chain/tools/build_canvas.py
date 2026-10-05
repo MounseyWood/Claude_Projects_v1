@@ -24,7 +24,7 @@ page = f"""<!doctype html>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>{title}</title>
-<meta name="description" content="An interactive fibre lab for FN4005: make a polyester thread, then find out if it can come back.">
+<meta name="description" content="An interactive fibre lab from the Phygital Materials Studio: make a polyester thread, then find out if it can come back.">
 <meta name="author" content="Matthew Mounsey-Wood FHEA MA (RCA) LCF Alumni">
 {style.group(0)}
 </head>

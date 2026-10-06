@@ -111,6 +111,7 @@ body { margin: 0; padding-inline: 0; background: #121211; color: var(--k); font-
 /* A number you drag up and down */
 .scrub { position: absolute; z-index: 2; font-size: clamp(54px, 16vw, 74px); font-weight: 700; letter-spacing: -0.04em; line-height: 1; cursor: ns-resize; touch-action: none; user-select: none; -webkit-user-select: none; padding: 4px 0; font-variant-numeric: tabular-nums; }
 .scrub small { display: block; font-size: 14px; letter-spacing: .08em; text-transform: uppercase; margin-top: 4px; }
+.scrub.r { text-align: right; }
 .scrub.inline { position: static; display: inline-block; font-size: clamp(44px, 13vw, 60px); margin-top: 6px; }
 
 /* Tug of war */
@@ -339,7 +340,7 @@ body { margin: 0; padding-inline: 0; background: #121211; color: var(--k); font-
     <p class="hint" id="cut-hint">Swipe across the thread to cut it</p>
     <button class="sr" type="button" id="cut-key">Cut the thread into staple</button>
   </div>
-  <div class="scrub" data-avoid="twist" id="twist" role="slider" tabindex="0" aria-label="Twist" aria-valuemin="0" aria-valuemax="10" aria-valuenow="0" hidden><span class="sv">0</span><small>twist · drag up</small></div>
+  <div class="scrub r" data-avoid="twist" id="twist" role="slider" tabindex="0" aria-label="Twist" aria-valuemin="0" aria-valuemax="10" aria-valuenow="0" hidden><span class="sv">0</span><small>twist · drag up</small></div>
   <div class="card bl reserve" data-avoid="card"><p class="cl"></p><p class="ct"></p></div>
 </section>
 
@@ -865,7 +866,8 @@ function stitchGaps(ctx, f) {
   });
 }
 // The thread throws a loop round a block of text, the way it lassos the title on the first page.
-function lassoPts(r) { var cx = (r.l + r.r) / 2, cy = (r.t + r.b) / 2, rx = (r.r - r.l) / 2 + 10, ry = (r.b - r.t) / 2 + 12, o = []; for (var i = 0; i <= 72; i++) { var a = (-40 + i / 72 * 410) * D; o.push(pt(cx + rx * Math.cos(a), cy + ry * Math.sin(a))); } return o; }
+// a loop round a block of words. It can carry on past the full circle to end somewhere else (a1, in degrees), a little wider on the second pass
+function lassoPts(r, a1) { a1 = a1 || 370; var cx = (r.l + r.r) / 2, cy = (r.t + r.b) / 2, rx = (r.r - r.l) / 2 + 10, ry = (r.b - r.t) / 2 + 12, o = [], n = Math.round((a1 + 40) / 410 * 72); for (var i = 0; i <= n; i++) { var dg = -40 + i / n * (a1 + 40), k = a1 > 370 && dg > 320 ? Math.min(1, (dg - 320) / 40) * 9 : 0; o.push(pt(cx + (rx + k) * Math.cos(dg * D), cy + (ry + k) * Math.sin(dg * D))); } return o; }
 function arc(cx, cy, rx, ry, a0, a1, steps) { steps = steps || 60; var o = []; for (var i = 0; i <= steps; i++) { var a = a0 + (a1 - a0) * i / steps; o.push(pt(cx + rx * Math.cos(a), cy + ry * Math.sin(a))); } return o; }
 function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
 function catmull(P, k) { var o = []; for (var i = 0; i < P.length - 1; i++) { var a = P[Math.max(0, i - 1)], b = P[i], c = P[i + 1], d = P[Math.min(P.length - 1, i + 2)]; for (var j = 0; j < k; j++) { var t = j / k, t2 = t * t, t3 = t2 * t; o.push(pt(.5 * (2 * b.x + (c.x - a.x) * t + (2 * a.x - 5 * b.x + 4 * c.x - d.x) * t2 + (3 * b.x - a.x - 3 * c.x + d.x) * t3), .5 * (2 * b.y + (c.y - a.y) * t + (2 * a.y - 5 * b.y + 4 * c.y - d.y) * t2 + (3 * b.y - a.y - 3 * c.y + d.y) * t3))); } } o.push(P[P.length - 1]); return o; }
@@ -875,8 +877,18 @@ function rnd(seed) { var s = seed >>> 0; return function () { s = (Math.imul(s, 
 function box(def, x0, y0, w, h) { return def.map(function (a) { return pt(x0 + a[0] * w, y0 + a[1] * h); }); }
 // loose curls along a line: the yarn coming apart as it falls
 function curls(a, b, n, seed) { var r = rnd(seed), o = [], i, j; for (i = 1; i <= n; i++) { var u = i / (n + 1), c = pt(a.x + (b.x - a.x) * u, a.y + (b.y - a.y) * u), rr = 12 + r() * 9, a0 = r() * Math.PI * 2, sd = r() < .5 ? 1 : -1; for (j = 0; j <= 16; j++) { var an = a0 + sd * j / 16 * Math.PI * 2.2; o.push(pt(c.x + Math.cos(an) * rr, c.y + Math.sin(an) * rr)); } } o.push(b); return o; }
-// a tangle: loops of different sizes piled over each other, like a dropped ball of yarn
-function tangle(cx, cy, rx, ry, n, seed) { var r = rnd(seed), o = [], i, j; for (i = 0; i < n; i++) { var c = pt(cx + (r() - .5) * 1.6 * rx, cy + (r() - .5) * 1.6 * ry), rr = 15 + r() * 17, a0 = r() * Math.PI * 2, sd = r() < .5 ? 1 : -1, sq = .75 + r() * .45; for (j = 0; j <= 18; j++) { var an = a0 + sd * j / 18 * Math.PI * 2.3; o.push(pt(c.x + Math.cos(an) * rr, c.y + Math.sin(an) * rr * sq)); } } return o; }
+// a tangle: round loops of different sizes, each running on from the last, piled in two loose rows like dropped yarn
+function tangle(cx, cy, rx, ry, n, seed) {
+  var r = rnd(seed), o = [], p = pt(cx - rx, cy + ry * .3), half = Math.ceil(n / 2), i, j;
+  for (i = 0; i < n; i++) {
+    var low = i < half, u = low ? i / Math.max(1, half - 1) : 1 - (i - half) / Math.max(1, n - half - 1);
+    var q = pt(cx + (u * 2 - 1) * rx * .85 + (r() - .5) * 18, cy + (low ? 1 : -1) * ry * .35 + (r() - .5) * ry * .5), rr = 20 + r() * 16, sd = r() < .8 ? 1 : -1;
+    var th = Math.atan2(p.y - q.y, p.x - q.x), c = pt(p.x - rr * Math.cos(th), p.y - rr * Math.sin(th)), turns = 1.1 + r() * .4, m = Math.round(26 * turns);
+    for (j = 1; j <= m; j++) { var an = th + sd * j / m * Math.PI * 2 * turns; p = pt(c.x + Math.cos(an) * rr, c.y + Math.sin(an) * rr); o.push(p); }
+  }
+  return o;
+}
+
 function heap(cx, cy, rx, ry, seed, n) { var r = rnd(seed), a = []; for (var i = 0; i < (n || 30); i++) { var ang = r() * Math.PI * 2, rr = .25 + r() * .75; a.push(pt(cx + Math.cos(ang) * rx * rr, cy + Math.sin(ang) * ry * rr)); } return a; }
 function segX(a, b, c, d) { var r = (b.x - a.x) * (d.y - c.y) - (b.y - a.y) * (d.x - c.x); if (Math.abs(r) < 1e-9) return false; var t = ((c.x - a.x) * (d.y - c.y) - (c.y - a.y) * (d.x - c.x)) / r, u = ((c.x - a.x) * (b.y - a.y) - (c.y - a.y) * (b.x - a.x)) / r; return t >= 0 && t <= 1 && u >= 0 && u <= 1; }
 function hexRgb(h) { var n = parseInt(h.slice(1), 16); return [n >> 16 & 255, n >> 8 & 255, n & 255]; }
@@ -1015,6 +1027,7 @@ function label(ctx, f, s, x, y, size, col, align, ghost) {
   ctx.fillStyle = col; ctx.textAlign = 'left'; ctx.fillText(s, x0, y);
   if (!ghost) f.dyn.push({ l: x0 - 8, r: x0 + m + 8, t: y - size - 6, b: y + 8 });
 }
+function bubble(ctx, x, y, r) { if (r <= .5) return; ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fillStyle = KU.w; ctx.fill(); ctx.strokeStyle = 'rgba(0,156,222,.6)'; ctx.lineWidth = 1.4; ctx.stroke(); if (r > 3) disc(ctx, x - r * .35, y - r * .35, r * .22, 'rgba(0,156,222,.45)'); }
 function pellet(ctx, x, y, a, col) { ctx.save(); ctx.translate(x, y); ctx.rotate(a); ctx.fillStyle = KU.k; ctx.fillRect(-7, -5, 14, 10); ctx.fillStyle = col; ctx.fillRect(-5.5, -3.5, 11, 7); ctx.restore(); }
 function disc(ctx, x, y, r, col) { if (r <= 0) return; ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fillStyle = col; ctx.fill(); }
 function ring(ctx, x, y, r, w, col) { ctx.beginPath(); ctx.arc(x, y, Math.max(1, r), 0, Math.PI * 2); ctx.strokeStyle = col; ctx.lineWidth = w; ctx.stroke(); }
@@ -1584,8 +1597,8 @@ SCENES.shape = {
   // pick a test up and drop it on the lens; a tap works too
   hitTest: function (f, x, y) {
     var self = this, g = this.geo(f);
-    for (var k = 0; k < 3; k++) { var q = this.tool(f, k); if (Math.hypot(q.x - x, q.y - y) < 30 * g.sc) { (function (k) { var o = f.s.tl[k]; o.held = true; o.x = q.x; o.y = q.y; self.grabbed = k; })(k);
-      return { move: function (mx, my) { var o = f.s.tl[self.grabbed]; o.x = mx; o.y = my; }, end: function () { var o = f.s.tl[self.grabbed]; o.held = false; o.back = f.t; if (Math.hypot(o.x - g.cx, o.y - g.cy) < g.R + 14) self.run(f, self.T[self.grabbed]); } }; } }
+    for (var k = 0; k < 3; k++) { var q = this.tool(f, k); if (Math.hypot(q.x - x, q.y - y) < 30 * g.sc) {
+      return { begin: (function (k, q) { return function () { var o = f.s.tl[k]; o.held = true; o.x = q.x; o.y = q.y; self.grabbed = k; }; })(k, q), move: function (mx, my) { var o = f.s.tl[self.grabbed]; o.x = mx; o.y = my; }, end: function () { var o = f.s.tl[self.grabbed]; o.held = false; o.back = f.t; if (Math.hypot(o.x - g.cx, o.y - g.cy) < g.R + 14) self.run(f, self.T[self.grabbed]); } }; } }
     return null;
   },
   tap: function (f, x, y) { var g = this.geo(f); for (var k = 0; k < 3; k++) if (Math.hypot(g.tp[k].x - x, g.tp[k].y - y) < 30 * g.sc) this.run(f, this.T[k]); },
@@ -1804,12 +1817,12 @@ SCENES.cut = {
   // once it is cut, the Z lifts to leave room for the twist underneath
   room: function () { return G.staple ? ($('twist').offsetHeight || 90) + 36 : 0; },
   zbox: function (f) { var st = stage(f); return { L: .14 * f.w, R: .86 * f.w, t: st.t + st.h * .16, b: st.b - Math.max(st.h * .14, this.room()) }; },
-  layout: function (f) { var el = $('twist'); if (!el.hidden) { el.style.left = '6%'; el.style.top = Math.round(this.zbox(f).b + 24) + 'px'; } f.measure(); },
+  layout: function (f) { var el = $('twist'); if (!el.hidden) { el.style.left = 'auto'; el.style.right = Math.round(.2 * f.w) + 'px'; el.style.top = Math.round(this.zbox(f).b + 24) + 'px'; } f.measure(); },
   path: function (f) { var st = stage(f), W = f.w, z = this.zbox(f), a = pt(.87 * W, st.t + 6); return [a].concat(swing(a, pt(z.L, z.t - 18), 'zig'), [pt(z.L, z.t), pt(z.R, z.t), pt(z.L, z.b), pt(z.R, z.b), pt(.87 * W, st.b - 6)]); },
   k: 0.08,
   tick: function (f) { f.falls = f.falls.filter(function (c) { c.step(f.t, [], 0); return !c.p.every(function (q) { return q.y > f.h + 30; }); }); },
   front: function (ctx, f) {
-    if (G.twist > 0) { var z = this.zbox(f); label(ctx, f, 'Z TWIST', z.R - 16, z.b + 30, 13, KU.w, 'right'); }
+    if (G.twist > 0) { var z = this.zbox(f); label(ctx, f, 'Z TWIST', z.L, z.b + 30, 13, KU.w, 'left'); }
     f.falls.forEach(function (c) { strokeChain(ctx, c, KU.b, 5); });
     var tr = f.s.trail.filter(function (q) { return f.t - q.t < .35; });
     if (tr.length > 1) { ctx.strokeStyle = KU.y; ctx.lineWidth = 4; ctx.lineCap = 'round'; ctx.beginPath(); tr.forEach(function (q, i) { ctx[i ? 'lineTo' : 'moveTo'](q.x, q.y); }); ctx.stroke(); }
@@ -2040,7 +2053,7 @@ SCENES.colour = {
   // pellets rattle into the hopper and pile up; once the screw turns, it draws them down into the barrel
   feed: function (f) {
     var x = this.geo(f).ex, dt = f.t - f.s.mt;
-    if (dt < 1.3 && Math.random() < .55) f.s.pel.push({ x: x.x + (Math.random() - .5) * x.hw * .6, y: x.ht - 22 - Math.random() * 16, vy: Math.random() * 1.5, a: Math.random() * 3, c: Math.random() < .3 });
+    if (dt < 1.3 && Math.random() < .3) f.s.pel.push({ x: x.x + (Math.random() - .5) * x.hw * .6, y: x.ht - 22 - Math.random() * 16, vy: Math.random() * 1.5, a: Math.random() * 3, c: Math.random() < .3 });
     f.s.pel = f.s.pel.filter(function (q) { q.vy += .42; q.y += q.vy; q.a += .12; if (q.y > x.ht + x.hh * .4) { f.s.heap = Math.min(f.s.heap + 1, 40); return false; } return true; });
     if (dt > 1.5) f.s.heap = Math.max(10, f.s.heap - .3);
     if (dt > .2 && !f.s.rat) { f.s.rat = true; stamp(f, 'RATTLE', x.x + x.hw / 2 - 10, x.ht - 8); }
@@ -2053,42 +2066,23 @@ SCENES.colour = {
     if (f.s.m === 'melt') this.extruder(ctx, f, g.ex);
   },
   extruder: function (ctx, f, x) {
-    var dt = f.t - f.s.mt, tc = this.target(f), run = dt < 2.9, hot = run && dt > .4, L = x.x - x.hw / 2, R = x.x + x.hw / 2, bl = x.x - x.bw / 2, br = x.x + x.bw / 2, top = x.bt, H = x.sp - x.bt, i, k;
+    var dt = f.t - f.s.mt, tc = this.target(f), run = dt < 2.9, L = x.x - x.hw / 2, R = x.x + x.hw / 2, bl = x.x - x.bw / 2, br = x.x + x.bw / 2, top = x.bt, H = x.sp - x.bt, k;
     var pop = RM ? 1 : .9 + .1 * ease(dt / .3), cy = (x.ht + x.sb) / 2;
     ctx.save(); ctx.translate(x.x, cy); ctx.scale(pop, pop); ctx.translate(-x.x, -cy);
-    function funnel(dx, dy, ins) { ctx.beginPath(); ctx.moveTo(L - 6 + ins + dx, x.ht + dy); ctx.lineTo(R + 6 - ins + dx, x.ht + dy); ctx.lineTo(br + 5 - ins * .5 + dx, x.bt + dy); ctx.lineTo(bl - 5 + ins * .5 + dx, x.bt + dy); ctx.closePath(); }
-    // woven shadow, then the hopper with its rim
-    var sh = weave(KU.k, 2); if (sh) { ctx.fillStyle = sh; funnel(8, 8, 0); ctx.fill(); ctx.fillRect(bl + 3, x.bt + 8, x.bw + 10, x.sb - x.bt); }
-    ctx.fillStyle = KU.k; funnel(0, 0, 0); ctx.fill(); ctx.fillRect(L - 12, x.ht - 8, x.hw + 24, 9);
-    // the pile of pellets in the hopper, filling up from the throat
-    ctx.save(); funnel(0, 0, 6); ctx.fillStyle = KU.w; ctx.fill(); ctx.clip();
-    var n = Math.floor(f.s.heap), row = 0, j = 0;
-    for (i = 0; i < n; i++) {
-      var y = x.bt - 8 - row * 7.5, wy = x.bw + (x.hw - x.bw) * clamp((x.bt - y) / x.hh, 0, 1), cnt = Math.max(1, Math.floor(wy / 13));
-      pellet(ctx, x.x + (j - (cnt - 1) / 2) * 13 + (hash(i, 63) - .5) * 4, y + (hash(i, 64) - .5) * 3, (hash(i, 61) - .5) * 1.2, hash(i, 62) < .3 ? tc : KU.w);
-      if (++j >= cnt) { j = 0; row++; }
-    }
+    function body(dx, dy) { ctx.beginPath(); ctx.moveTo(L - 8 + dx, x.ht - 8 + dy); ctx.lineTo(R + 8 + dx, x.ht - 8 + dy); ctx.lineTo(br + dx, x.bt + dy); ctx.lineTo(br + dx, x.sp + dy); ctx.lineTo(x.x + x.bw * .75 + dx, x.sb + dy); ctx.lineTo(x.x - x.bw * .75 + dx, x.sb + dy); ctx.lineTo(bl + dx, x.sp + dy); ctx.lineTo(bl + dx, x.bt + dy); ctx.closePath(); }
+    // hopper, barrel and spinneret in one black shape, with a woven shadow
+    var sh = weave(KU.k, 2); if (sh) { ctx.fillStyle = sh; body(8, 8); ctx.fill(); }
+    ctx.fillStyle = KU.k; body(0, 0); ctx.fill();
+    // a handful of pellets in the mouth of the hopper
+    var np = clamp(Math.floor(f.s.heap / 5) + 2, 2, 7);
+    for (k = 0; k < np; k++) pellet(ctx, x.x + (k - (np - 1) / 2) * 15, x.ht - 1 + (k % 2) * 5, 0, k % 3 === 1 ? tc : KU.w);
+    // one window on the barrel: it fills with melt from the top, plain at first, then the colour, while the screw turns
+    var wx = bl + 8, ww = x.bw - 16, wy = top + 8, wh = H - 14, fill = clamp((dt - .5) / 1.3, 0, 1), melt = mix(KU.w, tc, f.s.u);
+    ctx.fillStyle = KU.g; ctx.fillRect(wx, wy, ww, wh); ctx.fillStyle = melt; ctx.fillRect(wx, wy, ww, wh * fill);
+    ctx.save(); ctx.beginPath(); ctx.rect(wx, wy, ww, wh); ctx.clip();
+    ctx.strokeStyle = lum(melt) < .2 && fill > .5 ? KU.w : KU.k; ctx.lineWidth = 4; var sl = run ? (f.t * 50) % 26 : 0;
+    for (var y2 = wy - 26 + sl; y2 < wy + wh; y2 += 26) { ctx.beginPath(); ctx.moveTo(wx, y2); ctx.lineTo(wx + ww, y2 + 12); ctx.stroke(); }
     ctx.restore();
-    // the barrel, with a window cut in it: melt fills it from the top, and the pigment mixes in on the way down
-    ctx.fillStyle = KU.k; ctx.fillRect(bl - 5, top - 1, x.bw + 10, H + 1);
-    var wx = bl + 4, ww = x.bw - 8, fill = clamp((dt - .5) / 1.3, 0, 1), fy = top + 4 + fill * (H - 8), yy;
-    ctx.save(); ctx.beginPath(); ctx.rect(wx, top + 4, ww, H - 8); ctx.clip();
-    ctx.fillStyle = KU.g; ctx.fillRect(wx, top + 4, ww, H - 8);
-    for (yy = top + 4; yy < fy; yy += 3) { ctx.fillStyle = mix(KU.w, tc, clamp((yy - top) / H * 1.5, 0, 1)); ctx.fillRect(wx, yy, ww, 3.5); }
-    ctx.strokeStyle = tc; ctx.lineWidth = 2.2; ctx.lineCap = 'round';
-    for (k = 0; k < 4; k++) { ctx.beginPath(); for (var s2 = 0; s2 <= 20; s2++) { var yv = top + 6 + s2 * H * .55 / 20; if (yv > fy) break; ctx[s2 ? 'lineTo' : 'moveTo'](wx + ww * (.2 + .6 * hash(k, 66)) + Math.sin(yv / 9 - (run ? f.t * 4 : 0) + k) * ww * .18, yv); } ctx.stroke(); }
-    // the screw: a shaft, and flights that slide down while it turns
-    var sl = run ? (f.t * 70) % 18 : 0;
-    for (var y2 = top - 18 + sl; y2 < x.sp + 18; y2 += 18) { var dark = y2 < fy && lum(mix(KU.w, tc, clamp((y2 - top) / H * 1.5, 0, 1))) < .2; ctx.strokeStyle = dark ? 'rgba(255,255,255,.55)' : 'rgba(29,29,27,.6)'; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(wx, y2); ctx.lineTo(wx + ww, y2 + 10); ctx.stroke(); }
-    ctx.fillStyle = KU.k; ctx.fillRect(x.x - 3, top, 6, H);
-    ctx.restore();
-    // heater bands clamp the barrel, glowing while it runs
-    for (k = 0; k < 3; k++) { var hy = top + H * (.2 + k * .3); [bl - 14, br + 3].forEach(function (hx) { ctx.fillStyle = KU.k; ctx.fillRect(hx, hy - 8, 11, 16); ctx.fillStyle = hot ? KU.y : KU.g; ctx.fillRect(hx + 2, hy - 6, 7, 12); }); if (hot) { ctx.strokeStyle = KU.y; ctx.lineWidth = 2; [-1, 1].forEach(function (sd) { var hx2 = sd < 0 ? bl - 20 : br + 20; ctx.beginPath(); for (var q = 0; q <= 6; q++) ctx[q ? 'lineTo' : 'moveTo'](hx2 + sd * Math.sin(q * 1.6 + f.t * 9) * 2.5, hy - 9 + q * 3); ctx.stroke(); }); } }
-    // the spinneret: a plate full of holes; once the colour reaches it, coloured filaments run out and gather into the thread
-    ctx.fillStyle = KU.k; ctx.beginPath(); ctx.moveTo(bl - 8, x.sp); ctx.lineTo(br + 8, x.sp); ctx.lineTo(x.x + x.bw * .75, x.sb); ctx.lineTo(x.x - x.bw * .75, x.sb); ctx.closePath(); ctx.fill();
-    var e = ease((dt - 1.2) / 1.2), hole = e > 0 ? (lum(tc) < .2 ? KU.w : tc) : KU.g;
-    for (k = -3; k <= 3; k++) disc(ctx, x.x + k * x.bw * .2, x.sb - 4, 1.8, hole);
-    if (e > 0) { ctx.strokeStyle = tc; ctx.lineWidth = 1.4; ctx.beginPath(); for (k = -3; k <= 3; k++) { ctx.moveTo(x.x + k * x.bw * .2, x.sb); ctx.lineTo(x.x + k * x.bw * .2 * (1 - e), x.sb + 22 * e); } ctx.stroke(); }
     ctx.restore();
   },
   front: function (ctx, f) {
@@ -2098,7 +2092,6 @@ SCENES.colour = {
     // what goes in, and where it comes out
     pellet(ctx, lx + 7, ly - 4, 0, KU.w); label(ctx, f, 'PET', lx + 20, ly, 12, KU.k, 'left');
     pellet(ctx, lx + 7, ly + 18, 0, tc); label(ctx, f, 'PIGMENT', lx + 20, ly + 22, 12, KU.k, 'left');
-    label(ctx, f, 'SPINNERET', x.x + x.bw * .75 + 10, x.sb - 2, 12, KU.k, 'left');
   }
 };
 
@@ -2154,6 +2147,8 @@ SCENES.wash = {
   controls: function (f) { var g = this.geo(f); place($('wash-n'), g.x + 20, g.y + 24, null, 34); place($('wash-go'), g.x + g.w - 20 - 88, g.y + 21, 88, 40); },
   layout: function (f) { this.controls(f); f.measure(); },
   geo: function (f) { var st = stage(f), W = f.w, mw = .82 * W, mh = Math.min(mw * 1.02, st.h * .8), x = .5 * W - mw / 2, y = st.t + Math.max(st.h * .02, 26), r = Math.min(mw, mh - 70) * .37; return { x: x, y: y, w: mw, h: mh, cx: .5 * W, cy: y + 70 + (mh - 70) * .5, r: r, wy: y + mh + 26 }; },
+  // soap suds: they build up while it washes and drain away after; pale, so the fibres stay the thing you see
+  suds: function (f) { if (!f.s.until) return 0; return f.t < f.s.until ? clamp((f.t - f.s.until + 3.4) / .8, 0, 1) : clamp(1 - (f.t - f.s.until) / 2.5, 0, 1); },
   water: function (f) { var g = this.geo(f); return Math.max(g.cy + g.r * .2, g.wy - Math.min(G.shed, 400) * .35); },
   path: function (f) {
     var g = this.geo(f), W = f.w, sp = [];
@@ -2178,9 +2173,12 @@ SCENES.wash = {
     wRect(ctx, KU.k, 2, g.x + 10, g.y + 10, g.w, g.h);
     ctx.fillStyle = KU.k; ctx.beginPath(); if (ctx.roundRect) ctx.roundRect(g.x, g.y, g.w, g.h, 18); else ctx.rect(g.x, g.y, g.w, g.h); ctx.fill();
     disc(ctx, g.cx, g.cy, g.r + 10, KU.g); disc(ctx, g.cx, g.cy, g.r, KU.w);
+    var sa = this.suds(f), i;
+    if (sa > 0) for (i = 0; i < 16; i++) { var an = (25 + hash(i, 81) * 130) * D + f.s.rot * .4, rr = g.r * (.6 + hash(i, 82) * .3); bubble(ctx, g.cx + Math.cos(an) * rr, g.cy + Math.sin(an) * rr, (4 + hash(i, 83) * 7) * sa); }
     ctx.restore();
     this.controls(f);
     var wl = this.water(f); wave(ctx, wl, f, 5, KU.b, false); wFade(ctx, KU.k, 0, wl + (f.h - wl) * .35, f.w, (f.h - wl) * .65, 1, 2);
+    if (sa > 0) for (i = 0; i < 18; i++) { var bx = f.w * (.04 + i * .054); bubble(ctx, bx, waveY(bx, wl, f, 5) - 1, (3 + hash(i, 84) * 5) * sa); }
   },
   front: function (ctx, f) {
     var wl = this.water(f); ctx.lineWidth = 2;
@@ -2215,7 +2213,7 @@ SCENES.bottle = {
     }
     var r = Math.min(.3 * W, st.h * .32), cy = st.t + st.h * .4;
     var o = [pt(.13 * W, cy - r - 10), pt(cx, cy - r)].concat(arc(cx, cy, r, r, -90 * D, 220 * D, 70)), ty = st.b - st.h * .17;
-    return o.concat(curls(o[o.length - 1], pt(cx - r * .55, ty - st.h * .12), 3, 21), tangle(cx - r * .15, ty, .27 * W, st.h * .11, 12, 5), [pt(.13 * W, st.b - 4)]);
+    return o.concat(curls(o[o.length - 1], pt(cx - r * .55, ty - st.h * .12), 3, 21), tangle(cx - r * .1, ty, .3 * W, st.h * .12, 8, 5), [pt(.13 * W, st.b - 4)]);
   },
   front: function (ctx, f) { stitchGaps(ctx, f); },
   k: 0.09
@@ -2226,7 +2224,7 @@ SCENES.recycle = {
   n: 180,
   init: function (f) {
     f.s.rec = false; f.s.rt = 0; f.s.done = false; var self = this;
-    $('rc-coil').addEventListener('click', function () { if (!G.elastane && !G.partner) { G.elastane = true; self.reset(f); syncUI(); } });
+    $('rc-coil').addEventListener('click', function () { self.feed(f); });
     $('rc-ring').addEventListener('click', function () { self.recycle(f); });
   },
   blocked: function () { return G.elastane ? 'elastane' : G.partner; },
@@ -2234,9 +2232,11 @@ SCENES.recycle = {
   demo: function (f) { var g = this.geo(f); return { kind: 'tap', pts: [pt(g.cx + g.r * .72, g.cy + g.r * .72)], dur: 1.9 }; },
   reset: function (f) { f.s.rec = false; f.s.done = false; setBg(f, 'white'); $('rc-say').hidden = true; $('rc-hint').textContent = 'Tap the ring'; var b = this.blocked(); $('rc-p').textContent = b === 'elastane' ? 'Your thread has an elastane core. Predict first: will it go round?' : b ? 'Your thread has ' + b + ' wrapped round it. Predict first: will it go round?' : 'Your thread is about to go round. Predict first: will it?'; f.measure(); },
   recycle: function (f) { this.reset(f); f.s.rec = true; f.s.rt = f.t; },
-  geo: function (f) { var st = stage(f), W = f.w, r = Math.min(.3 * W, st.h * .3); return { cx: .5 * W, cy: st.t + st.h * .42, r: r, st: st, peg: pt(.8 * W, st.t + st.h * .66), cl: st.h * .26 }; },
-  tap: function (f, x, y) { var g = this.geo(f); if (Math.hypot(x - g.cx, y - g.cy) < g.r + 20) this.recycle(f); else if (!this.blocked() && Math.abs(x - g.peg.x) < 40 && y > g.peg.y - 10 && y < g.peg.y + g.cl + 20) { G.elastane = true; this.reset(f); syncUI(); } },
-  layout: function (f) { var g = this.geo(f); place($('rc-ring'), g.cx - g.r, g.cy - g.r, g.r * 2, g.r * 2); place($('rc-coil'), g.peg.x - 34, g.peg.y - 10, 68, g.cl + 24); f.coil = new Chain([g.peg, pt(g.peg.x, g.peg.y + g.cl)], 46, { pinBot: false, g: .05, wind: .03, iter: 8 }); },
+  geo: function (f) { var st = stage(f), W = f.w, r = Math.min(.3 * W, st.h * .3), rb = clamp(.05 * W, 15, 22); return { cx: .5 * W, cy: st.t + st.h * .42, r: r, st: st, rb: rb, sp: pt(.86 * W, st.t + rb + 6), cl: st.h * .3 }; },
+  tap: function (f, x, y) { var g = this.geo(f); if (Math.hypot(x - g.cx, y - g.cy) < g.r + 20) this.recycle(f); else if (!this.blocked() && Math.abs(x - g.sp.x) < 40 && y > g.sp.y - g.rb - 10 && y < g.sp.y + g.rb + g.cl + 20) this.feed(f); },
+  // the elastane on the spool feeds into the middle of your thread
+  feed: function (f) { if (G.elastane || G.partner) return; G.elastane = true; var g = this.geo(f); stamp(f, 'ZIP!', g.sp.x - 60, g.sp.y + g.rb + 30); this.reset(f); syncUI(); },
+  layout: function (f) { var g = this.geo(f), top = pt(g.sp.x, g.sp.y + g.rb + 2); place($('rc-ring'), g.cx - g.r, g.cy - g.r, g.r * 2, g.r * 2); place($('rc-coil'), g.sp.x - 34, g.sp.y - g.rb - 10, 68, 2 * g.rb + g.cl + 30); f.coil = new Chain([top, pt(top.x, top.y + g.cl)], 46, { pinBot: false, g: .05, wind: .03, iter: 8 }); },
   sweep: function (f) { if (!f.s.rec) return 0; var u = (f.t - f.s.rt) * 220; return this.blocked() ? Math.min(u, 150) : Math.min(u, 320); },
   path: function (f) {
     var g = this.geo(f), W = f.w;
@@ -2245,14 +2245,14 @@ SCENES.recycle = {
   },
   k: 0.09,
   tick: function (f) {
-    if (!this.blocked() && f.coil) f.coil.step(f.t, [], 0);
+    if (!this.blocked() && f.coil) { var gs = this.geo(f); f.coil.top.x = gs.sp.x; f.coil.top.y = gs.sp.y + gs.rb + 2; f.coil.step(f.t, [], 0); }
     if (f.s.rec && !f.s.done && f.t - f.s.rt > 1.7) {
       f.s.done = true; var bad = this.blocked();
       if (!bad) { G.rounds = Math.min(4, G.rounds + 1); renderLabel(); }
       var tired = !bad && G.rounds >= 3;
       setBg(f, bad ? 'black' : 'blue'); say($('rc-say'), bad ? 'Jammed.' : tired ? 'Weaker each time.' : 'It goes round.');
       var core = bad === 'elastane';
-      $('rc-p').textContent = core ? 'The elastane is in the core, so it can\'t be pulled out. Could chemistry get it out? Scroll on.' : bad ? 'The ' + bad + ' is wound round the polyester, so they would have to be separated first. Could chemistry do it? Scroll on.' : tired ? 'Each melt breaks some links. Could chemistry rebuild them? Scroll on.' : 'One material. Melted ' + G.rounds + (G.rounds === 1 ? ' time' : ' times') + '. Go again, or tap the coil to give it an elastane core.';
+      $('rc-p').textContent = core ? 'The elastane is in the core, so it can\'t be pulled out. Could chemistry get it out? Scroll on.' : bad ? 'The ' + bad + ' is wound round the polyester, so they would have to be separated first. Could chemistry do it? Scroll on.' : tired ? 'Each melt breaks some links. Could chemistry rebuild them? Scroll on.' : 'One material. Melted ' + G.rounds + (G.rounds === 1 ? ' time' : ' times') + '. Go again, or tap the spool to give it an elastane core.';
       $('rc-hint').textContent = bad ? 'Scroll on to unzip the chain' : 'Tap the ring again'; card(f, bad ? 'jam' : tired ? 'downcycle' : 'loop');
       var gr = this.geo(f); stamp(f, bad ? 'CLUNK!' : tired ? 'CRACK' : 'WHIRR', gr.cx, gr.cy - gr.r - 30); f.measure();
     }
@@ -2263,10 +2263,19 @@ SCENES.recycle = {
     var rs = shadeOf(f) && weave(KU.k, 2); if (rs) { ctx.strokeStyle = rs; ctx.lineWidth = 12; ctx.beginPath(); ctx.arc(g.cx + 8, g.cy + 8, g.r, 0, Math.PI * 2); ctx.stroke(); }
     ring(ctx, g.cx + sh, g.cy, g.r, 12, ringCol);
     for (var k = 0; k < 3; k++) { var a = turn + k * 2.094; ctx.save(); ctx.translate(g.cx + sh + Math.cos(a) * g.r, g.cy + Math.sin(a) * g.r); ctx.rotate(a + Math.PI / 2); ctx.fillStyle = ringCol; ctx.beginPath(); ctx.moveTo(-12, -11); ctx.lineTo(12, 0); ctx.lineTo(-12, 11); ctx.closePath(); ctx.fill(); ctx.restore(); }
-    if (!this.blocked()) { ctx.fillStyle = ringCol; ctx.fillRect(g.peg.x - 22, g.peg.y - 8, 44, 8); }
-    place($('rc-ring'), g.cx - g.r, g.cy - g.r, g.r * 2, g.r * 2); place($('rc-coil'), g.peg.x - 34, g.peg.y - 10, 68, this.blocked() ? 0 : g.cl + 24);
+    this.spool(ctx, f, g, ringCol, !G.elastane);
+    place($('rc-ring'), g.cx - g.r, g.cy - g.r, g.r * 2, g.r * 2); place($('rc-coil'), g.sp.x - 34, g.sp.y - g.rb - 10, 68, this.blocked() ? 0 : 2 * g.rb + g.cl + 30);
   },
-  front: function (ctx, f) { if (!this.blocked() && f.coil) drawSquiggle(ctx, f.coil, f.t, f.bg === 'black' ? KU.w : KU.k); }
+  front: function (ctx, f) { if (!this.blocked() && f.coil) drawSquiggle(ctx, f.coil, f.t, f.bg === 'black' ? KU.w : KU.k); },
+  // a spool of elastane, like the bobbins on Ply it; empty once it has gone into your thread
+  spool: function (ctx, f, g, col, full) {
+    var s = g.sp, r = g.rb, j, x;
+    if (f.bg === 'white') wRect(ctx, KU.k, 2, s.x - r + 6, s.y - r + 6, 2 * r + 4, 2 * r);
+    ctx.fillStyle = col; ctx.fillRect(s.x - r - 5, s.y - r - 4, 2 * r + 10, 6); ctx.fillRect(s.x - r - 5, s.y + r - 2, 2 * r + 10, 6);
+    if (!full) { ctx.fillRect(s.x - 4, s.y - r, 8, 2 * r); return; }
+    ctx.strokeStyle = col; ctx.lineWidth = 2.2; ctx.lineCap = 'round';
+    for (j = 0; j < 6; j++) { ctx.beginPath(); for (x = -r; x <= r; x += 4) ctx[x === -r ? 'moveTo' : 'lineTo'](s.x + x, s.y - r + 5 + j * (2 * r - 8) / 5 + (hash(j * 13 + x, 91) - .5) * 2.4); ctx.stroke(); }
+  }
 };
 
 // Chemical recycling: pour in a reagent and the chain unzips into its building blocks. Then link it back up, clean.
@@ -2319,8 +2328,8 @@ SCENES.unzip = {
   },
   hitTest: function (f, x, y) {
     var self = this, g = this.geo(f);
-    for (var k = 0; k < 3; k++) { var q = this.flask(f, k).p; if (Math.hypot(q.x - x, q.y - y) < g.fw * .7) { (function (k) { var o = f.s.fk[k] || (f.s.fk[k] = {}); o.held = true; o.x = q.x; o.y = q.y; o.back = null; self.grabbed = k; })(k);
-      return { move: function (mx, my) { var o = f.s.fk[self.grabbed]; o.x = mx; o.y = my; if (mx > g.vx + 6 && my > g.vy - g.fh && my < g.vb && self.pour(f, ['water', 'glycol', 'enzyme'][self.grabbed])) drag = null; },
+    for (var k = 0; k < 3; k++) { var q = this.flask(f, k).p; if (Math.hypot(q.x - x, q.y - y) < g.fw * .7) {
+      return { begin: (function (k, q) { return function () { var o = f.s.fk[k] || (f.s.fk[k] = {}); o.held = true; o.x = q.x; o.y = q.y; o.back = null; self.grabbed = k; }; })(k, q), move: function (mx, my) { var o = f.s.fk[self.grabbed]; o.x = mx; o.y = my; if (mx > g.vx + 6 && my > g.vy - g.fh && my < g.vb && self.pour(f, ['water', 'glycol', 'enzyme'][self.grabbed])) drag = null; },
         end: function () { var o = f.s.fk[self.grabbed]; if (o.held) { o.held = false; o.back = f.t; } } }; } }
     return null;
   },
@@ -2401,36 +2410,49 @@ SCENES.spot = {
     $('spot-p').textContent = 'Your thread forks. One strand is PET. The other is PLA, a polyester made from plants. Tap the PET.';
     if (f.measure) f.measure();
   },
-  geo: function (f) { var st = stage(f), W = f.w; return { F: pt(.5 * W, st.t + st.h * .06), J: pt(.5 * W, st.b - st.h * .05), dx: .2 * W, st: st }; },
-  demo: function (f) { if (f.s.ans !== null) return null; var g = this.geo(f); return { kind: 'tap', pts: [pt(g.F.x - g.dx, (g.F.y + g.J.y) / 2)], dur: 1.9 }; },
-  side: function (g, s) { return [g.F, pt(g.F.x + s * g.dx, g.F.y + g.st.h * .22), pt(g.F.x + s * g.dx, g.J.y - g.st.h * .2), g.J]; },
-  layout: function (f) { var g = this.geo(f); f.extras = f.s.ans === null ? [new Chain(this.side(g, -f.s.main), 60, { wind: .02, iter: 8 })] : []; },
-  path: function (f) { var g = this.geo(f), W = f.w; return (f.named.top ? lassoPts(f.named.top) : [pt(.87 * W, g.F.y - 30)]).concat(this.side(g, f.s.main)).concat([pt(.13 * W, g.J.y + 24)]); },
+  // the thread loops round the words, comes out underneath and forks: two routes on down the page that look exactly the same
+  geo: function (f) {
+    var st = stage(f), W = f.w, r = f.named.top, x0 = r ? (r.l + r.r) / 2 : .5 * W, lb = r ? r.b + 21 : st.t;
+    var F = pt(x0, Math.max(st.t + 20, lb + 26)), dx = Math.min(.24 * W, x0 - .12 * W, .9 * W - x0);
+    return { F: F, x0: x0, dx: dx, st: st, bot: st.b - 14 };
+  },
+  demo: function (f) { if (f.s.ans !== null) return null; var g = this.geo(f); return { kind: 'tap', pts: [pt(g.x0 - g.dx, (g.F.y + g.bot) / 2)], dur: 1.9 }; },
+  route: function (g, s) { var x = g.x0 + s * g.dx, b = pt(x, g.F.y + 80); return [g.F].concat(swing(g.F, b, 'ogee'), [pt(x, g.bot)]); },
+  // the other route: its own strand, on down and off the page
+  layout: function (f) {
+    var g = this.geo(f); f.extras = []; if (f.s.ans !== null) return;
+    var sd = -f.s.main, path = this.route(g, sd).concat([pt(g.x0 + sd * g.dx, f.h + 30)]), c = new Chain(path, 80, { wind: .02, iter: 8, avoid: false, pinBot: false });
+    c.setTarget(path, .1, []); c.grabbable = false; f.extras = [c];
+  },
+  path: function (f) { var g = this.geo(f), W = f.w; return (f.named.top ? lassoPts(f.named.top, 450) : [pt(.87 * W, g.F.y - 30)]).concat(this.route(g, f.s.main), [pt(.13 * W, g.bot + 12)]); },
   k: 0.1,
   answer: function (f, s) {
     if (f.s.ans !== null) return;
     var pla = s !== f.s.pet; f.s.ans = s; G.pla = pla;
     var g = this.geo(f), c = f.chain, bits = [];
-    if (s === f.s.main) { var x = f.extras[0]; x.pinTop = x.pinBot = false; x.g = .35; x.grabbable = false; f.falling = x; }
+    if (s === f.s.main) { var x = f.extras[0]; if (x) { x.pinTop = x.pinBot = false; x.target = null; x.k = x.kGoal = 0; x.g = .35; x.grabbable = false; f.falling = x; } }
     else {
-      c.p.forEach(function (q) { if (q.y > g.F.y + 12 && q.y < g.J.y - 12 && Math.sign(q.x - g.F.x) === f.s.main) bits.push(pt(q.x, q.y)); });
+      c.p.forEach(function (q) { if (q.y > g.F.y + 40 && q.y < g.bot - 12 && Math.sign(q.x - g.x0) === f.s.main) bits.push(pt(q.x, q.y)); });
       if (bits.length > 2) { var fall = new Chain(bits, bits.length, { pinTop: false, pinBot: false, g: .35 }); fall.grabbable = false; f.falling = fall; }
       f.s.main = s;
     }
     f.s.fallPLA = !pla; f.extras = [];
-    say($('spot-say'), pla ? 'That was PLA' : 'PET. Good eye.'); stamp(f, pla ? 'OOPS' : 'YES!', g.F.x + s * g.dx, (g.F.y + g.J.y) / 2 - 60);
+    say($('spot-say'), pla ? 'That was PLA' : 'PET. Good eye.'); stamp(f, pla ? 'OOPS' : 'YES!', g.x0 + s * g.dx, (g.F.y + g.bot) / 2 - 60);
     $('spot-p').textContent = pla ? 'It\'s spliced into your thread now.' : 'The PLA strand is cut away.';
     $('spot-again').hidden = false; card(f, 'pla'); syncUI(); f.s.cq = f.t + 4.5;
   },
-  tap: function (f, x, y) { var g = this.geo(f); if (f.s.ans === null && y > g.F.y && y < g.J.y) this.answer(f, x < g.F.x ? -1 : 1); },
+  tap: function (f, x, y) { var g = this.geo(f); if (f.s.ans === null && y > g.F.y + 30 && y < g.bot) this.answer(f, x < g.x0 ? -1 : 1); },
   tick: function (f) { if (f.s.cq && f.t > f.s.cq) { f.s.cq = 0; card(f, 'compost'); } if (f.falling) { f.falling.step(f.t, [], 0); if (f.falling.p.every(function (q) { return q.y > f.h + 40; })) f.falling = null; } },
-  back: function (ctx, f) { var g = this.geo(f); place($('spot-a'), g.F.x - g.dx - 34, g.F.y + 20, 68, g.J.y - g.F.y - 40); place($('spot-b'), g.F.x + g.dx - 34, g.F.y + 20, 68, g.J.y - g.F.y - 40); $('spot-a').hidden = $('spot-b').hidden = f.s.ans !== null; },
+  back: function (ctx, f) { var g = this.geo(f), h = Math.max(40, g.bot - g.F.y - 80); place($('spot-a'), g.x0 - g.dx - 34, g.F.y + 60, 68, h); place($('spot-b'), g.x0 + g.dx - 34, g.F.y + 60, 68, h); $('spot-a').hidden = $('spot-b').hidden = f.s.ans !== null; },
+  // the other strand is drawn exactly like your thread, so nothing gives it away (the PLA mark only shows once you've chosen)
+  twin: function (ctx, f, c) { var keep = f.chain, pla = G.pla; f.chain = c; G.pla = false; drawMain(ctx, f, 0, RM ? 0 : performance.now() / 1000 * 30); G.pla = pla; f.chain = keep; },
   front: function (ctx, f) {
-    f.extras.forEach(function (c) { cased(ctx, c, KU.k, KU.w, 6); });
-    if (f.falling) cased(ctx, f.falling, KU.k, KU.w, 6, f.s.fallPLA ? [11, 7] : null);
-    if (f.s.ans !== null) { var g = this.geo(f); label(ctx, f, G.pla ? 'PLA' : 'PET', g.F.x + f.s.main * g.dx + f.s.main * 30, g.F.y + (g.J.y - g.F.y) / 2, 22, KU.k, f.s.main > 0 ? 'left' : 'right'); }
+    var self = this, g = this.geo(f);
+    f.extras.forEach(function (c) { self.twin(ctx, f, c); });
+    if (f.falling) { this.twin(ctx, f, f.falling); if (f.s.fallPLA) strokeChain(ctx, f.falling, casingFor(inkFor(f.bg)), 2.4, [11, 7]); }
+    if (f.s.ans !== null) label(ctx, f, G.pla ? 'PLA' : 'PET', g.x0 + f.s.main * (g.dx + 30), (g.F.y + g.bot) / 2, 22, KU.k, f.s.main > 0 ? 'left' : 'right');
   },
-  splice: function (f) { var g = this.geo(f), c = f.chain, a = -1, b = -1; for (var i = 0; i < c.n; i++) { var q = c.p[i]; if (q.y > g.F.y + 16 && q.y < g.J.y - 16) { if (a < 0) a = i; b = i; } } return a >= 0 ? [a, b] : null; }
+  splice: function (f) { var g = this.geo(f), c = f.chain, a = -1, b = -1; for (var i = 0; i < c.n; i++) { var q = c.p[i]; if (q.y > g.F.y + 40 && q.y < g.bot - 16) { if (a < 0) a = i; b = i; } } return a >= 0 ? [a, b] : null; }
 };
 
 // The thread coils into a spring. Pull it. An elastane core can't be pulled out; this stretch is built in instead.
@@ -3136,7 +3158,7 @@ function start(cx, cy, touch, target) {
   var h = hit(cx, cy, touch); if (!h) return false;
   drag = h; drag.sx = cx; drag.sy = cy; drag.moved = 0; drag.lx = h.x; drag.ly = h.y; drag.vx = 0; drag.vy = 0;
   h.f.touched = true; h.f.demo = null;
-  if (h.custom) h.custom.move(h.x, h.y); else { h.chain.grab = h.i; h.chain.gx = h.x; h.chain.gy = h.y; }
+  if (h.custom) { if (h.custom.begin) h.custom.begin(); h.custom.move(h.x, h.y); } else { h.chain.grab = h.i; h.chain.gx = h.x; h.chain.gy = h.y; }
   return true;
 }
 function move(cx, cy) {

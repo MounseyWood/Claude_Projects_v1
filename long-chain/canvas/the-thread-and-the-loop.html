@@ -124,9 +124,9 @@ body { margin: 0; padding-inline: 0; background: #121211; color: var(--k); font-
 .cons .chip-btn[aria-pressed="true"] { background: var(--w); color: var(--k); }
 
 /* Washing machine parts */
-.mbtn { position: absolute; z-index: 3; border-radius: 999px; border: 0; background: var(--w); color: var(--k); font: 700 15px/1 var(--font); letter-spacing: .06em; text-transform: uppercase; cursor: pointer; }
+.mbtn { position: absolute; z-index: 3; border-radius: 999px; border: 0; background: var(--w); color: var(--k); font: 700 16px/1 var(--font); letter-spacing: .06em; text-transform: uppercase; cursor: pointer; }
 .mbtn:active { transform: scale(.94); }
-.disp { position: absolute; z-index: 3; background: var(--y); color: var(--k); font: 700 16px/1 ui-monospace, Menlo, Consolas, monospace; white-space: nowrap; display: flex; align-items: center; padding: 0 10px; border-radius: 4px; font-variant-numeric: tabular-nums; }
+.disp { position: absolute; z-index: 3; background: var(--y); color: var(--k); font: 700 17px/1 ui-monospace, Menlo, Consolas, monospace; white-space: nowrap; display: flex; align-items: center; padding: 0 12px; border-radius: 4px; font-variant-numeric: tabular-nums; }
 
 /* Promises */
 .pledges { position: absolute; z-index: 2; left: 6%; width: 64%; display: flex; flex-direction: column; gap: 14px; align-items: flex-start; }
@@ -353,8 +353,9 @@ body { margin: 0; padding-inline: 0; background: #121211; color: var(--k); font-
   <button class="hit" type="button" data-bob="1" aria-label="One strand" aria-pressed="true"></button>
   <button class="hit" type="button" data-bob="2" aria-label="Two strands" aria-pressed="false"></button>
   <button class="hit" type="button" data-bob="3" aria-label="Three strands" aria-pressed="false"></button>
+  <button class="hit" type="button" data-bob="4" aria-label="Four strands" aria-pressed="false"></button>
   <div class="dial" id="ply-dial" role="slider" tabindex="0" aria-label="Ply twist: turn clockwise for Z, anticlockwise for S" aria-valuemin="-10" aria-valuemax="10" aria-valuenow="0"></div>
-  <div class="card bl reserve" data-avoid="card"><p class="cl"></p><p class="ct"></p></div>
+  <div class="card bl reserve" data-avoid="card" data-pad="3"><p class="cl"></p><p class="ct"></p></div>
 </section>
 
 <section class="frame bg-blue" data-scene="blend" aria-label="Wrap it in another fibre">
@@ -415,7 +416,7 @@ body { margin: 0; padding-inline: 0; background: #121211; color: var(--k); font-
 </section>
 
 <section class="frame bg-white" data-scene="wash" aria-label="Microfibres">
-  <div class="copy tl lassoed" data-avoid="top">
+  <div class="copy tl" data-avoid="top">
     <p class="kicker">Wear</p>
     <h2>Wash it</h2>
     <p id="wash-p">Every wash breaks off tiny fibres. Press Wash, or rub the thread.</p>
@@ -872,6 +873,10 @@ function ease(u) { u = clamp(u, 0, 1); return u * u * (3 - 2 * u); }
 function hash(a, b) { var h = Math.sin(a * 127.1 + b * 311.7) * 43758.5453; return h - Math.floor(h); }
 function rnd(seed) { var s = seed >>> 0; return function () { s = (Math.imul(s, 1664525) + 1013904223) >>> 0; return s / 4294967296; }; }
 function box(def, x0, y0, w, h) { return def.map(function (a) { return pt(x0 + a[0] * w, y0 + a[1] * h); }); }
+// loose curls along a line: the yarn coming apart as it falls
+function curls(a, b, n, seed) { var r = rnd(seed), o = [], i, j; for (i = 1; i <= n; i++) { var u = i / (n + 1), c = pt(a.x + (b.x - a.x) * u, a.y + (b.y - a.y) * u), rr = 12 + r() * 9, a0 = r() * Math.PI * 2, sd = r() < .5 ? 1 : -1; for (j = 0; j <= 16; j++) { var an = a0 + sd * j / 16 * Math.PI * 2.2; o.push(pt(c.x + Math.cos(an) * rr, c.y + Math.sin(an) * rr)); } } o.push(b); return o; }
+// a tangle: loops of different sizes piled over each other, like a dropped ball of yarn
+function tangle(cx, cy, rx, ry, n, seed) { var r = rnd(seed), o = [], i, j; for (i = 0; i < n; i++) { var c = pt(cx + (r() - .5) * 1.6 * rx, cy + (r() - .5) * 1.6 * ry), rr = 15 + r() * 17, a0 = r() * Math.PI * 2, sd = r() < .5 ? 1 : -1, sq = .75 + r() * .45; for (j = 0; j <= 18; j++) { var an = a0 + sd * j / 18 * Math.PI * 2.3; o.push(pt(c.x + Math.cos(an) * rr, c.y + Math.sin(an) * rr * sq)); } } return o; }
 function heap(cx, cy, rx, ry, seed, n) { var r = rnd(seed), a = []; for (var i = 0; i < (n || 30); i++) { var ang = r() * Math.PI * 2, rr = .25 + r() * .75; a.push(pt(cx + Math.cos(ang) * rx * rr, cy + Math.sin(ang) * ry * rr)); } return a; }
 function segX(a, b, c, d) { var r = (b.x - a.x) * (d.y - c.y) - (b.y - a.y) * (d.x - c.x); if (Math.abs(r) < 1e-9) return false; var t = ((c.x - a.x) * (d.y - c.y) - (c.y - a.y) * (d.x - c.x)) / r, u = ((c.x - a.x) * (b.y - a.y) - (c.y - a.y) * (b.x - a.x)) / r; return t >= 0 && t <= 1 && u >= 0 && u <= 1; }
 function hexRgb(h) { var n = parseInt(h.slice(1), 16); return [n >> 16 & 255, n >> 8 & 255, n & 255]; }
@@ -886,8 +891,8 @@ function shapeSVG(shape) {
   return '<svg viewBox="0 0 26 26" aria-hidden="true"><path class="s" d="' + d + 'Z"/>' + (shape === 'hollow' ? '<circle class="h" cx="13" cy="13" r="4.5"/>' : '') + '</svg>';
 }
 
-var SHIRT_L = [[.182,1],[.182,.278],[.114,.378],[0,.278],[.159,.067],[.386,0],[.5,.067],[.614,0],[.841,.067],[1,.278],[.886,.378],[.818,.278],[.818,1],[.182,1]];
-var BOTTLE = [[0,1],[0,.283],[.333,.152],[.333,.043],[.5,0],[.667,.043],[.667,.152],[1,.283],[1,1],[0,1]];
+var SHIRT_L = [[.182,1],[.182,.278],[.114,.378],[0,.278],[.159,.067],[.386,0]].concat([1, 2, 3, 4, 5, 6, 7, 8, 9].map(function (i) { var u = i / 10; return [.5 - .114 * Math.cos(u * Math.PI), .085 * Math.sin(u * Math.PI)]; }), [[.614,0],[.841,.067],[1,.278],[.886,.378],[.818,.278],[.818,1],[.182,1]]);
+var BOTTLE = [[0,1],[0,.283],[.333,.152],[.333,.052],[.29,.052],[.29,0],[.71,0],[.71,.052],[.667,.052],[.667,.152],[1,.283],[1,1],[0,1]];
 
 // ---------- Verlet chain (frame-local coordinates) ----------
 function Chain(path, n, o) {
@@ -1003,11 +1008,12 @@ function drawSquiggle(ctx, c, t, col, mask, wm) {
   }
   ctx.stroke();
 }
-function label(ctx, f, s, x, y, size, col, align) {
+// a label is solid to the thread unless it is a ghost (one the thread may pass close by without snagging)
+function label(ctx, f, s, x, y, size, col, align, ghost) {
   ctx.font = '700 ' + size + 'px ' + FONT; ctx.textBaseline = 'alphabetic';
   var m = ctx.measureText(s).width, x0 = align === 'center' ? x - m / 2 : align === 'right' ? x - m : x;
   ctx.fillStyle = col; ctx.textAlign = 'left'; ctx.fillText(s, x0, y);
-  f.dyn.push({ l: x0 - 8, r: x0 + m + 8, t: y - size - 6, b: y + 8 });
+  if (!ghost) f.dyn.push({ l: x0 - 8, r: x0 + m + 8, t: y - size - 6, b: y + 8 });
 }
 function pellet(ctx, x, y, a, col) { ctx.save(); ctx.translate(x, y); ctx.rotate(a); ctx.fillStyle = KU.k; ctx.fillRect(-7, -5, 14, 10); ctx.fillStyle = col; ctx.fillRect(-5.5, -3.5, 11, 7); ctx.restore(); }
 function disc(ctx, x, y, r, col) { if (r <= 0) return; ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fillStyle = col; ctx.fill(); }
@@ -1838,7 +1844,7 @@ SCENES.ply = {
   },
   geo: function (f) {
     var st = stage(f), W = f.w, rb = clamp(.055 * W, 16, 24), by = st.t + rb + 14, R = clamp(.1 * W, 30, 42), cy = by + rb + R + 22 + st.h * .03;
-    return { st: st, rb: rb, by: by, bx: [.72 * W, .5 * W, .28 * W], cx: .5 * W, cy: cy, R: R, top: cy + R + 8, bot: st.b - 10, hw: .17 * W };
+    return { st: st, rb: rb, by: by, bx: [.79 * W, .58 * W, .37 * W, .16 * W], cx: .5 * W, cy: cy, R: R, top: cy + R + 8, bot: st.b - 10, hw: .17 * W };
   },
   strands: function (f) { var g = this.geo(f), o = []; for (var k = 1; k < G.ply; k++) { var c = new Chain([pt(g.bx[k], g.by + g.rb + 2), pt(g.cx, g.cy)], 30, { wind: .02, iter: 8 }); c.grabbable = false; o.push(c); } f.extras = o; },
   layout: function (f) { this.strands(f); },
@@ -1847,7 +1853,18 @@ SCENES.ply = {
     var depth = (g.bot - g.top) * (1 - .3 * sn);
     // the hanging loop: its two legs wind round each other as the yarn snarls
     for (var i = 0; i <= 80; i++) { var th = i / 80 * Math.PI * 2, t = (1 - Math.cos(th)) / 2, ph = dir * sn * Math.PI * 4.5 * t * t, w = g.hw * (1 - .45 * sn * t); o.push(pt(g.cx + w * Math.sin(th) * Math.cos(ph), g.top + depth * t)); }
-    return o.concat([pt(.8 * W, g.top + 14), pt(.8 * W, g.bot)]);
+    return o.concat(this.tail(f, g));
+  },
+  // off the loop, the yarn runs down the side. Once a card is up, it lands on the card, pools there and slides off the edge
+  tail: function (f, g) {
+    var W = f.w, x0 = .8 * W, cd = f.named.card, el = f.el.querySelector('.card');
+    if (!cd || !el || !el.classList.contains('show')) return [pt(x0, g.top + 14), pt(x0, g.bot)];
+    var vt = cd.t + 3, R = cd.r - 3, y = vt - 5, lx = Math.min(x0, R - 6), r = rnd(7), o = [pt(x0, g.top + 14), pt(lx - 6, y - 34)];
+    var nl = clamp(Math.floor((R - cd.l - 50) / 19), 1, 5), k, j, c, rr, an;
+    for (k = 0; k < nl; k++) { c = pt(lx - 20 - k * 19, y - 11); rr = 10 + r() * 7; for (j = 0; j <= 14; j++) { an = Math.PI * .5 + j / 14 * Math.PI * 2.15; o.push(pt(c.x + Math.cos(an) * rr * 1.25, Math.min(y, c.y + Math.sin(an) * rr))); } }
+    // a second layer piled on top
+    for (k = 0; k < Math.min(2, nl - 1); k++) { c = pt(lx - 30 - k * 30, y - 27); rr = 9 + r() * 5; for (j = 0; j <= 14; j++) { an = -Math.PI * .5 + j / 14 * Math.PI * 2.1; o.push(pt(c.x + Math.cos(an) * rr * 1.2, c.y + Math.sin(an) * rr)); } }
+    return o.concat([pt(lx - 12, y - 16), pt(R - 4, y), pt(R + 7, vt + 9), pt(R + 9, cd.b + 6)]);
   },
   k: 0.1,
   split: function (f) { return { y: this.geo(f).cy, above: { ply: 1 } }; },
@@ -1877,8 +1894,8 @@ SCENES.ply = {
     var g = this.geo(f), ink = inkFor(f.bg), cs = casingFor(ink), v = G.plyTwist;
     f.extras.forEach(function (c) { cased(ctx, c, ink, cs, 3.4); });
     disc(ctx, g.cx, g.cy, 8, KU.w); disc(ctx, g.cx, g.cy, 4, KU.k);
-    label(ctx, f, v < 0 ? 'S ' + (-v) : 'S', g.cx - g.R - 14, g.cy + 7, v < 0 ? 22 : 16, KU.k, 'right');
-    label(ctx, f, v > 0 ? 'Z ' + v : 'Z', g.cx + g.R + 14, g.cy + 7, v > 0 ? 22 : 16, KU.k, 'left');
+    label(ctx, f, v < 0 ? 'S ' + (-v) : 'S', g.cx - g.R - 14, g.cy + 7, v < 0 ? 22 : 16, KU.k, 'right', true);
+    label(ctx, f, v > 0 ? 'Z ' + v : 'Z', g.cx + g.R + 14, g.cy + 7, v > 0 ? 22 : 16, KU.k, 'left', true);
   }
 };
 
@@ -2133,13 +2150,15 @@ SCENES.wash = {
     if (!f.s.rev) { f.s.rev = true; card(f, 'wash'); }
     else if (!f.s.rev2 && (G.fil >= 144 || G.staple)) { f.s.rev2 = true; card(f, 'fleece'); }
   },
-  layout: function (f) { var g = this.geo(f); place($('wash-n'), g.x + 16, g.y + 12, g.w * .48, 32); place($('wash-go'), g.x + g.w - 16 - 78, g.y + 9, 78, 38); f.measure(); },
-  geo: function (f) { var st = stage(f), W = f.w, mw = .82 * W, mh = Math.min(mw * 1.02, st.h * .8), x = .5 * W - mw / 2, y = st.t + st.h * .02, r = Math.min(mw, mh - 56) * .37; return { x: x, y: y, w: mw, h: mh, cx: .5 * W, cy: y + 56 + (mh - 56) * .5, r: r, wy: y + mh + 26 }; },
+  // the counter and the Wash button sit in a band across the top of the machine, the same distance in from each side
+  controls: function (f) { var g = this.geo(f); place($('wash-n'), g.x + 20, g.y + 24, null, 34); place($('wash-go'), g.x + g.w - 20 - 88, g.y + 21, 88, 40); },
+  layout: function (f) { this.controls(f); f.measure(); },
+  geo: function (f) { var st = stage(f), W = f.w, mw = .82 * W, mh = Math.min(mw * 1.02, st.h * .8), x = .5 * W - mw / 2, y = st.t + Math.max(st.h * .02, 26), r = Math.min(mw, mh - 70) * .37; return { x: x, y: y, w: mw, h: mh, cx: .5 * W, cy: y + 70 + (mh - 70) * .5, r: r, wy: y + mh + 26 }; },
   water: function (f) { var g = this.geo(f); return Math.max(g.cy + g.r * .2, g.wy - Math.min(G.shed, 400) * .35); },
   path: function (f) {
     var g = this.geo(f), W = f.w, sp = [];
     for (var i = 0; i <= 90; i++) { var a = -90 * D + f.s.rot + i / 90 * 540 * D, rr = g.r * .8 - i / 90 * g.r * .45; sp.push(pt(g.cx + rr * Math.cos(a), g.cy + rr * Math.sin(a))); }
-    return (f.named.top ? lassoPts(f.named.top) : []).concat([pt(.87 * W, g.y - 22), pt(.56 * W, g.y - 22), pt(.55 * W, g.y + 40), pt(g.cx, g.cy - g.r * .85)]).concat(sp).concat([pt(g.cx, g.y + g.h + 10), pt(.13 * W, g.wy + 40)]);
+    return [pt(.87 * W, g.y - 13), pt(.56 * W, g.y - 13), pt(.55 * W, g.y + 40), pt(g.cx, g.cy - g.r * .85)].concat(sp).concat([pt(g.cx, g.y + g.h + 10), pt(.13 * W, g.wy + 40)]);
   },
   k: 0.12,
   shedFrom: function (f, q) { if (f.parts.length > 360) return; f.parts.push({ x: q.x, y: q.y, px: q.x - (Math.random() - .5) * 1.4, py: q.y - Math.random() * .4, a: Math.random() * Math.PI }); G.shed++; },
@@ -2160,7 +2179,7 @@ SCENES.wash = {
     ctx.fillStyle = KU.k; ctx.beginPath(); if (ctx.roundRect) ctx.roundRect(g.x, g.y, g.w, g.h, 18); else ctx.rect(g.x, g.y, g.w, g.h); ctx.fill();
     disc(ctx, g.cx, g.cy, g.r + 10, KU.g); disc(ctx, g.cx, g.cy, g.r, KU.w);
     ctx.restore();
-    place($('wash-n'), g.x + 16, g.y + 12, g.w * .48, 32); place($('wash-go'), g.x + g.w - 16 - 78, g.y + 9, 78, 38);
+    this.controls(f);
     var wl = this.water(f); wave(ctx, wl, f, 5, KU.b, false); wFade(ctx, KU.k, 0, wl + (f.h - wl) * .35, f.w, (f.h - wl) * .65, 1, 2);
   },
   front: function (ctx, f) {
@@ -2195,7 +2214,8 @@ SCENES.bottle = {
       return [pt(.13 * W, sy + sh - 6)].concat(box(SHIRT_L, cx - sw / 2, sy, sw, sh), [seam, pt(x0 - 4, yw + H)], word('rPET', x0, yw, H), [pit, pt(cx + sx, sy + sh), pt(cx - sx, sy + sh), pt(.13 * W, sy + sh + 24)]);
     }
     var r = Math.min(.3 * W, st.h * .32), cy = st.t + st.h * .4;
-    return [pt(.13 * W, cy - r - 10), pt(cx, cy - r)].concat(arc(cx, cy, r, r, -90 * D, 220 * D, 70)).concat([pt(cx - r - 16, cy + r * .3)]).concat(heap(cx - r * .2, st.b - st.h * .1, .26 * W, st.h * .06, 11, 24)).concat([pt(.13 * W, st.b - 4)]);
+    var o = [pt(.13 * W, cy - r - 10), pt(cx, cy - r)].concat(arc(cx, cy, r, r, -90 * D, 220 * D, 70)), ty = st.b - st.h * .17;
+    return o.concat(curls(o[o.length - 1], pt(cx - r * .55, ty - st.h * .12), 3, 21), tangle(cx - r * .15, ty, .27 * W, st.h * .11, 12, 5), [pt(.13 * W, st.b - 4)]);
   },
   front: function (ctx, f) { stitchGaps(ctx, f); },
   k: 0.09
@@ -2753,7 +2773,7 @@ var frames = Array.prototype.slice.call(document.querySelectorAll('.frame')).map
       if (e.offsetParent === null) return; var r = e.getBoundingClientRect(); if (!r.width || !r.height) return;
       // Cards animate in with a transform, so measure their resting box instead.
       if (e.classList.contains('card') && e.offsetParent === el) r = { left: fr.left + e.offsetLeft, top: fr.top + e.offsetTop, right: fr.left + e.offsetLeft + e.offsetWidth, bottom: fr.top + e.offsetTop + e.offsetHeight };
-      var o = { l: r.left - fr.left - 12, r: r.right - fr.left + 12, t: r.top - fr.top - 12, b: r.bottom - fr.top + 12, el: e, hx: 0, hy: 0 };
+      var m = e.dataset.pad ? +e.dataset.pad : 12, o = { l: r.left - fr.left - m, r: r.right - fr.left + m, t: r.top - fr.top - m, b: r.bottom - fr.top + m, el: e, hx: 0, hy: 0 };
       out.push(o); if (e.dataset.avoid) named[e.dataset.avoid] = o;
     });
     f.rects = out; f.named = named;

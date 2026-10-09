@@ -112,6 +112,7 @@ body { margin: 0; padding-inline: 0; background: #121211; color: var(--k); font-
 .scrub { position: absolute; z-index: 2; font-size: clamp(54px, 16vw, 74px); font-weight: 700; letter-spacing: -0.04em; line-height: 1; cursor: ns-resize; touch-action: none; user-select: none; -webkit-user-select: none; padding: 4px 0; font-variant-numeric: tabular-nums; }
 .scrub small { display: block; font-size: 14px; letter-spacing: .08em; text-transform: uppercase; margin-top: 4px; }
 .scrub.r { text-align: right; }
+.btn.float { position: absolute; z-index: 3; }
 .scrub.inline { position: static; display: inline-block; font-size: clamp(44px, 13vw, 60px); margin-top: 6px; }
 
 /* Tug of war */
@@ -316,7 +317,7 @@ body { margin: 0; padding-inline: 0; background: #121211; color: var(--k); font-
     <p>A thread can be one thick filament, or a bundle of fine ones.</p>
     <p class="hint">Drag the number up</p>
   </div>
-  <div class="scrub" data-avoid="scrub" id="fil-n" role="slider" tabindex="0" aria-label="Filaments in the thread" aria-valuemin="1" aria-valuemax="300" aria-valuenow="1"><span class="sv">1</span><small>filament</small></div>
+  <div class="scrub r" data-avoid="scrub" id="fil-n" role="slider" tabindex="0" aria-label="Filaments in the thread" aria-valuemin="1" aria-valuemax="300" aria-valuenow="1"><span class="sv">1</span><small>filament</small></div>
   <div class="card bl reserve" data-avoid="card"><p class="cl"></p><p class="ct"></p></div>
 </section>
 
@@ -434,7 +435,7 @@ body { margin: 0; padding-inline: 0; background: #121211; color: var(--k); font-
     <p id="bot-p">Tap the shape to see where most recycled polyester comes from.</p>
     <button class="btn" type="button" id="bot-go">Next step</button>
   </div>
-  <div class="card br reserve" data-avoid="card"><p class="cl"></p><p class="ct"></p></div>
+  <div class="card br reserve" data-avoid="card" data-pad="3"><p class="cl"></p><p class="ct"></p></div>
 </section>
 
 <section class="frame bg-white" data-scene="recycle" aria-label="Feed the recycler">
@@ -470,8 +471,8 @@ body { margin: 0; padding-inline: 0; background: #121211; color: var(--k); font-
     <h2>Spot the PET</h2>
     <p class="say" id="spot-say" hidden></p>
     <p id="spot-p">Your thread forks. One strand is PET. The other is PLA, a polyester made from plants. Tap the PET.</p>
-    <button class="btn" type="button" id="spot-again" hidden>Try again</button>
   </div>
+  <button class="btn float" type="button" id="spot-again" data-avoid="again" hidden>Try again</button>
   <button class="hit" type="button" id="spot-a" aria-label="Choose the left strand"></button>
   <button class="hit" type="button" id="spot-b" aria-label="Choose the right strand"></button>
   <div class="card br reserve" data-avoid="card"><p class="cl"></p><p class="ct"></p></div>
@@ -539,7 +540,7 @@ body { margin: 0; padding-inline: 0; background: #121211; color: var(--k); font-
 
 <section class="frame bg-black" data-scene="end" aria-label="Your thread">
   <div class="endwrap">
-    <div class="endq" data-avoid="q"><h2>What would you design if every garment had to come back?</h2></div>
+    <div class="endq" data-avoid="q"><h2>What would you design if every garment had to come back to you?</h2></div>
     <div class="label" data-avoid="bottom">
       <p class="lt">Your thread · care label</p>
       <dl id="pass"></dl>
@@ -569,7 +570,7 @@ body { margin: 0; padding-inline: 0; background: #121211; color: var(--k); font-
   <p>Write a few sentences for each question. Then copy your care label and answers, and paste them where your module asks, such as a Canvas discussion or your journal. Nothing is saved when you close the page.</p>
   <label class="rf" for="rf-1">Which one choice changed your thread the most? Why?</label>
   <textarea id="rf-1" rows="4"></textarea>
-  <label class="rf" for="rf-2">What would you design if every garment had to come back?</label>
+  <label class="rf" for="rf-2">What would you design if every garment had to come back to you?</label>
   <textarea id="rf-2" rows="4"></textarea>
   <div class="rf-acts"><button class="btn" type="button" id="rf-copy">Copy my label and answers</button></div>
   <p id="rf-msg" aria-live="polite"></p>
@@ -1463,8 +1464,12 @@ SCENES.oil = {
   },
   // the two building blocks as a big key, a step apart: each tap lifts a copy out of each
   key: function (f) {
-    var W = f.w, sy = this.surf(f), span = this.pet(f).y0 - sy, sz = clamp(.12 * W, 38, 54);
-    return { s: sz, r: sz * .6, fs: Math.round(clamp(.085 * W, 26, 36)), e: pt(.3 * W, sy + Math.max(span * .32, sz / 2 + 40)), t: pt(.6 * W, sy + span * .66) };
+    var W = f.w, sy = this.surf(f), pw = this.pet(f), span = pw.y0 - sy, sz = clamp(.12 * W, 38, 54), r = sz * .6, fs = Math.round(clamp(.085 * W, 26, 36));
+    var b = pt(.5 * W, sy + 14), c = pt(pw.x0 - .12 * W, pw.y0 + pw.H * .35);
+    // where the chain runs at a given height (the same curve as the spine in path)
+    function cx(y) { var u = clamp((y - b.y) / (c.y - b.y), 0, 1); return b.x + (c.x - b.x) * ease(u) + Math.sin(u * Math.PI * 3) * .07 * W * Math.sin(u * Math.PI); }
+    var ty = sy + Math.max(span * .32, sz / 2 + 40), ey = sy + span * .66;
+    return { s: sz, r: r, fs: fs, t: pt(Math.max(.06 * W + fs * 2 + 10 + r, cx(ty) - r - 30), ty), e: pt(Math.min(.94 * W - fs * 1.4 - 10 - sz / 2, cx(ey) + sz / 2 + 30), ey) };
   },
   k: 0.08,
   slot: function (f, j) {
@@ -1486,8 +1491,8 @@ SCENES.oil = {
   front: function (ctx, f) {
     var sy = this.surf(f), W = f.w, self = this, K = this.key(f);
     stitchGaps(ctx, f);
-    ctx.fillStyle = KU.k; ctx.fillRect(K.e.x - K.s / 2, K.e.y - K.s / 2, K.s, K.s); label(ctx, f, 'EG', K.e.x - K.s / 2 - 10, K.e.y + K.fs * .36, K.fs, KU.k, 'right');
-    hexagon(ctx, K.t.x, K.t.y, K.r, KU.k); label(ctx, f, 'TPA', K.t.x + K.r + 10, K.t.y + K.fs * .36, K.fs, KU.k, 'left');
+    ctx.fillStyle = KU.k; ctx.fillRect(K.e.x - K.s / 2, K.e.y - K.s / 2, K.s, K.s); label(ctx, f, 'EG', K.e.x + K.s / 2 + 10, K.e.y + K.fs * .36, K.fs, KU.k, 'left');
+    hexagon(ctx, K.t.x, K.t.y, K.r, KU.k); label(ctx, f, 'TPA', K.t.x - K.r - 10, K.t.y + K.fs * .36, K.fs, KU.k, 'right');
     f.dyn.push({ l: K.e.x - K.s / 2 - 8, r: K.e.x + K.s / 2 + 8, t: K.e.y - K.s / 2 - 8, b: K.e.y + K.s / 2 + 8 }, { l: K.t.x - K.r - 8, r: K.t.x + K.r + 8, t: K.t.y - K.r - 8, b: K.t.y + K.r + 8 });
     for (var i = 0; i < f.s.links; i++) {
       var fl = f.s.fly.find(function (q) { return q.i === i; }), u = fl ? ease((f.t - fl.t) / .55) : 1;
@@ -1644,13 +1649,13 @@ SCENES.count = {
       onChange: function (v) { G.fil = v; SCENES.count.fit(f); f.chain.kick(3, 0); if (v >= 144) card(f, 'micro'); else if (v >= 24) card(f, 'multi'); } });
   },
   tick: function (f) { if (f.vt > 2 && !f.s.told && G.fil === 1) { f.s.told = true; card(f, 'mono'); } },
-  layout: function (f) { $('fil-n').style.left = '6%'; this.fit(f); },
+  layout: function (f) { var el = $('fil-n'); el.style.left = 'auto'; el.style.right = '6%'; this.fit(f); },
   // the number is big, and gives way only as far as it must to clear the lens
   fit: function (f) {
-    var el = $('fil-n'), g = this.geo(f), room = (g.cx - g.R - 18) - .06 * f.w, d = String(G.fil).length;
+    var el = $('fil-n'), g = this.geo(f), room = .94 * f.w - (g.cx + g.R + 18), d = String(G.fil).length;
     el.style.fontSize = Math.round(clamp(room / (d * .6), 56, 132)) + 'px'; el.style.top = Math.round(g.cy - el.offsetHeight / 2) + 'px'; f.measure();
   },
-  geo: function (f) { var st = stage(f), R = Math.min(.22 * f.w, st.h * .3); return { cx: .66 * f.w, cy: st.m, R: R, st: st }; },
+  geo: function (f) { var st = stage(f), R = Math.min(.22 * f.w, st.h * .3); return { cx: .34 * f.w, cy: st.m, R: R, st: st }; },
   // a loop on the way in and another on the way out, the thread dropping straight into the lens
   path: function (f) { var g = this.geo(f), W = f.w, a = pt(.87 * W, Math.max(g.st.t + 4, g.cy - g.R - 140)), b = pt(g.cx + 4, g.cy - g.R - 32), c = pt(g.cx, g.cy + g.R + 10); return [a].concat(swing(a, b, 'loop'), [pt(g.cx, g.cy - g.R - 10), c], swing(c, pt(.87 * W, g.st.b - 4), 'loop', true)); },
   k: 0.1,
@@ -2138,7 +2143,18 @@ SCENES.wash = {
   wash: function (f) { f.s.until = f.t + 3.4; this.reveal(f); var g = this.geo(f); stamp(f, 'SLOSH', g.cx - 30, g.cy - g.r - 26); },
   bottomBg: function () { return 'blue'; },
   demo: function (f) { return { kind: 'tap', pts: [domPt(f, $('wash-go'), 0, 6)], dur: 1.9 }; },
-  tap: function (f, x, y) { var g = this.geo(f); if (Math.hypot(x - g.cx, y - g.cy) < g.r) this.wash(f); },
+  tap: function (f, x, y) {
+    var best = null, bd = 1e9; (f.s.bub || []).forEach(function (q) { var d = Math.hypot(q.x - x, q.y - y); if (d < q.r + 14 && d < bd) { bd = d; best = q; } });
+    if (best) { this.pop(f, best, true); return; }
+    var g = this.geo(f); if (Math.hypot(x - g.cx, y - g.cy) < g.r) this.wash(f);
+  },
+  // a popped bubble bursts; if it carried a fibre, the fibre drops back into the water
+  pop: function (f, q, byYou) {
+    q.dead = true; f.s.pops.push({ x: q.x, y: q.y, r: q.r, t: f.t });
+    if (!byYou) return; SND.play('pop'); f.s.popped = (f.s.popped || 0) + 1;
+    if (f.s.popped === 1 || f.s.popped % 6 === 0) stamp(f, 'POP', q.x, q.y - q.r - 18);
+    if (q.fib) { f.parts.push({ x: q.x, y: q.y, px: q.x, py: q.y - .5, a: Math.random() * Math.PI }); if (!f.s.toldB) { f.s.toldB = true; card(f, 'Caught one', 'That bubble was carrying a microfibre. Pop it, and the fibre still goes down the drain with the water.'); } }
+  },
   reveal: function (f) {
     if (!f.s.rev) { f.s.rev = true; card(f, 'wash'); }
     else if (!f.s.rev2 && (G.fil >= 144 || G.staple)) { f.s.rev2 = true; card(f, 'fleece'); }
@@ -2164,6 +2180,11 @@ SCENES.wash = {
     if (washing && f.t > f.s.until - 1 && (G.fil >= 144 || G.staple)) this.reveal(f);
     var H = f.h, t = f.t;
     f.parts = f.parts.filter(function (o) { var vx = (o.x - o.px) * .985, vy = (o.y - o.py) * .985 + .012; o.px = o.x; o.py = o.y; o.x += vx + Math.sin(t * 2 + o.a * 5) * .03; o.y += vy; o.a += .02; return o.y < H + 10; });
+    // bubbles rise out of the drum and the water while it washes, and for a little after
+    var sa = this.suds(f), wl0 = this.water(f); if (!f.s.bub) { f.s.bub = []; f.s.pops = []; }
+    if (sa > 0 && !RM && f.s.bub.length < 26 && Math.random() < (washing ? .22 : .05) * sa) { var inDrum = Math.random() < .5, an = (30 + Math.random() * 120) * D; f.s.bub.push(inDrum ? { x: g.cx + Math.cos(an) * g.r * .7, y: g.cy + Math.sin(an) * g.r * .7, r: 5 + Math.random() * 8, vy: -.5 - Math.random() * .7, ph: Math.random() * 9, fib: Math.random() < .3, t: f.t } : { x: f.w * (.08 + Math.random() * .84), y: wl0 - 4, r: 6 + Math.random() * 10, vy: -.4 - Math.random() * .8, ph: Math.random() * 9, fib: Math.random() < .3, t: f.t }); }
+    var self = this; f.s.bub.forEach(function (q) { q.y += q.vy; q.x += Math.sin(f.t * 2 + q.ph) * .5; q.r = Math.min(q.r + .01, 20); if (q.y < q.r + 8 || f.t - q.t > 9) self.pop(f, q, false); });
+    f.s.bub = f.s.bub.filter(function (q) { return !q.dead; }); f.s.pops = f.s.pops.filter(function (o) { return f.t - o.t < .35; });
     if (G.shed !== f.s.shown) { f.s.shown = G.shed; $('wash-n').textContent = String(G.shed).padStart(3, '0') + ' fibres'; }
   },
   onDrag: function (f, d) { if (d.chain && Math.hypot(d.vx || 0, d.vy || 0) > 5) { var i = d.chain.grab; for (var k = -2; k <= 2; k++) { var q = d.chain.p[clamp(i + k * 3, 0, d.chain.n - 1)]; if (Math.random() < .5 * this.rate()) this.shedFrom(f, q); } this.reveal(f); } },
@@ -2182,6 +2203,8 @@ SCENES.wash = {
   },
   front: function (ctx, f) {
     var wl = this.water(f); ctx.lineWidth = 2;
+    (f.s.bub || []).forEach(function (q) { bubble(ctx, q.x, q.y, q.r); if (q.fib) { ctx.strokeStyle = KU.b; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(q.x - q.r * .45, q.y + q.r * .2); ctx.quadraticCurveTo(q.x, q.y - q.r * .4, q.x + q.r * .45, q.y + q.r * .1); ctx.stroke(); } });
+    (f.s.pops || []).forEach(function (o) { var u = (f.t - o.t) / .35; ctx.strokeStyle = KU.b; ctx.lineWidth = 2; ctx.globalAlpha = 1 - u; for (var k = 0; k < 6; k++) { var an = k * Math.PI / 3; ctx.beginPath(); ctx.moveTo(o.x + Math.cos(an) * o.r * (1 + u * .4), o.y + Math.sin(an) * o.r * (1 + u * .4)); ctx.lineTo(o.x + Math.cos(an) * o.r * (1.5 + u), o.y + Math.sin(an) * o.r * (1.5 + u)); ctx.stroke(); } ctx.globalAlpha = 1; });
     f.parts.forEach(function (o) { ctx.strokeStyle = o.y > wl ? KU.w : KU.b; ctx.beginPath(); ctx.moveTo(o.x, o.y); ctx.lineTo(o.x + Math.cos(o.a) * 6, o.y + Math.sin(o.a) * 6); ctx.stroke(); });
   }
 };
@@ -2213,6 +2236,11 @@ SCENES.bottle = {
     }
     var r = Math.min(.3 * W, st.h * .32), cy = st.t + st.h * .4;
     var o = [pt(.13 * W, cy - r - 10), pt(cx, cy - r)].concat(arc(cx, cy, r, r, -90 * D, 220 * D, 70)), ty = st.b - st.h * .17;
+    var cd = f.named.card, ce = f.el.querySelector('.card');
+    if (cd && ce && ce.classList.contains('show')) {
+      var vt = cd.t + 3, px = (cd.l + cd.r) / 2, rx = Math.min(.26 * W, (cd.r - cd.l) / 2 - 26), pile = tangle(px, vt - 30, rx, 16, 7, 5).map(function (q) { return pt(q.x, Math.min(q.y, vt - 5)); });
+      return o.concat(curls(o[o.length - 1], pt(px - rx, vt - 80), 3, 21), pile, [pt(cd.l + 16, vt - 7), pt(cd.l - 8, vt + 6), pt(.13 * W, cd.b)]);
+    }
     return o.concat(curls(o[o.length - 1], pt(cx - r * .55, ty - st.h * .12), 3, 21), tangle(cx - r * .1, ty, .3 * W, st.h * .12, 8, 5), [pt(.13 * W, st.b - 4)]);
   },
   front: function (ctx, f) { stitchGaps(ctx, f); },
@@ -2424,7 +2452,15 @@ SCENES.spot = {
     var sd = -f.s.main, path = this.route(g, sd).concat([pt(g.x0 + sd * g.dx, f.h + 30)]), c = new Chain(path, 80, { wind: .02, iter: 8, avoid: false, pinBot: false });
     c.setTarget(path, .1, []); c.grabbable = false; f.extras = [c];
   },
-  path: function (f) { var g = this.geo(f), W = f.w; return (f.named.top ? lassoPts(f.named.top, 450) : [pt(.87 * W, g.F.y - 30)]).concat(this.route(g, f.s.main), [pt(.13 * W, g.bot + 12)]); },
+  // once you have chosen, the kept strand turns for the left lane halfway down, leaving the lower right clear for Try again
+  ym: function (g) { return g.F.y + (g.bot - g.F.y) * .55; },
+  path: function (f) {
+    var g = this.geo(f), W = f.w, L = f.named.top ? lassoPts(f.named.top, 450) : [pt(.87 * W, g.F.y - 30)], r = this.route(g, f.s.main);
+    if (f.s.ans === null) return L.concat(r, [pt(.13 * W, g.bot + 12)]);
+    var ym = this.ym(g), x = g.x0 + f.s.main * g.dx;
+    return L.concat(r.filter(function (q) { return q.y < ym; }), [pt(x, ym), pt(.13 * W, ym + 34), pt(.13 * W, g.bot + 12)]);
+  },
+  again: function (f) { var el = $('spot-again'); if (el.hidden) return; var st = stage(f); place(el, .94 * f.w - el.offsetWidth, st.b + 2 - el.offsetHeight); },
   k: 0.1,
   answer: function (f, s) {
     if (f.s.ans !== null) return;
@@ -2439,20 +2475,20 @@ SCENES.spot = {
     f.s.fallPLA = !pla; f.extras = [];
     say($('spot-say'), pla ? 'That was PLA' : 'PET. Good eye.'); stamp(f, pla ? 'OOPS' : 'YES!', g.x0 + s * g.dx, (g.F.y + g.bot) / 2 - 60);
     $('spot-p').textContent = pla ? 'It\'s spliced into your thread now.' : 'The PLA strand is cut away.';
-    $('spot-again').hidden = false; card(f, 'pla'); syncUI(); f.s.cq = f.t + 4.5;
+    $('spot-again').hidden = false; this.again(f); card(f, 'pla'); syncUI(); f.s.cq = f.t + 4.5;
   },
   tap: function (f, x, y) { var g = this.geo(f); if (f.s.ans === null && y > g.F.y + 30 && y < g.bot) this.answer(f, x < g.x0 ? -1 : 1); },
   tick: function (f) { if (f.s.cq && f.t > f.s.cq) { f.s.cq = 0; card(f, 'compost'); } if (f.falling) { f.falling.step(f.t, [], 0); if (f.falling.p.every(function (q) { return q.y > f.h + 40; })) f.falling = null; } },
-  back: function (ctx, f) { var g = this.geo(f), h = Math.max(40, g.bot - g.F.y - 80); place($('spot-a'), g.x0 - g.dx - 34, g.F.y + 60, 68, h); place($('spot-b'), g.x0 + g.dx - 34, g.F.y + 60, 68, h); $('spot-a').hidden = $('spot-b').hidden = f.s.ans !== null; },
+  back: function (ctx, f) { this.again(f); var g = this.geo(f), h = Math.max(40, g.bot - g.F.y - 80); place($('spot-a'), g.x0 - g.dx - 34, g.F.y + 60, 68, h); place($('spot-b'), g.x0 + g.dx - 34, g.F.y + 60, 68, h); $('spot-a').hidden = $('spot-b').hidden = f.s.ans !== null; },
   // the other strand is drawn exactly like your thread, so nothing gives it away (the PLA mark only shows once you've chosen)
-  twin: function (ctx, f, c) { var keep = f.chain, pla = G.pla; f.chain = c; G.pla = false; drawMain(ctx, f, 0, RM ? 0 : performance.now() / 1000 * 30); G.pla = pla; f.chain = keep; },
+  twin: function (ctx, f, c) { asThread(ctx, f, c); },
   front: function (ctx, f) {
     var self = this, g = this.geo(f);
     f.extras.forEach(function (c) { self.twin(ctx, f, c); });
     if (f.falling) { this.twin(ctx, f, f.falling); if (f.s.fallPLA) strokeChain(ctx, f.falling, casingFor(inkFor(f.bg)), 2.4, [11, 7]); }
-    if (f.s.ans !== null) label(ctx, f, G.pla ? 'PLA' : 'PET', g.x0 + f.s.main * (g.dx + 30), (g.F.y + g.bot) / 2, 22, KU.k, f.s.main > 0 ? 'left' : 'right');
+    if (f.s.ans !== null) label(ctx, f, G.pla ? 'PLA' : 'PET', g.x0 + f.s.main * (g.dx + 30), g.F.y + (this.ym(g) - g.F.y) * .6, 22, KU.k, f.s.main > 0 ? 'left' : 'right');
   },
-  splice: function (f) { var g = this.geo(f), c = f.chain, a = -1, b = -1; for (var i = 0; i < c.n; i++) { var q = c.p[i]; if (q.y > g.F.y + 40 && q.y < g.bot - 16) { if (a < 0) a = i; b = i; } } return a >= 0 ? [a, b] : null; }
+  splice: function (f) { var g = this.geo(f), c = f.chain, a = -1, b = -1, ym = this.ym(g); for (var i = 0; i < c.n; i++) { var q = c.p[i]; if (q.y > g.F.y + 40 && q.y < ym - 6) { if (a < 0) a = i; b = i; } } return a >= 0 ? [a, b] : null; }
 };
 
 // The thread coils into a spring. Pull it. An elastane core can't be pulled out; this stretch is built in instead.
@@ -2509,8 +2545,8 @@ SCENES.heat = {
   },
   demo: function (f) { var a = domPt(f, $('heat-n')); return { kind: 'drag', pts: [a, pt(a.x, a.y - 110)], dur: 2.6 }; },
   front: function (ctx, f) {
-    var p = f.ply; if (p && p.restGoal > 1) cased(ctx, p, KU.b, KU.w, 6, [11, 7]);
-    f.parts.forEach(function (d) { disc(ctx, d.x, d.y, 5, KU.b); });
+    var p = f.ply, ink = look(f).colour || inkFor(f.bg); if (p && p.restGoal > 1) asThread(ctx, f, p);
+    f.parts.forEach(function (d) { disc(ctx, d.x, d.y, 5, ink); });
     var g = this.geo(f);
     label(ctx, f, 'PET', g.a.x + 12, g.S.y + g.st.h * .24, 18, KU.k, 'left');
     if (f.s.plyOK) label(ctx, f, 'PLA', g.b.x - 12, g.S.y + g.st.h * .56, 18, KU.k, 'right');
@@ -2557,6 +2593,7 @@ SCENES.rot = {
     f.extras = [f.cot, f.pc];
     if (!f.s.bugs.length) for (var i = 0; i < 7; i++) f.s.bugs.push({ x: (.12 + .76 * Math.random()) * W, y: g.gy + 24 + Math.random() * (g.r3 - g.gy), tx: 0, ty: 0, tt: 0, ph: Math.random() * 9 });
     f.s.bugs.forEach(function (b) { b.tx = b.x; b.ty = b.y; });
+    if (!f.s.worms) f.s.worms = [{ x: .2 * W, y: g.r3 + 14, d: 1, ph: 0, ty: g.r3 + 14 }, { x: .8 * W, y: g.r1 + 30, d: -1, ph: 3, ty: g.r1 + 30 }];
   },
   set: function (f, v) {
     var up = v > f.s.s, g = this.geo(f); f.s.s = v; if (v > G.buried) { G.buried = v; renderLabel(); }
@@ -2570,6 +2607,8 @@ SCENES.rot = {
   },
   // one card at a time: later finds wait their turn
   find: function (f, k) { if (!FOUND[k] && f.s.q.indexOf(k) < 0) f.s.q.push(k); },
+  // the sun crosses the sky once for every step of time you drag through; at rest it sits high on the right
+  sunAt: function (f) { var g = this.geo(f), W = f.w, ph = ((f.s.u + .7) % 1 + 1) % 1, top = g.st.t + 26, hz = g.gy + 26; return { x: -.06 * W + 1.12 * W * ph, y: hz - (hz - top) * Math.sin(Math.PI * ph), up: Math.sin(Math.PI * ph) }; },
   // a microbe tries your polyester, and gives up
   offer: function (f, b) {
     var g = this.geo(f), c = f.chain, q = null, qd = 1e9;
@@ -2598,6 +2637,16 @@ SCENES.rot = {
     if (eating && !RM && Math.random() < .45) { var row = Math.random() < .5 ? f.cot : f.pc, q = row.p[(Math.random() * row.n) | 0]; f.parts.push({ x: q.x, y: q.y, r: 1.5 + Math.random() * 2.5, v: .5 + Math.random() * .6 }); }
     f.parts = f.parts.filter(function (b) { b.y -= b.v; b.x += Math.sin(b.y * .12) * .3; if (b.y > g.gy + 3) return true; if (b.x > .6 * W && f.s.puffs.length < 2 && Math.random() < .2) f.s.puffs.push({ x: b.x, t: f.t }); return false; });
     f.s.puffs = f.s.puffs.filter(function (p) { return f.t - p.t < 1.6; });
+    // worms eat dead plant matter: they head for the cotton while there is any, and leave casts behind
+    (f.s.worms || []).forEach(function (w, i) {
+      if (!RM) { w.x += w.d * (cl > .05 ? .45 : .3); w.ph += .12; }
+      if (w.x < 24 || w.x > W - 24) { w.d = -w.d; w.x = clamp(w.x, 24, W - 24); w.ty = cl > .05 ? (i ? g.r1 : g.r2) + 6 : g.gy + 30 + Math.random() * (g.r3 - g.gy); }
+      w.y += (w.ty - w.y) * .01;
+      if (cl > .05 && eating && Math.random() < .03) { (f.s.casts = f.s.casts || []).push({ x: w.x - w.d * 50, y: w.y + 6 }); if (f.s.casts.length > 24) f.s.casts.shift(); }
+    });
+    // microbes multiply where there is food, and thin out when it has gone
+    if (eating && f.s.bugs.length < 13 && Math.random() < .02) { var mum = f.s.bugs[(Math.random() * f.s.bugs.length) | 0]; f.s.bugs.push({ x: mum.x + 6, y: mum.y, tx: mum.x + 20, ty: mum.y, tt: f.t + 1, ph: 0 }); }
+    if (cl < .02 && f.s.bugs.length > 7 && Math.random() < .01) f.s.bugs.pop();
     f.s.bugs.forEach(function (b, i) {
       if (f.t > b.tt) {
         if (cl > .04 && Math.random() < .75) { var row = Math.random() < .5 ? f.cot : f.pc, k = (Math.random() * row.n) | 0; b.tx = row.p[k].x; b.ty = row.p[k].y + (Math.random() - .5) * 10; }
@@ -2612,14 +2661,18 @@ SCENES.rot = {
   },
   back: function (ctx, f) {
     var g = this.geo(f), W = f.w, u = f.s.u, i;
-    // the sun is The Dot, with a woven glow
-    wDisc(ctx, KU.y, u >= 4 ? 3 : 2, g.sun.x, g.sun.y, 34); disc(ctx, g.sun.x, g.sun.y, 19, KU.y);
+    // the sun is The Dot, with a woven glow; when it dips, night falls over the ground for a moment
+    var sn = this.sunAt(f); wDisc(ctx, KU.y, u >= 4 ? 3 : 2, sn.x, sn.y, 34); disc(ctx, sn.x, sn.y, 19, KU.y);
+    if (sn.up < .35) { ctx.globalAlpha = (.35 - sn.up) / .35 * .35; wRect(ctx, KU.k, 3, 0, 0, W, g.gy); ctx.globalAlpha = 1; }
     // soil: a black field under a frayed edge, with woven crumbs
     wFade(ctx, KU.k, 0, g.gy - 15, W, 13, 1, 4);
     ctx.fillStyle = KU.k; ctx.beginPath(); ctx.moveTo(-4, f.h + 4); for (var x = -4; x <= W + 8; x += 8) ctx.lineTo(x, g.gy + Math.sin(x * .09) * 2 + Math.sin(x * .31) * 1.2); ctx.lineTo(W + 8, f.h + 4); ctx.closePath(); ctx.fill();
     for (i = 0; i < 24; i++) wDisc(ctx, KU.w, 1, hash(i, 51) * W, g.gy + 14 + hash(i, 52) * (f.h - g.gy - 30), 2 + hash(i, 53) * 5);
+    // worms, and what they leave behind
+    (f.s.casts || []).forEach(function (c) { disc(ctx, c.x, c.y, 2.2, KU.g); });
+    (f.s.worms || []).forEach(function (w) { for (var k = 9; k >= 0; k--) { var x = w.x - w.d * k * 5, y = w.y + Math.sin(w.ph - k * .8) * 3; disc(ctx, x, y, k ? 4 : 4.6, '#e7a0b4'); } disc(ctx, w.x + w.d * 1.5, w.y - 1.5, 1.1, KU.k); });
     // once years pass, the sun works on the scrap
-    if (u > 3.5) { ctx.globalAlpha = clamp(u - 3.5, 0, 1); ctx.strokeStyle = KU.y; ctx.lineWidth = 2; ctx.setLineDash([4, 6]); ctx.beginPath(); for (i = 0; i < 3; i++) { ctx.moveTo(g.sun.x - 12 + i * 8, g.sun.y + 24); ctx.lineTo(g.ox + g.ow * (.2 + i * .3), g.gy - 14); } ctx.stroke(); ctx.setLineDash([]); ctx.globalAlpha = 1; }
+    if (u > 3.5) { ctx.globalAlpha = clamp(u - 3.5, 0, 1); ctx.strokeStyle = KU.y; ctx.lineWidth = 2; ctx.setLineDash([4, 6]); ctx.beginPath(); for (i = 0; i < 3; i++) { ctx.moveTo(sn.x - 12 + i * 8, sn.y + 24); ctx.lineTo(g.ox + g.ow * (.2 + i * .3), g.gy - 14); } ctx.stroke(); ctx.setLineDash([]); ctx.globalAlpha = 1; }
   },
   // cotton is a cream strand with loose fibre ends; as microbes eat it, pieces go, leaving crumbs
   cotton: function (ctx, c, left, core) {
@@ -2864,7 +2917,7 @@ $('open-sheet').addEventListener('click', function () { $('sheet').hidden = fals
 function summary() {
   var rows = $('pass').children, lines = ['The Thread and the Loop: my thread'];
   for (var i = 0; i + 1 < rows.length; i += 2) lines.push(rows[i].textContent + ': ' + rows[i + 1].textContent);
-  lines.push('Verdict: ' + $('end-say').textContent, '', 'Which one choice changed my thread the most? Why?', $('rf-1').value.trim() || '(not answered yet)', '', 'What would I design if every garment had to come back?', $('rf-2').value.trim() || '(not answered yet)');
+  lines.push('Verdict: ' + $('end-say').textContent, '', 'Which one choice changed my thread the most? Why?', $('rf-1').value.trim() || '(not answered yet)', '', 'What would I design if every garment had to come back to me?', $('rf-2').value.trim() || '(not answered yet)');
   return lines.join('\n');
 }
 function updateOut() { $('rf-out').value = summary(); }
@@ -3029,6 +3082,8 @@ function helix(ctx, p, nm, w, a, b, N, u) {
   ctx.lineCap = 'round';
   [[N.edge, N.rim == null ? 2.2 : N.rim], [N.col, 0]].forEach(function (pass) { ctx.strokeStyle = pass[0]; bands.forEach(function (q) { ctx.lineWidth = q[6] * Math.max(u, .5) + pass[1]; ctx.beginPath(); ctx.moveTo(q[0], q[1]); ctx.quadraticCurveTo(q[4], q[5], q[2], q[3]); ctx.stroke(); }); });
 }
+// draw another chain exactly like the visitor's thread, without the PLA mark: for strands that must look the same
+function asThread(ctx, f, c) { var keep = f.chain, pla = G.pla; f.chain = c; G.pla = false; drawMain(ctx, f, 0, RM ? 0 : performance.now() / 1000 * 30); G.pla = pla; f.chain = keep; }
 function drawMain(ctx, f, cum, flow, over) {
   var c = f.chain, p = c.p, L = look(f), key;
   if (over) for (key in over) L[key] = over[key];

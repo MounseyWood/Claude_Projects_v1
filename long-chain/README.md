@@ -13,10 +13,10 @@ One Verlet-simulated thread runs through every exhibit and is the controller. It
 Exhibits:
 
 - **Warm-up:** guess how much fibre is polyester (59%), then how much of the world's oil goes into synthetic fibre (about 1.35%, one estimate).
-- **Make:** link the chain (EG and TPA from oil and gas link into PET, which the thread writes out; each link gives off water; 1941 Terylene); melt, push and stretch (draw the fibre).
+- **Make:** link the chain (EG and TPA from oil and gas, drawn beside the thread, link into PET, which the thread writes out; each link gives off water; 1941 Terylene); melt, push and stretch (draw the fibre).
 - **Fibre:**
   - Pick a nozzle (round, trilobal, hollow or channelled), then drag a torch, an ice cube or a sweat drop onto the microscope lens.
-  - One strand or hundreds (mono-, multi- and microfilament).
+  - One strand or hundreds (mono-, multi- and microfilament): the cut end of the thread on the left, the filament count on the right under the thumb.
 - **Yarn:**
   - Puff it up: hold the air jet to blow loops into the filaments (air-jet texturing), or tap the heater to crimp them (false-twist texturing). The heater fires heat rays at the yarn, which glows and twists as the spindle backs twist up into it; past the spindle it untwists and puffs up into crimp, as in the real process. A feel meter fills from slick to soft. One thick filament won't texture.
   - Cut it and spin it (staple fibre and twist): the thread draws a Z, the direction most single yarns are spun. Swipe across it to cut it into staple; then the Z lifts and the twist appears underneath, on the right under the thumb, so the page reads in the order you work: cut, then spin.
@@ -25,18 +25,18 @@ Exhibits:
   - Wrap it: pull a cotton, wool or elastane yarn off the rail and bring it to the thread, which leans towards it; it snaps on and the wrap spreads out from where it landed (core-spun). Cotton winds on smooth, slim and even; wool lofty, lumpy and hairy; both cover the whole thread, and the polyester (and any dye in it) shows between the turns. Elastane goes inside, as the core, where it usually sits in stretch yarn. Miss, and the yarn swings back to its hook.
   - Colour it (a dye bath that only works at about 130°C, or pigment into the melt). The melt is a bold extruder on the same scale as the bath: PET and pigment pellets drop into the hopper, the window on the barrel fills with melt and then colour while the screw turns, and the thread comes out coloured. Blends reveal that only the polyester takes the dye.
 - **For and against:** a tug-of-war.
-- **Wear:** the washing machine is the interface: a fibre counter and a Wash button sit across its top, and suds build while it washes. Fine, staple and loose yarns shed more.
+- **Wear:** the washing machine is the interface: a fibre counter and a Wash button sit across its top, and suds build while it washes. Bubbles rise off the drum; pop them, and some turn out to be carrying a microfibre, which still goes down the drain. Fine, staple and loose yarns shed more.
 - **Return:**
-  - Where recycled polyester comes from: a bottle (flat cap) to a round-necked slogan tee that reads rPET, and then the loop breaks: the yarn falls out of it in curls into a tangle, because the shirt usually stops there.
+  - Where recycled polyester comes from: a bottle (flat cap) to a round-necked slogan tee that reads rPET, and then the loop breaks: the yarn falls off it in curls and piles up on the card, because the shirt usually stops there. One strand is pulled straight off the pile and leaves the page.
   - Feed the recycler: predict first, then tap the ring. Blends jam it, whether the other fibre is wound round (cotton, wool) or inside (elastane), and none can be stripped off, so chemistry is the next stop. A spool of elastane hangs above: tap it to give your thread an elastane core and see. Each melt breaks links, and the thread shows it.
   - Unzip the chain: tip a flask of water, glycol or enzymes into the tank and the chain breaks into its building blocks (dye leaches out, cotton comes out whole). Then link it back up, clean.
-  - Spot the PET: the thread forks into two routes that look exactly the same, one PET and one PLA. Tap the PET; the other falls away (or, if you picked PLA, it is spliced in). Then find out where PLA can compost.
+  - Spot the PET: the thread forks into two routes that look exactly the same, one PET and one PLA. Tap the PET; the other falls away (or, if you picked PLA, it is spliced in). Then find out where PLA can compost. Try again sits bottom right, under the thumb.
   - Stretch without elastane: a bicomponent spring, stretch built in from the start. There's no pulling elastane off; if your thread has an elastane core, a card says why it stays.
-  - Turn up the heat: the PLA ply melts first, and PET shows its memory.
-  - Bury it: drag time from today to polyester's whole life since 1941. Cotton rots, polycotton loses only its cotton, a natural wrap on your thread rots underground but not in the air, and a scrap of polyester in the sun cracks into microplastics. Tap a microbe: it tries your polyester and gives up. The last card asks what a "biodegradable" label should tell you.
+  - Turn up the heat: the two plies are drawn exactly alike, because PET and PLA look alike. Only the heat tells them apart: the PLA ply melts first, and PET shows its memory.
+  - Bury it: drag time from today to polyester's whole life since 1941; the sun rises and sets as the days, months and years pass. Worms head for the cotton and leave casts, and microbes multiply while there is food, then thin out. Cotton rots, polycotton loses only its cotton, a natural wrap on your thread rots underground but not in the air, and a scrap of polyester in the sun cracks into microplastics. Tap a microbe: it tries your polyester and gives up. The last card asks what a "biodegradable" label should tell you.
 - **Promise:** tie knots.
 - **Check yourself:** five quick questions with hints for wrong answers; each right answer threads an eyelet on the thread.
-- **The end:** the care label reads the thread back. **Reflect and copy** asks two questions and copies the label and answers as plain text to paste into a Canvas discussion or journal. **Notes and sources** is written for students: outcomes, how the lab works, questions to think about, confidence ratings and 50 sources.
+- **The end:** the care label reads the thread back. The last question is personal: what would you design if every garment had to come back to you? **Reflect and copy** asks two questions and copies the label and answers as plain text to paste into a Canvas discussion or journal. **Notes and sources** is written for students: outcomes, how the lab works, questions to think about, confidence ratings and 50 sources.
 
 It is built for asynchronous guided independent study: the notes give the time (about 20 minutes), a pixel hand demonstrates gestures, and nothing needs a tutor or an account. Nothing is saved when the page closes, so the copy step is the record.
 

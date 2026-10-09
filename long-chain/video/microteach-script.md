@@ -1,4 +1,4 @@
-# The Thread and the Loop: 3-minute microteach
+# Oil to soil? The Thread and the Loop, a 3-minute microteach
 
 Narration script for the motion-graphic version of the lab. 16:9, about 3:00, AI-generated voice. Every spoken claim is rated Strong in the lab's notes except the sunlight line [10], which is Moderate (lab studies, not field measurements); the source for each line is given in brackets and listed at the end.
 
@@ -9,11 +9,11 @@ Narration script for the motion-graphic version of the lab. 16:9, about 3:00, AI
 ---
 
 ## 0:00–0:15 · Hook and outcome
-*Screen: the thread unwinds from its spool on the title page.*
+*Screen: title card "Oil to soil?", then the thread unwinds from its spool on the title page.*
 
-This is one polyester thread. In the next three minutes, we'll follow it from oil to the ground.
+This is one polyester thread. In the next three minutes, we'll follow it from oil to soil.
 
-By the end, you'll be able to explain why most polyester never comes back.
+Or will we? By the end, you'll be able to explain why most polyester never comes back.
 
 ## 0:15–0:50 · Make
 *Screen: Link the chain. The hand taps; TPA and EG link; the thread writes PET. Large type: 1941 · 59% · 88%.*
@@ -59,6 +59,8 @@ Worldwide, less than one per cent of the material used to make clothing is recyc
 So what if we bury it? In a compost test, cotton fabric broke down within months. The polyester stayed intact. [9]
 
 In sunlight, polyester becomes brittle and cracks into smaller and smaller pieces. It breaks up, not down. [10]
+
+So: oil to soil? Not polyester. Not yet.
 
 ## 2:40–3:00 · Check and reflect
 *Screen: three questions, each held 3 seconds, then the answer. Then the end question in the big loop, and the lab link.*

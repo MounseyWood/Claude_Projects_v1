@@ -1,7 +1,7 @@
 // Render the lab as video frames, deterministically: a fixed 30 fps clock, seeded randomness,
 // a scripted camera (scroll) and scripted gestures shown by the lab's own pixel hand.
 // The thread is the real Verlet simulation, so it moves exactly as it does in the lab.
-// The phone column is rendered at full video height; compose_video.sh places it in 16:9.
+// Compose with compose_vertical.sh (phone format, as in the lab) or compose_video.sh (16:9).
 //
 //   node long-chain/tools/render_video.js <timeline.json> <out-dir>
 //
@@ -18,7 +18,8 @@ const fs = require('fs');
 
 const [TL, OUT] = [process.argv[2], process.argv[3] || 'frames'];
 const timeline = JSON.parse(fs.readFileSync(TL, 'utf8'));
-const FPS = 30, W = 390, H = 844, SCALE = 1080 / 844;
+// scale sets the output size: 1080 / 390 gives a 1080-wide phone-format film, 1080 / 844 a full-height column for 16:9
+const FPS = 30, W = 390, H = 844, SCALE = timeline.scale || 1080 / 844;
 const PAGE = 'http://lab.local/index.html';
 
 // the virtual clock and seeded randomness, installed before the page's own code runs

@@ -1,6 +1,6 @@
 # Oil to soil? The Thread and the Loop, a 3-minute microteach
 
-Narration script for the motion-graphic version of the lab. 16:9, about 3:00, AI-generated voice. Every spoken claim is rated Strong in the lab's notes except the sunlight line [10], which is Moderate (lab studies, not field measurements); the source for each line is given in brackets and listed at the end.
+Narration script for the motion-graphic version of the lab. Phone format, the lab's own 390 × 844 shape (1080 × 2336), 2:39, AI-generated voice (Google Gemini, voice Charon), with English subtitles. Every spoken claim is rated Strong in the lab's notes except the sunlight line [10], which is Moderate (lab studies, not field measurements); the source for each line is given in brackets and listed at the end.
 
 **Learning outcome:** explain why most polyester does not come back, and how design choices decide that.
 
@@ -8,14 +8,14 @@ Narration script for the motion-graphic version of the lab. 16:9, about 3:00, AI
 
 ---
 
-## 0:00–0:15 · Hook and outcome
+## 0:00–0:18 · Hook and outcome
 *Screen: title card "Oil to soil?", then the thread unwinds from its spool on the title page.*
 
 This is one polyester thread. In the next three minutes, we'll follow it from oil to soil.
 
 Or will we? By the end, you'll be able to explain why most polyester never comes back.
 
-## 0:15–0:50 · Make
+## 0:18–0:49 · Make
 *Screen: Link the chain. The hand taps; TPA and EG link; the thread writes PET. Large type: 1941 · 59% · 88%.*
 
 Polyester starts as oil and gas. [2]
@@ -26,7 +26,7 @@ It was invented in Lancashire in 1941. [4]
 
 Today, polyester is 59 per cent of all the fibre the world makes. And 88 per cent of that polyester comes from fossil fuels. [1]
 
-## 0:50–1:25 · Shape
+## 0:49–1:23 · Shape
 *Screen: melt and stretch; nozzle; cut and twist; wrap; dye bath rising to 130°C.*
 
 The chain is melted, pushed through tiny holes, and stretched into filament. [5]
@@ -37,14 +37,12 @@ Dye it, and it fights back: polyester repels water, so its dyes only get in at a
 
 Every choice changes how it feels. And every choice decides what can happen to it later.
 
-## 1:25–1:40 · Pause and predict
-*Screen: the thread, wrapped in cotton, at the recycler. On-screen: "Pause. Predict." Hold 5 seconds.*
+## 1:23–1:28 · The question
+*Screen: the thread, wrapped in cotton, arrives at the recycler.*
 
-Pause here. This thread is wrapped in cotton. Will the recycler take it?
+This thread is wrapped in cotton. Will the recycler take it?
 
-Decide. Then play.
-
-## 1:40–2:20 · Return
+## 1:28–1:49 · Return
 *Screen: Feed the recycler. The ring jams. Then the bottle becomes a T-shirt; the loop breaks into a tangle.*
 
 It jams. Blends are hard to separate, so most blended clothing can't go round again. [7]
@@ -53,7 +51,7 @@ Most recycled polyester doesn't come from clothes at all. It comes from plastic 
 
 Worldwide, less than one per cent of the material used to make clothing is recycled into new clothing. [8]
 
-## 2:20–2:40 · Bury
+## 1:49–2:12 · Bury
 *Screen: Bury it. The heap warms, cotton is eaten, polyester stays; the scrap in the sun cracks.*
 
 So what if we bury it? In a compost test, cotton fabric broke down within months. The polyester stayed intact. [9]
@@ -62,8 +60,8 @@ In sunlight, polyester becomes brittle and cracks into smaller and smaller piece
 
 So: oil to soil? Not polyester. Not yet.
 
-## 2:40–3:00 · Check and reflect
-*Screen: three questions, each held 3 seconds, then the answer. Then the end question in the big loop, and the lab link.*
+## 2:13–2:39 · Check and reflect
+*Screen: each question appears on a KU-yellow card as it is spoken. Then the end question in the big loop, and the credit.*
 
 Three quick questions. What is PET made from? Why does a blend jam the recycler? Where does most recycled polyester come from?
 

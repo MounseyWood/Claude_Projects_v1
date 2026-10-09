@@ -1,0 +1,7 @@
+0|5.5|L|THE THREAD
+0|5.5|R|One polyester thread.
+5.5|13|L|1  MAKE
+5.5|9|R|Oil and gas
+9|13|R|TPA + EG link into PET.
+13|20|L|2  SHAPE
+13|20|R|Melted and stretched.

@@ -21,6 +21,8 @@ body { margin: 0; padding-inline: 0; background: #121211; color: var(--k); font-
 #fx { position: fixed; top: 0; left: 0; width: 100px; height: 100vh; pointer-events: none; z-index: 4; }
 #bar { position: fixed; top: 0; height: 4px; background: var(--y); z-index: 5; width: 0; pointer-events: none; }
 .sr { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+/* keyboard users see the hidden helper buttons when they reach them */
+button.sr:focus-visible { width: auto; height: auto; clip: auto; overflow: visible; top: 100%; left: 0; margin-top: 8px; z-index: 6; background: var(--k); color: var(--w); border: 0; border-radius: 999px; padding: 12px 16px; font: 700 15px/1 var(--font); outline: 3px solid var(--y); outline-offset: 2px; }
 
 .frame { position: relative; height: 100vh; height: 100svh; min-height: 640px; scroll-snap-align: start; overflow: hidden; transition: background-color .45s; }
 .bg-white { background-color: var(--w); color: var(--k); }
@@ -114,11 +116,20 @@ body { margin: 0; padding-inline: 0; background: #121211; color: var(--k); font-
 .tugwrap { position: absolute; z-index: 2; top: 5.5%; left: 6%; right: 6%; display: grid; grid-template-columns: 36.4% 47.7%; column-gap: 15.9%; }
 .tugcol { display: flex; flex-direction: column; align-items: flex-start; gap: 7px; }
 .tugcol h2 { font-size: clamp(30px, 8.6vw, 40px) !important; margin-bottom: 8px !important; }
-.chip-btn { font: 700 16px/1.15 var(--font); text-align: left; border-radius: 999px; padding: 9px 14px; min-height: 42px; cursor: pointer; background: transparent; }
+.chip-btn { font: 700 16px/1.15 var(--font); text-align: left; border-radius: 999px; padding: 9px 14px; min-height: 44px; cursor: pointer; background: transparent; }
 .pros .chip-btn { color: var(--k); border: 2.5px solid var(--k); }
 .pros .chip-btn[aria-pressed="true"] { background: var(--k); color: var(--w); }
 .cons .chip-btn { color: var(--w); border: 2.5px solid var(--w); }
 .cons .chip-btn[aria-pressed="true"] { background: var(--w); color: var(--k); }
+.chip-btn .ev { display: inline-flex; gap: 3px; margin-left: 7px; vertical-align: 1px; }
+.chip-btn .ev i { width: 9px; height: 9px; border-radius: 50%; border: 2px solid currentColor; box-sizing: border-box; }
+.chip-btn .ev i.f { background: currentColor; }
+@media (max-height: 720px) { .tugcol { gap: 5px; } .chip-btn { font-size: 15px; padding: 6px 12px; min-height: 38px; } .seg button { min-height: 40px; padding: 0 11px; font-size: 14px; } }
+.chip-btn .ev i.h { background: linear-gradient(90deg, currentColor 50%, transparent 50%); }
+.seg { display: flex; gap: 6px; margin: 0 0 10px; }
+.seg button { font: 700 15px/1 var(--font); white-space: nowrap; min-height: 44px; padding: 0 13px; border-radius: 999px; border: 2.5px solid var(--k); background: transparent; color: var(--k); cursor: pointer; }
+.seg button[aria-pressed="true"] { background: var(--k); color: var(--y); }
+.seg button:focus-visible { outline: 3px solid var(--k); outline-offset: 3px; }
 
 /* Washing machine parts */
 .mbtn { position: absolute; z-index: 3; border-radius: 999px; border: 0; background: var(--w); color: var(--k); font: 700 16px/1 var(--font); letter-spacing: .06em; text-transform: uppercase; cursor: pointer; }
@@ -162,7 +173,7 @@ body { margin: 0; padding-inline: 0; background: #121211; color: var(--k); font-
 .sheet .close { position: sticky; top: 0; float: right; }
 .sheet .note { background: var(--y); padding: 10px 12px; }
 .chip { display: inline-block; font-size: 12px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; padding: 1px 7px; border-radius: 999px; border: 2px solid currentColor; }
-.chip.s { color: #2d6a36; } .chip.m { color: #7a5600; } .chip.w { color: #a22a1c; }
+.chip.s { background: var(--k); color: var(--w); border-color: var(--k); } .chip.m { color: var(--k); } .chip.w { color: var(--k); border-style: dashed; }
 .sig { font-size: 15px; color: var(--g); }
 
 /* Kinetic type: words pop in when a frame first arrives (skipped for reduced motion) */
@@ -224,6 +235,7 @@ body { margin: 0; padding-inline: 0; background: #121211; color: var(--k); font-
 </div>
 
 <div id="bar" aria-hidden="true"></div>
+<div id="sr-live" class="sr" role="status" aria-live="polite"></div>
 <canvas id="ink" aria-hidden="true"></canvas>
 <canvas id="fx" aria-hidden="true"></canvas>
 
@@ -269,6 +281,7 @@ body { margin: 0; padding-inline: 0; background: #121211; color: var(--k); font-
     <h2>Link the chain</h2>
     <p>Two chemicals from oil and gas link up, again and again, into one long chain: <b>PET</b>.</p>
     <p class="hint">Tap to link them · <span id="oil-n">0</span></p>
+    <button class="sr" type="button" id="oil-key">Link two more building blocks</button>
   </div>
   <div class="card bl reserve" data-avoid="card"><p class="cl"></p><p class="ct"></p></div>
 </section>
@@ -390,24 +403,29 @@ body { margin: 0; padding-inline: 0; background: #121211; color: var(--k); font-
   <div class="tugwrap">
     <div class="tugcol pros" data-avoid="lc" role="group" aria-label="Reasons for polyester">
       <h2>For</h2>
-      <button class="chip-btn" type="button" aria-pressed="false">Strong</button>
-      <button class="chip-btn" type="button" aria-pressed="false">Holds its shape</button>
-      <button class="chip-btn" type="button" aria-pressed="false">Dries fast</button>
-      <button class="chip-btn" type="button" aria-pressed="false">Cheap</button>
-      <button class="chip-btn" type="button" aria-pressed="false">Less water than cotton</button>
+      <button class="chip-btn" type="button" aria-pressed="false" data-k="0">Strong</button>
+      <button class="chip-btn" type="button" aria-pressed="false" data-k="1">Holds its shape</button>
+      <button class="chip-btn" type="button" aria-pressed="false" data-k="2">Dries fast</button>
+      <button class="chip-btn" type="button" aria-pressed="false" data-k="3">Cheap</button>
+      <button class="chip-btn" type="button" aria-pressed="false" data-k="4">Less water than cotton</button>
     </div>
     <div class="tugcol cons on-dark" data-avoid="rc" role="group" aria-label="Reasons against polyester">
       <h2>Against</h2>
-      <button class="chip-btn" type="button" aria-pressed="false">Made from oil</button>
-      <button class="chip-btn" type="button" aria-pressed="false">Won't biodegrade</button>
-      <button class="chip-btn" type="button" aria-pressed="false">Sheds fibres</button>
-      <button class="chip-btn" type="button" aria-pressed="false">Cheap means more</button>
-      <button class="chip-btn" type="button" aria-pressed="false">Blends block recycling</button>
+      <button class="chip-btn" type="button" aria-pressed="false" data-k="5">Made from oil</button>
+      <button class="chip-btn" type="button" aria-pressed="false" data-k="6">Barely biodegrades</button>
+      <button class="chip-btn" type="button" aria-pressed="false" data-k="7">Sheds fibres</button>
+      <button class="chip-btn" type="button" aria-pressed="false" data-k="8">Cheap means more</button>
+      <button class="chip-btn" type="button" aria-pressed="false" data-k="9">Blends block recycling</button>
     </div>
   </div>
   <div class="copy bl" data-avoid="bottom">
+    <div class="seg" role="group" aria-label="Which garment?">
+      <button type="button" data-g="0" aria-pressed="true">Raincoat</button>
+      <button type="button" data-g="1" aria-pressed="false">Gym top</button>
+      <button type="button" data-g="2" aria-pressed="false">T-shirt</button>
+    </div>
     <p class="say" id="tug-say">Tap reasons</p>
-    <p id="tug-p">Each one pulls the knot. Would it pull the same way for a raincoat as for a T-shirt?</p>
+    <p id="tug-p">Dots show the evidence. Half dots: matters less for this garment.</p>
   </div>
 </section>
 
@@ -416,6 +434,7 @@ body { margin: 0; padding-inline: 0; background: #121211; color: var(--k); font-
     <p class="kicker">Wear</p>
     <h2>Wash it</h2>
     <p id="wash-p">Every wash breaks off tiny fibres. Press Wash, or rub the thread.</p>
+    <button class="sr" type="button" id="wash-pop">Pop a bubble</button>
   </div>
   <div class="disp" data-avoid="wdisp" id="wash-n" aria-live="polite">0 fibres</div>
   <button class="mbtn" type="button" data-avoid="wbtn" id="wash-go">Wash</button>
@@ -497,11 +516,12 @@ body { margin: 0; padding-inline: 0; background: #121211; color: var(--k); font-
   <div class="copy tl" data-avoid="top">
     <p class="kicker">Return · 7 of 7</p>
     <h2>Bury it</h2>
-    <p>Does it decompose? Cotton, polycotton and your thread go underground; a scrap of polyester stays in the sun.</p>
-    <p class="hint">Drag the time up · tap a microbe</p>
+    <p>Does it decompose? Cotton, polycotton and your thread are buried in a compost heap; a scrap of polyester stays in the sun.</p>
+    <p class="hint">Drag the time up · tap a microbe or a worm</p>
     <button class="sr" type="button" id="rot-bug">Offer your thread to a microbe</button>
+    <button class="sr" type="button" id="rot-worm">Tickle a worm</button>
   </div>
-  <div class="scrub" data-avoid="time" id="rot-n" role="slider" tabindex="0" aria-label="Time underground" aria-valuemin="0" aria-valuemax="6" aria-valuenow="0"><span class="sv">0</span><small>days: just buried</small></div>
+  <div class="scrub" data-avoid="time" id="rot-n" role="slider" tabindex="0" aria-label="Time in the compost heap" aria-valuemin="0" aria-valuemax="6" aria-valuenow="0"><span class="sv">0</span><small>days: just buried</small></div>
   <div class="card bl reserve" data-avoid="card"><p class="cl"></p><p class="ct"></p></div>
 </section>
 
@@ -547,7 +567,7 @@ body { margin: 0; padding-inline: 0; background: #121211; color: var(--k); font-
 
 </main>
 
-<button class="tally" id="tally" type="button" aria-label="Discoveries: 0 found. Open your collection.">0/42</button>
+<button class="tally" id="tally" type="button" aria-label="Discoveries: 0 found. Open your collection.">0/43</button>
 <button class="fs" id="fs" type="button" hidden>Full screen</button>
 <a class="fs" id="fs-tab" target="_blank" rel="noopener" href="#" hidden>Open in new tab</a>
 <button class="fs" id="snd" type="button" aria-pressed="true">Sound on</button>
@@ -649,9 +669,15 @@ body { margin: 0; padding-inline: 0; background: #121211; color: var(--k); font-
     <li><span class="chip m">Moderate</span> First full-size enzymatic plant planned for 2028; its financing was not closed by September 2026 [30].</li>
     <li><span class="chip m">Moderate</span> Glycolysis of mixed textiles: cotton survives, polyester and elastane break down, dyes slow it (one lab study) [31].</li>
     <li><span class="chip w">Weak</span> Chemical recycling's footprint: depends on plant and energy; studies disagree [32].</li>
-    <li><span class="chip m">Moderate</span> 0.1% PLA spoils PET: bottle recycling, 2009 [7].</li>
+    <li><span class="chip m">Moderate</span> In 2009 US recyclers said more than 0.1% PLA was not acceptable in recycled PET [7][54]. A 2022 study, part-funded by a PLA maker, found little effect at 0.1–1% [55]. Both sides have interests.</li>
+    <li><span class="chip m">Moderate</span> Shed fibres leave with the rinse water. UK treatment works remove most (about 99%), and what they catch ends up in sludge, much of it spread on farmland [51][52]. Bubbles carrying fibres in the game is a playful device, not a finding.</li>
+    <li><span class="chip s">Strong</span> Microbes give off heat and CO₂ together. A big compost heap traps the heat and peaks at about 55–65°C, sometimes above 70°C; buried in plain soil, the heat escapes [53].</li>
+    <li><span class="chip m">Moderate</span> Earthworms mix soil and leave casts rich in cellulose-digesting microbes; fungi and bacteria do most of the work on cotton. No study isolates worms' effect on buried cotton fabric [59].</li>
+    <li><span class="chip s">Strong</span> Tug of war, strong evidence: polyester is strong and holds its shape; it dries fast (moisture regain about 0.4%, cotton 8.5%) [56]; it is cheaper than cotton [57]; 88% is fossil-based [1]; it barely biodegrades [47][48]; it sheds fibres [51]; blends block recycling today [21].</li>
+    <li><span class="chip m">Moderate</span> Tug of war: less water than cotton holds in most studies but depends on method, and polyester uses more energy [32].</li>
+    <li><span class="chip w">Weak</span> Tug of war: "cheap means more". Cheap fibre has grown alongside fast fashion and many experts link them, but cause and effect is hard to prove [33][58]. Which garment each reason matters for is our judgement, to argue with.</li>
     <li><span class="chip w">Weak</span> Two-polyester stretch fibre recycles with polyester: the maker's own tests [8][9].</li>
-    <li><span class="chip s">Strong</span> PLA melts ~170°C, PET ~250°C [10]. All-polyester rubbers reach ~11× length in the lab [11].</li>
+    <li><span class="chip s">Strong</span> PLA melts at about 150–180°C, depending on grade; PET at about 250–260°C [10][60]. All-polyester rubbers reach ~11× length in the lab [11].</li>
     <li><span class="chip s">Strong</span> EU textile producer responsibility in force 17 October 2025 [12].</li>
   </ul>
   <h3>How the thread works</h3>
@@ -708,6 +734,16 @@ body { margin: 0; padding-inline: 0; background: #121211; color: var(--k); font-
     <li><a target="_blank" rel="noopener" href="https://www.gov.uk/government/publications/green-claims-code-making-environmental-claims/green-claims-and-your-business">CMA (2021), Green Claims Code</a></li>
     <li><a target="_blank" rel="noopener" href="https://doi.org/10.1139/er-2023-0107">Sun et al. (2024), Environmental Reviews: PET-degrading enzymes</a></li>
     <li><a target="_blank" rel="noopener" href="https://www.cell.com/heliyon/fulltext/S2405-8440(21)02635-9">Heliyon (2021), stretch denim from core-spun yarn</a>; <a target="_blank" rel="noopener" href="https://adityabirla-yarn.com/product/classical-yarns/core-spun-yarns">Aditya Birla, core-spun yarns (trade)</a></li>
+    <li><a target="_blank" rel="noopener" href="https://pubmed.ncbi.nlm.nih.gov/27686821/">Napper and Thompson (2016), Marine Pollution Bulletin: fibres released in washing</a></li>
+    <li><a target="_blank" rel="noopener" href="https://ukwir.org/sink-to-river-river-to-tap-review-of-potential-risks-from-microplastics">UKWIR (2019), Sink to river, river to tap</a></li>
+    <li><a target="_blank" rel="noopener" href="https://www.css.cornell.edu/cwmi/compost/physics.html">Cornell Waste Management Institute, compost physics and microorganisms</a></li>
+    <li><a target="_blank" rel="noopener" href="https://waste-management-world.com/artikel/napcor-concerned-over-pla-contamination-of-pet-stream/">Waste Management World (2009), PLA contamination of PET</a></li>
+    <li><a target="_blank" rel="noopener" href="https://doi.org/10.1002/pts.2633">Packaging Technology and Science (2022), PLA in recycled PET (part-funded by a PLA maker)</a></li>
+    <li><a target="_blank" rel="noopener" href="https://store.astm.org/d1909-13.html">ASTM D1909, commercial moisture regain of textile fibres</a></li>
+    <li><a target="_blank" rel="noopener" href="https://icac.org/wp-content/uploads/2026/04/4-Secretariat-Reports.pdf">ICAC (2026), cotton and polyester prices</a></li>
+    <li><a target="_blank" rel="noopener" href="https://finix.aalto.fi/wp-content/uploads/2021/04/Nature_review_Niinimaki-2020.pdf">Niinimäki et al. (2020), Nature Reviews Earth and Environment: fast fashion</a></li>
+    <li><a target="_blank" rel="noopener" href="https://pmc.ncbi.nlm.nih.gov/articles/PMC2935051">Earthworm casts and cellulose-digesting microbes (2010), PMC2935051</a></li>
+    <li><a target="_blank" rel="noopener" href="https://www.materialdatacenter.com/ms/en/Ingeo/NatureWorks+LLC/Ingeo%E2%84%A2+4032D+Film/df428307/5616">NatureWorks Ingeo PLA datasheets, melting points by grade</a></li>
   </ol>
   <p style="margin-top:14px">Visual style after The Dot and the Line (Chuck Jones and Maurice Noble, MGM, 1965).</p>
 </div>
@@ -758,13 +794,14 @@ var DISC = {
   unzip: 'Chemical recycling runs the reaction backwards. Water, glycol or methanol break every link, and the building blocks can be made into PET as good as new.',
   enzyme: 'In a 2020 lab study, an engineered enzyme broke down 90% of PET in 10 hours. The first full-size plant is planned for 2028.',
   separate: 'In one lab study, cotton came out whole while the polyester and elastane broke down. Dyes and finishes slowed the reaction.',
-  pla: 'PLA looks like PET. In bottle recycling, just 0.1% PLA can spoil a batch of PET.',
+  pla: 'PLA looks like PET. Recyclers treat it as contamination: in 2009 US recyclers said more than 0.1% PLA in recycled PET was not acceptable.',
   spring: 'Two polyesters in one filament curl into a spring: stretch without elastane. The maker says it recycles with polyester; ask for proof.',
   rubber: 'In the lab, all-polyester rubbers stretch to about 11 times their length. Not on sale as fibre yet.',
   union: 'Only the polyester took the colour. Cotton and wool need other dyes, so blends are often dyed twice, once for each fibre.',
-  plamelt: 'PLA melts at around 170°C, PET at around 250°C. That is why PLA needs a cool iron.',
+  plamelt: 'PLA melts at about 150 to 180°C, depending on grade; PET at about 250°C. That is why PLA needs a cool iron.',
   memory: 'This is polyester\'s memory. Heat-set at about 180 to 210°C, it keeps a new shape for good. Issey Miyake\'s Pleats Please garments are sewn first, then pleated with heat.',
   compost: 'PLA can be composted, but only in industrial composters held at about 58°C; in a garden heap it barely breaks down.',
+  heap: 'Feeding microbes give off heat and carbon dioxide together. A big compost heap traps the heat, up to about 60°C. In plain soil it escapes.',
   rot: 'Microbes eat cotton. It is cellulose, like leaves, and they turn it into carbon dioxide, water and more microbes. In one compost test, cotton fabrics lost 50 to 77% of their weight in 90 days.',
   blendrot: 'In polycotton, microbes eat the cotton and leave the polyester. In one water test, cotton yarn was 76% broken down after 243 days; polyester, under 5%.',
   breakup: 'Polyester breaks up, not down. Sunlight makes it brittle, so it cracks into ever smaller pieces: microplastics. Out of the sun it lasts longer: PET bottles on the sea floor barely changed for about 15 years.',
@@ -773,7 +810,7 @@ var DISC = {
   jacquard: 'In 1804 Jacquard\'s loom read punched cards to choose which threads to lift. Babbage borrowed the cards for his computing engine. Ada Lovelace wrote that it "weaves algebraical patterns".'
 };
 // short names and where each one hides, for the collection drawer
-var DMETA = { link: ['The chain', 'oil'], y1941: ['Terylene', 'oil'], draw: ['Drawing', 'spin'], trilobal: ['Sparkle', 'shape'], hollow: ['Warmth', 'shape'], channel: ['Wicking', 'shape'], mono: ['Monofilament', 'count'], multi: ['Multifilament', 'count'], micro: ['Microfibre', 'count'], aty: ['Air loops', 'texture'], dty: ['Crimp', 'texture'], staple: ['Staple', 'cut'], twist: ['Twist', 'cut'], snarl: ['Snarl', 'ply'], ply: ['Balance', 'ply'], cotton: ['Core-spun', 'blend'], wool: ['Wool wrap', 'blend'], elastane: ['Elastane', 'blend'], bath: ['Dye bath', 'colour'], melt: ['Dope dyeing', 'colour'], union: ['Dyed twice', 'colour'], wash: ['Shedding', 'wash'], fleece: ['Fleece', 'wash'], bottle: ['Bottles', 'bottle'], jam: ['Jam', 'recycle'], loop: ['The loop', 'recycle'], downcycle: ['Weaker', 'recycle'], unzip: ['Unzip', 'unzip'], enzyme: ['Enzymes', 'unzip'], separate: ['Separating', 'unzip'], pla: ['PLA', 'spot'], compost: ['Compost', 'spot'], spring: ['Spring', 'bend'], rubber: ['Rubber', 'bend'], plamelt: ['Melting point', 'heat'], memory: ['Memory', 'heat'], rot: ['Rot', 'rot'], blendrot: ['Blends', 'rot'], breakup: ['Breaks up', 'rot'], bug: ['PET-eater', 'rot'], claims: ['Biodegradable?', 'rot'], jacquard: ['Punched cards', 'cover'] };
+var DMETA = { link: ['The chain', 'oil'], y1941: ['Terylene', 'oil'], draw: ['Drawing', 'spin'], trilobal: ['Sparkle', 'shape'], hollow: ['Warmth', 'shape'], channel: ['Wicking', 'shape'], mono: ['Monofilament', 'count'], multi: ['Multifilament', 'count'], micro: ['Microfibre', 'count'], aty: ['Air loops', 'texture'], dty: ['Crimp', 'texture'], staple: ['Staple', 'cut'], twist: ['Twist', 'cut'], snarl: ['Snarl', 'ply'], ply: ['Balance', 'ply'], cotton: ['Core-spun', 'blend'], wool: ['Wool wrap', 'blend'], elastane: ['Elastane', 'blend'], bath: ['Dye bath', 'colour'], melt: ['Dope dyeing', 'colour'], union: ['Dyed twice', 'colour'], wash: ['Shedding', 'wash'], fleece: ['Fleece', 'wash'], bottle: ['Bottles', 'bottle'], jam: ['Jam', 'recycle'], loop: ['The loop', 'recycle'], downcycle: ['Weaker', 'recycle'], unzip: ['Unzip', 'unzip'], enzyme: ['Enzymes', 'unzip'], separate: ['Separating', 'unzip'], pla: ['PLA', 'spot'], compost: ['Compost', 'spot'], spring: ['Spring', 'bend'], rubber: ['Rubber', 'bend'], plamelt: ['Melting point', 'heat'], memory: ['Memory', 'heat'], heap: ['Hot heap', 'rot'], rot: ['Rot', 'rot'], blendrot: ['Blends', 'rot'], breakup: ['Breaks up', 'rot'], bug: ['PET-eater', 'rot'], claims: ['Biodegradable?', 'rot'], jacquard: ['Punched cards', 'cover'] };
 var FOUND = {}, NFOUND = 0, NDISC = Object.keys(DISC).length;
 
 // ---------- geometry ----------
@@ -887,7 +924,6 @@ function tangle(cx, cy, rx, ry, n, seed) {
 function heap(cx, cy, rx, ry, seed, n) { var r = rnd(seed), a = []; for (var i = 0; i < (n || 30); i++) { var ang = r() * Math.PI * 2, rr = .25 + r() * .75; a.push(pt(cx + Math.cos(ang) * rx * rr, cy + Math.sin(ang) * ry * rr)); } return a; }
 function segX(a, b, c, d) { var r = (b.x - a.x) * (d.y - c.y) - (b.y - a.y) * (d.x - c.x); if (Math.abs(r) < 1e-9) return false; var t = ((c.x - a.x) * (d.y - c.y) - (c.y - a.y) * (d.x - c.x)) / r, u = ((c.x - a.x) * (b.y - a.y) - (c.y - a.y) * (b.x - a.x)) / r; return t >= 0 && t <= 1 && u >= 0 && u <= 1; }
 function hexRgb(h) { var n = parseInt(h.slice(1), 16); return [n >> 16 & 255, n >> 8 & 255, n & 255]; }
-function mix(a, b, u) { var A = hexRgb(a), B = hexRgb(b); return '#' + [0, 1, 2].map(function (i) { return Math.round(A[i] + (B[i] - A[i]) * clamp(u, 0, 1)).toString(16).padStart(2, '0'); }).join(''); }
 function lum(h) { var c = hexRgb(h).map(function (v) { v /= 255; return v <= .03928 ? v / 12.92 : Math.pow((v + .055) / 1.055, 2.4); }); return .2126 * c[0] + .7152 * c[1] + .0722 * c[2]; }
 
 // fibre cross-sections, as radius at angle
@@ -1050,7 +1086,11 @@ function stage(f) {
   return { t: t, b: b, h: Math.max(80, b - t), m: (t + b) / 2 };
 }
 function $(id) { return document.getElementById(id); }
-function say(el, text) { el.hidden = false; if (el.textContent === text) return; el.textContent = text; el.classList.remove('popin'); void el.offsetWidth; el.classList.add('popin'); }
+// one polite live region reads out results and discoveries that otherwise only show on the canvas
+var ANN = false, annT = 0;
+['pointerdown', 'keydown'].forEach(function (t) { document.addEventListener(t, function () { ANN = true; }, { capture: true, passive: true }); });
+function announce(t) { if (!ANN) return; var el = $('sr-live'); clearTimeout(annT); el.textContent = ''; annT = setTimeout(function () { el.textContent = t; }, 60); }
+function say(el, text) { el.hidden = false; if (el.textContent === text) return; el.textContent = text; announce(text); el.classList.remove('popin'); void el.offsetWidth; el.classList.add('popin'); }
 function setBg(f, name) { f.el.classList.remove('bg-white', 'bg-black', 'bg-blue', 'bg-yellow'); f.el.classList.add('bg-' + name); f.bg = name; }
 function place(el, x, y, w, h) { var v = [x, y, w, h].map(Math.round).join(','); if (el._pv === v) return; el._pv = v; el.style.left = Math.round(x) + 'px'; el.style.top = Math.round(y) + 'px'; if (w != null) el.style.width = Math.round(w) + 'px'; if (h != null) el.style.height = Math.round(h) + 'px'; }
 function countUp(el, to, ms, fmtFn) {
@@ -1067,7 +1107,7 @@ function card(f, kind, text) {
     if (!FOUND[kind]) { FOUND[kind] = true; NFOUND++; renderLabel(); tallyUp(); SND.play('found'); }
     head = 'Discovery · ' + NFOUND + ' of ' + NDISC; text = DISC[kind];
   } else head = kind || 'Try this';
-  c.querySelector('.cl').textContent = head; c.querySelector('.ct').textContent = text;
+  c.querySelector('.cl').textContent = head; c.querySelector('.ct').textContent = text; announce(head + '. ' + text);
   c.classList.remove('reserve', 'show'); void c.offsetWidth; c.classList.add('show'); f.cardT = performance.now();
   f.measure(); if (f.sc.cardLayout) f.sc.layout(f);
 }
@@ -1214,7 +1254,7 @@ var SND = (function () {
     wake: function () { if (on) ctx(); }
   };
 })();
-var STAMP_FX = { 'CLICK': 'click', 'CLICK CLICK': 'click2', 'POP': 'pop', 'CRUNCH': 'crunch', 'THUD': 'thud', 'ZIP!': 'zip', 'WHIRR': 'whirr', 'TWANG': 'twang', 'THREADED': 'chime', 'STRETCH': 'stretch', 'SNIP!': 'snip', 'SLOSH': 'slosh', 'PHEW': 'phew', 'NOPE': 'nope', 'MUNCH': 'munch', 'KNOT!': 'knot', 'KINK!': 'kink', 'HISSS': 'hiss', 'HEAVE': 'heave', 'GLUG GLUG': 'glug', 'BLUB': 'glug', 'FWOOSH': 'whoosh', 'DRIP': 'drip', 'PLIP': 'drip', 'CRACK': 'crack', 'BOOP': 'boop', 'BOING': 'boing', 'GLINT': 'glint', 'BRRR': 'brrr', 'OOPS': 'oops', 'YES!': 'yes', 'BLOOP': 'bloop', 'GLOOP': 'bloop', 'CLUNK!': 'clunk', 'PUFF!': 'puff', 'RATTLE': 'click2' };
+var STAMP_FX = { 'CLICK': 'click', 'CLICK CLICK': 'click2', 'POP': 'pop', 'CRUNCH': 'crunch', 'THUD': 'thud', 'ZIP!': 'zip', 'WHIRR': 'whirr', 'TWANG': 'twang', 'THREADED': 'chime', 'STRETCH': 'stretch', 'SNIP!': 'snip', 'SLOSH': 'slosh', 'PHEW': 'phew', 'NOPE': 'nope', 'MUNCH': 'munch', 'KNOT!': 'knot', 'KINK!': 'kink', 'HISSS': 'hiss', 'STEAM': 'hiss', 'WIGGLE': 'boing', 'HEAVE': 'heave', 'GLUG GLUG': 'glug', 'BLUB': 'glug', 'FWOOSH': 'whoosh', 'DRIP': 'drip', 'PLIP': 'drip', 'CRACK': 'crack', 'BOOP': 'boop', 'BOING': 'boing', 'GLINT': 'glint', 'BRRR': 'brrr', 'OOPS': 'oops', 'YES!': 'yes', 'BLOOP': 'bloop', 'GLOOP': 'bloop', 'CLUNK!': 'clunk', 'PUFF!': 'puff', 'RATTLE': 'click2' };
 function stamp(f, s, x, y) { SND.play(STAMP_FX[s] || 'pop'); if (!f.stamps) f.stamps = []; if (f.stamps.length > 3) f.stamps.shift(); f.stamps.push({ s: s, x: clamp(x, 70, f.w - 70), y: clamp(y, 40, f.h - 40), t: f.t, r: (Math.random() - .5) * .34 }); }
 function drawStamps(c, f) {
   if (!f.stamps || !f.stamps.length) return;
@@ -1444,7 +1484,7 @@ SCENES.guess = {
 // A black field of oil. Each tap lifts two building blocks out and links them onto the thread.
 SCENES.oil = {
   n: 290,
-  init: function (f) { f.s.links = 0; f.s.fly = []; f.s.next = .5; },
+  init: function (f) { f.s.links = 0; f.s.fly = []; f.s.next = .5; var self = this; $('oil-key').addEventListener('click', function () { self.tap(f); f.touched = true; announce(f.s.links + ' links in the chain'); }); },
   surf: function (f) { return (f.named.top ? f.named.top.b : f.h * .35) + 28; },
   // the word sits at the foot of the stage; the links attach to the rising chain above it
   pet: function (f) { var st = stage(f), H = clamp(st.h * .17, 38, 66), ww = wordW('PET', H); return { H: H, x0: .58 * f.w - ww / 2, y0: st.b - H - 22, w: ww }; },
@@ -1982,7 +2022,7 @@ SCENES.blend = {
       else {
         var wool = c.kind === 'wool', col = natural(c.kind, f.bg).col, pts = wool ? offsetBy(p, nm, function (j) { return Math.sin(j * 1.6) * 3.4; }) : p;
         strokeP(ctx, pts, KU.k, wool ? 17 : 13); strokeP(ctx, pts, col, wool ? 13 : 9.5);
-        if (!wool) { ctx.strokeStyle = '#bfb08a'; ctx.lineWidth = 1.4; ctx.beginPath(); for (i = 1; i < c.n - 1; i++) { var q1 = p[i], n1 = nm[i]; ctx.moveTo(q1.x - n1.x * 4 - n1.y * 2, q1.y - n1.y * 4 + n1.x * 2); ctx.lineTo(q1.x + n1.x * 4 + n1.y * 2, q1.y + n1.y * 4 - n1.x * 2); } ctx.stroke(); }
+        if (!wool) { ctx.strokeStyle = KU.g; ctx.lineWidth = 1.4; ctx.beginPath(); for (i = 1; i < c.n - 1; i++) { var q1 = p[i], n1 = nm[i]; ctx.moveTo(q1.x - n1.x * 4 - n1.y * 2, q1.y - n1.y * 4 + n1.x * 2); ctx.lineTo(q1.x + n1.x * 4 + n1.y * 2, q1.y + n1.y * 4 - n1.x * 2); } ctx.stroke(); }
         ctx.strokeStyle = col; ctx.lineWidth = 1.6; ctx.beginPath();
         for (i = 1; i < c.n; i++) {
           var sd = hash(i, 51) > .5 ? 1 : -1, q = p[i];
@@ -2032,6 +2072,7 @@ SCENES.colour = {
   hide: function (f) { var big = f.h + 40; if (f.s.m !== 'melt') return [big, big]; var x = this.geo(f).ex; return [x.ht + 2, x.sb + 1]; },
   // what goes in is plain; what comes out of the spinneret carries the colour, and it spreads on down the thread
   split: function (f) {
+    if (f.s.m === 'bath' && f.s.u > 0 && f.s.u < 1) { var v = this.geo(f).vat, yb = v.y + v.h - f.s.u * (v.y + v.h - this.geo(f).st.t + 30); return { zones: [{ a: -10, b: yb, o: { colour: null } }, { a: yb, b: f.h + 10, o: { colour: this.target(f) } }] }; }
     if (f.s.m !== 'melt') return null;
     var x = this.geo(f).ex, e = ease((f.t - f.s.mt - 1.2) / 1.2), y1 = x.sb + e * (f.h + 10 - x.sb), plain = { colour: null };
     return { zones: [{ a: -10, b: x.sb, o: plain }, { a: x.sb, b: y1, o: { colour: this.target(f) } }, { a: y1, b: f.h + 10, o: plain }] };
@@ -2040,7 +2081,7 @@ SCENES.colour = {
   tick: function (f) {
     if (f.s.m === 'bath') { var r = f.s.T >= 125 ? .5 : f.s.T >= 100 ? .04 : 0; f.s.u = clamp(f.s.u + r / 60, 0, 1); }
     if (f.s.m === 'melt') { f.s.u = clamp((f.t - f.s.mt - .6) / 1.6, 0, 1); this.feed(f); }
-    if (f.s.m && f.s.u > 0) { G.mix = mix(KU.b, this.target(f), f.s.u); }
+    if (f.s.m && f.s.u > 0) G.mix = f.s.u >= 1 ? this.target(f) : null;
     if (f.s.m && f.s.u >= 1 && !f.s.done) {
       f.s.done = true; G.colour = this.target(f); G.dye = f.s.m; card(f, f.s.m); renderLabel(); var gs = this.geo(f), gx = gs.ex;
       if (f.s.m === 'bath') stamp(f, 'BLOOP', .4 * f.w, gs.st.t + gs.st.h * .5); else stamp(f, 'GLOOP', gx.x + gx.bw / 2 + 64, (gx.bt + gx.sp) / 2);
@@ -2060,7 +2101,7 @@ SCENES.colour = {
   },
   back: function (ctx, f) {
     var g = this.geo(f), v = g.vat;
-    if (f.s.m === 'bath') { var c = mix(this.target(f), KU.w, f.s.u * .75); wRect(ctx, KU.k, 2, v.x, v.y, v.w + 16, v.h + 16); ctx.fillStyle = KU.k; ctx.fillRect(v.x - 8, v.y - 8, v.w + 16, v.h + 16); ctx.fillStyle = c; ctx.fillRect(v.x, v.y + 6, v.w, v.h - 6); wFade(ctx, KU.k, v.x, v.y + v.h * .5, v.w, v.h * .5, 1, 2);
+    if (f.s.m === 'bath') { wRect(ctx, KU.k, 2, v.x, v.y, v.w + 16, v.h + 16); ctx.fillStyle = KU.k; ctx.fillRect(v.x - 8, v.y - 8, v.w + 16, v.h + 16); ctx.fillStyle = this.target(f); ctx.fillRect(v.x, v.y + 6, v.w, v.h - 6); wRect(ctx, KU.w, Math.round(f.s.u * 3), v.x, v.y + 6, v.w, v.h - 6); wFade(ctx, KU.k, v.x, v.y + v.h * .5, v.w, v.h * .5, 1, 2);
       if (f.s.T >= 100) for (var i = 0; i < 8; i++) { var bx = v.x + hash(i, 1) * v.w, by = v.y + v.h - ((f.t * (20 + f.s.T / 4) + i * 30) % v.h); disc(ctx, bx, by, 3 + hash(i, 2) * 3, KU.w); } }
     if (f.s.m === 'melt') this.extruder(ctx, f, g.ex);
   },
@@ -2076,10 +2117,10 @@ SCENES.colour = {
     var np = clamp(Math.floor(f.s.heap / 5) + 2, 2, 7);
     for (k = 0; k < np; k++) pellet(ctx, x.x + (k - (np - 1) / 2) * 15, x.ht - 1 + (k % 2) * 5, 0, k % 3 === 1 ? tc : KU.w);
     // one window on the barrel: it fills with melt from the top, plain at first, then the colour, while the screw turns
-    var wx = bl + 8, ww = x.bw - 16, wy = top + 8, wh = H - 14, fill = clamp((dt - .5) / 1.3, 0, 1), melt = mix(KU.w, tc, f.s.u);
-    ctx.fillStyle = KU.g; ctx.fillRect(wx, wy, ww, wh); ctx.fillStyle = melt; ctx.fillRect(wx, wy, ww, wh * fill);
+    var wx = bl + 8, ww = x.bw - 16, wy = top + 8, wh = H - 14, fill = clamp((dt - .5) / 1.3, 0, 1), dark = tc === KU.k && f.s.u > .5;
+    ctx.fillStyle = KU.g; ctx.fillRect(wx, wy, ww, wh); ctx.fillStyle = KU.w; ctx.fillRect(wx, wy, ww, wh * fill); wRect(ctx, tc, Math.round(f.s.u * 6), wx, wy, ww, wh * fill);
     ctx.save(); ctx.beginPath(); ctx.rect(wx, wy, ww, wh); ctx.clip();
-    ctx.strokeStyle = lum(melt) < .2 && fill > .5 ? KU.w : KU.k; ctx.lineWidth = 4; var sl = run ? (f.t * 50) % 26 : 0;
+    ctx.strokeStyle = dark && fill > .5 ? KU.w : KU.k; ctx.lineWidth = 4; var sl = run ? (f.t * 50) % 26 : 0;
     for (var y2 = wy - 26 + sl; y2 < wy + wh; y2 += 26) { ctx.beginPath(); ctx.moveTo(wx, y2); ctx.lineTo(wx + ww, y2 + 12); ctx.stroke(); }
     ctx.restore();
     ctx.restore();
@@ -2095,28 +2136,57 @@ SCENES.colour = {
 };
 
 // A tug of war. The thread is the rope; every reason pulls the knot.
+// Each reason pulls by its evidence (1 to 3 dots), and by half as much where it matters less for the garment.
+// Ratings and sources are in the notes; the garment judgements are ours, to argue with.
+var TUG = {
+  garments: ['raincoat', 'gym top', 'T-shirt'],
+  ev: [3, 3, 3, 3, 2, 3, 3, 3, 1, 3],
+  rel: [[1, 1, .5], [1, 1, 1], [1, 1, .5], [1, 1, 1], [1, 1, 1], [1, 1, 1], [1, 1, 1], [.5, 1, 1], [.5, 1, 1], [1, 1, 1]],
+  word: ['', 'Weak evidence', 'Some evidence', 'Strong evidence']
+};
 SCENES.tug = {
   n: 200,
   bottomBg: function () { return 'yellow'; },
   demo: function (f) { var b = f.el.querySelector('.cons .chip-btn'); return b ? { kind: 'tap', pts: [domPt(f, b, 0, 6)], dur: 1.9 } : null; },
   init: function (f) {
-    f.s.np = 0; f.s.nc = 0; f.s.u = .5; var self = this;
-    f.el.querySelectorAll('.chip-btn').forEach(function (b) { b.addEventListener('click', function () {
+    f.s.np = 0; f.s.nc = 0; f.s.u = .5; f.s.g = 0; var self = this;
+    f.el.querySelectorAll('.chip-btn').forEach(function (b) { b.insertAdjacentHTML('beforeend', '<span class="ev" aria-hidden="true"></span>'); b.addEventListener('click', function () {
       var on = b.getAttribute('aria-pressed') !== 'true'; b.setAttribute('aria-pressed', on);
-      var pro = !!b.closest('.pros'); self.count(f); f.chain.kick((pro ? -1 : 1) * (on ? 1 : -1) * 5, 0);
+      var pro = !!b.closest('.pros'), k = +b.dataset.k; self.count(f); f.chain.kick((pro ? -1 : 1) * (on ? 1 : -1) * 2.5 * self.pull(f, k), 0);
       if (on) { var kq = f.chain.p[self.knotAt(f)]; stamp(f, 'HEAVE', kq.x, kq.y - 56); }
     }); });
+    f.el.querySelectorAll('[data-g]').forEach(function (b) { b.addEventListener('click', function () {
+      var was = f.s.verdict; f.s.g = +b.dataset.g; f.el.querySelectorAll('[data-g]').forEach(function (x) { x.setAttribute('aria-pressed', x === b); });
+      self.dots(f); self.count(f); f.chain.kick((f.s.nc - f.s.np) * 2, 0); f.s.swapped = f.s.np + f.s.nc > 0 && was !== f.s.verdict;
+      self.count(f);
+    }); });
+    this.dots(f);
+  },
+  pull: function (f, k) { return TUG.ev[k] * TUG.rel[k][f.s.g]; },
+  // the dots on each reason: evidence, halved where it matters less for this garment
+  dots: function (f) {
+    var g = f.s.g, gn = TUG.garments[g];
+    f.el.querySelectorAll('.chip-btn').forEach(function (b) {
+      var k = +b.dataset.k, half = TUG.rel[k][g] < 1, h = '';
+      for (var i = 0; i < TUG.ev[k]; i++) h += '<i class="' + (half ? 'h' : 'f') + '"></i>';
+      b.querySelector('.ev').innerHTML = h;
+      b.setAttribute('aria-label', b.firstChild.textContent + '. ' + TUG.word[TUG.ev[k]] + (half ? '; matters less for a ' : '; matters fully for a ') + gn + '.');
+    });
   },
   count: function (f) {
-    var p = f.el.querySelectorAll('.pros [aria-pressed="true"]').length, c = f.el.querySelectorAll('.cons [aria-pressed="true"]').length;
-    f.s.np = p; f.s.nc = c;
-    say($('tug-say'), p + c === 0 ? 'Tap reasons' : p === c ? 'A draw' : p > c ? 'For wins' : 'Against wins');
-    $('tug-p').textContent = p + c === 0 ? 'Each one pulls the knot. Would it pull the same way for a raincoat as for a T-shirt?' : 'Now picture a swimsuit. Which reasons would you swap?';
+    var self = this, p = 0, c = 0, n = 0, gn = TUG.garments[f.s.g];
+    f.el.querySelectorAll('.chip-btn[aria-pressed="true"]').forEach(function (b) { var w = self.pull(f, +b.dataset.k); n++; if (b.closest('.pros')) p += w; else c += w; });
+    f.s.np = p; f.s.nc = c; f.s.verdict = n ? (p === c ? 0 : p > c ? 1 : -1) : null;
+    var G2 = gn.charAt(0).toUpperCase() + gn.slice(1);
+    say($('tug-say'), !n ? 'Tap reasons' : p === c ? 'A draw' : p > c ? 'For wins' : 'Against wins'); announce(G2 + ': ' + $('tug-say').textContent);
+    $('tug-p').textContent = !n ? 'Dots show the evidence. Half dots: matters less for this garment.'
+      : f.s.swapped ? 'Same reasons, new verdict. Is it polyester, or how we use it?'
+      : 'Switch garment. Which reasons change?';
   },
   rope: function (f) { var lc = f.named.lc, rc = f.named.rc, top = Math.max(lc ? lc.b : 0, rc ? rc.b : 0), bot = f.named.bottom ? f.named.bottom.t : f.h * .9; return { y: top + (bot - top) * .45, top: top, bot: bot }; },
   path: function (f) { var r = this.rope(f), W = f.w; return [pt(.45 * W, r.top + 6), pt(18, r.y - 40), pt(14, r.y), pt(W - 14, r.y), pt(W - 18, r.y + 40), pt(.87 * W, r.bot - 8)]; },
   k: 0.1,
-  tick: function (f) { var tgt = clamp(.5 + (f.s.nc - f.s.np) * .075, .12, .88); f.s.u += (tgt - f.s.u) * .06; },
+  tick: function (f) { var tgt = clamp(.5 + (f.s.nc - f.s.np) * .03, .12, .88); f.s.u += (tgt - f.s.u) * .06; },
   knotAt: function (f) { var r = this.rope(f), x = 14 + f.s.u * (f.w - 28), c = f.chain, best = 1, bd = 1e9; for (var i = 1; i < c.n - 1; i++) { var q = c.p[i]; if (Math.abs(q.y - r.y) > 60) continue; var d = Math.abs(q.x - x); if (d < bd) { bd = d; best = i; } } return best; },
   back: function (ctx, f) {
     var r = this.rope(f);
@@ -2132,7 +2202,8 @@ SCENES.tug = {
 // The washing machine is the interface. Finer fibres and loose staple shed more.
 SCENES.wash = {
   n: 180,
-  init: function (f) { f.s.rot = 0; f.s.until = 0; f.s.shown = -1; f.parts = []; var self = this; $('wash-go').addEventListener('click', function () { self.wash(f); }); },
+  init: function (f) { f.s.rot = 0; f.s.until = 0; f.s.shown = -1; f.parts = []; var self = this; $('wash-go').addEventListener('click', function () { self.wash(f); });
+    $('wash-pop').addEventListener('click', function () { var q = (f.s.bub || []).filter(function (q) { return !q.dead; })[0]; if (q) self.pop(f, q, true); else announce('No bubbles yet. Press Wash first.'); }); },
   rate: function () { return (G.fil >= 144 ? 2 : 1) * (G.staple ? 1.7 - G.twist * .08 : 1); },
   wash: function (f) { f.s.until = f.t + 3.4; this.reveal(f); var g = this.geo(f); stamp(f, 'SLOSH', g.cx - 30, g.cy - g.r - 26); },
   bottomBg: function () { return 'blue'; },
@@ -2147,7 +2218,7 @@ SCENES.wash = {
     q.dead = true; f.s.pops.push({ x: q.x, y: q.y, r: q.r, t: f.t });
     if (!byYou) return; SND.play('pop'); f.s.popped = (f.s.popped || 0) + 1;
     if (f.s.popped === 1 || f.s.popped % 6 === 0) stamp(f, 'POP', q.x, q.y - q.r - 18);
-    if (q.fib) { f.parts.push({ x: q.x, y: q.y, px: q.x, py: q.y - .5, a: Math.random() * Math.PI }); if (!f.s.toldB) { f.s.toldB = true; card(f, 'Caught one', 'That bubble was carrying a microfibre. Pop it, and the fibre still goes down the drain with the water.'); } }
+    if (!f.s.toldB) { f.s.toldB = true; card(f, 'Pop!', 'Fun, but it won\'t save a fibre: shed fibres leave with the rinse water. Treatment works catch most, and they end up in sludge spread on farmland.'); }
   },
   reveal: function (f) {
     if (!f.s.rev) { f.s.rev = true; card(f, 'wash'); }
@@ -2176,7 +2247,7 @@ SCENES.wash = {
     f.parts = f.parts.filter(function (o) { var vx = (o.x - o.px) * .985, vy = (o.y - o.py) * .985 + .012; o.px = o.x; o.py = o.y; o.x += vx + Math.sin(t * 2 + o.a * 5) * .03; o.y += vy; o.a += .02; return o.y < H + 10; });
     // bubbles rise out of the drum and the water while it washes, and for a little after
     var sa = this.suds(f), wl0 = this.water(f); if (!f.s.bub) { f.s.bub = []; f.s.pops = []; }
-    if (sa > 0 && !RM && f.s.bub.length < 26 && Math.random() < (washing ? .22 : .05) * sa) { var inDrum = Math.random() < .5, an = (30 + Math.random() * 120) * D; f.s.bub.push(inDrum ? { x: g.cx + Math.cos(an) * g.r * .7, y: g.cy + Math.sin(an) * g.r * .7, r: 5 + Math.random() * 8, vy: -.5 - Math.random() * .7, ph: Math.random() * 9, fib: Math.random() < .3, t: f.t } : { x: f.w * (.08 + Math.random() * .84), y: wl0 - 4, r: 6 + Math.random() * 10, vy: -.4 - Math.random() * .8, ph: Math.random() * 9, fib: Math.random() < .3, t: f.t }); }
+    if (sa > 0 && !RM && f.s.bub.length < 26 && Math.random() < (washing ? .22 : .05) * sa) { var inDrum = Math.random() < .5, an = (30 + Math.random() * 120) * D; f.s.bub.push(inDrum ? { x: g.cx + Math.cos(an) * g.r * .7, y: g.cy + Math.sin(an) * g.r * .7, r: 5 + Math.random() * 8, vy: -.5 - Math.random() * .7, ph: Math.random() * 9, t: f.t } : { x: f.w * (.08 + Math.random() * .84), y: wl0 - 4, r: 6 + Math.random() * 10, vy: -.4 - Math.random() * .8, ph: Math.random() * 9, t: f.t }); }
     var self = this; f.s.bub.forEach(function (q) { q.y += q.vy; q.x += Math.sin(f.t * 2 + q.ph) * .5; q.r = Math.min(q.r + .01, 20); if (q.y < q.r + 8 || f.t - q.t > 9) self.pop(f, q, false); });
     f.s.bub = f.s.bub.filter(function (q) { return !q.dead; }); f.s.pops = f.s.pops.filter(function (o) { return f.t - o.t < .35; });
     if (G.shed !== f.s.shown) { f.s.shown = G.shed; $('wash-n').textContent = String(G.shed).padStart(3, '0') + ' fibres'; }
@@ -2197,7 +2268,7 @@ SCENES.wash = {
   },
   front: function (ctx, f) {
     var wl = this.water(f); ctx.lineWidth = 2;
-    (f.s.bub || []).forEach(function (q) { bubble(ctx, q.x, q.y, q.r); if (q.fib) { ctx.strokeStyle = KU.b; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(q.x - q.r * .45, q.y + q.r * .2); ctx.quadraticCurveTo(q.x, q.y - q.r * .4, q.x + q.r * .45, q.y + q.r * .1); ctx.stroke(); } });
+    (f.s.bub || []).forEach(function (q) { bubble(ctx, q.x, q.y, q.r); });
     (f.s.pops || []).forEach(function (o) { var u = (f.t - o.t) / .35; ctx.strokeStyle = KU.b; ctx.lineWidth = 2; ctx.globalAlpha = 1 - u; for (var k = 0; k < 6; k++) { var an = k * Math.PI / 3; ctx.beginPath(); ctx.moveTo(o.x + Math.cos(an) * o.r * (1 + u * .4), o.y + Math.sin(an) * o.r * (1 + u * .4)); ctx.lineTo(o.x + Math.cos(an) * o.r * (1.5 + u), o.y + Math.sin(an) * o.r * (1.5 + u)); ctx.stroke(); } ctx.globalAlpha = 1; });
     f.parts.forEach(function (o) { ctx.strokeStyle = o.y > wl ? KU.w : KU.b; ctx.beginPath(); ctx.moveTo(o.x, o.y); ctx.lineTo(o.x + Math.cos(o.a) * 6, o.y + Math.sin(o.a) * 6); ctx.stroke(); });
   }
@@ -2356,7 +2427,9 @@ SCENES.unzip = {
     return null;
   },
   tap: function (f, x, y) { var g = this.geo(f); for (var k = 0; k < 3; k++) if (Math.hypot(g.fl[k].x - x, g.fl[k].y + g.fh / 2 - y) < g.fw * .7) this.pour(f, ['water', 'glycol', 'enzyme'][k]); },
-  liquid: function (f) { var c = this.R[f.s.r][3]; return f.s.hadC ? mix(c, f.s.hadC, .55 * f.s.u) : c; },
+  liquid: function (f) { return this.R[f.s.r][3]; },
+  // dye leaches out as droplets of its own colour, never a mixed tint
+  stain: function (f) { var c = f.s.hadC, l = this.liquid(f); return c === l ? KU.k : c; },
   path: function (f) { var g = this.geo(f), W = f.w, a = pt(.87 * W, g.st.t - 16); return [a].concat(swing(a, pt(g.tx, g.vy - 4), 'zig'), [pt(g.tx, g.vb + 4), pt(g.tx + 10, g.vb + 26)]); },
   k: 0.1,
   hide: function (f) {
@@ -2391,7 +2464,10 @@ SCENES.unzip = {
   },
   back: function (ctx, f) {
     var g = this.geo(f), self = this, lv = this.level(f);
-    if (lv < g.vb - 1) { ctx.fillStyle = this.liquid(f); ctx.fillRect(g.vx, lv, g.vw, g.vb - lv); wFade(ctx, KU.k, g.vx, lv + (g.vb - lv) * .45, g.vw, (g.vb - lv) * .55, 1, 2); }
+    if (lv < g.vb - 1) { ctx.fillStyle = this.liquid(f); ctx.fillRect(g.vx, lv, g.vw, g.vb - lv); wFade(ctx, KU.k, g.vx, lv + (g.vb - lv) * .45, g.vw, (g.vb - lv) * .55, 1, 2);
+      if (f.s.hadC && f.s.u > 0) { var sc = this.stain(f); ctx.save(); ctx.beginPath(); ctx.rect(g.vx, lv, g.vw, g.vb - lv); ctx.clip();
+        for (var ci = 0; ci < Math.round(6 + 16 * f.s.u); ci++) { var cr = 2.5 + hash(ci, 71) * 4, cx = g.vx + g.vw * (.06 + .88 * hash(ci, 72)) + Math.sin(f.t * .6 + ci) * 8, cy = lv + (g.vb - lv) * (.15 + .7 * hash(ci, 73)) + Math.cos(f.t * .5 + ci * 2) * 6; disc(ctx, cx, cy, cr + 1.2, KU.k); disc(ctx, cx, cy, cr, sc); }
+        ctx.restore(); } }
     ctx.strokeStyle = KU.w; ctx.lineWidth = 4; ctx.lineJoin = 'round'; ctx.beginPath(); ctx.moveTo(g.vx, g.vy); ctx.lineTo(g.vx, g.vb); ctx.lineTo(g.tx - 12, g.vb); ctx.moveTo(g.tx + 12, g.vb); ctx.lineTo(g.vx + g.vw, g.vb); ctx.lineTo(g.vx + g.vw, g.vy); ctx.stroke();
     ['water', 'glycol', 'enzyme'].forEach(function (r, k) { place(f.el.querySelector('[data-r="' + r + '"]'), g.fl[k].x - g.fw / 2 - 8, g.fl[k].y - 6, g.fw + 16, g.fh + 26); });
   },
@@ -2410,7 +2486,7 @@ SCENES.unzip = {
     if (f.s.hadP && f.s.u > .4 && !f.s.rb) {
       // the cotton result is from a lab study; for wool we found no data, and say so
       var sy0 = Math.max(lv, g.vy) + 22;
-      if (f.s.hadP === 'cotton') { var pts = []; for (var i = 0; i < 26; i++) pts.push(pt(g.vx + 14 + i * (g.vw * .45) / 25, sy0 + Math.sin(i * .7 + f.t * 2) * 5)); drawSquiggle(ctx, { p: pts }, f.t, lum(this.liquid(f)) > .45 ? KU.k : '#e8e1cf'); }
+      if (f.s.hadP === 'cotton') { var pts = []; for (var i = 0; i < 26; i++) pts.push(pt(g.vx + 14 + i * (g.vw * .45) / 25, sy0 + Math.sin(i * .7 + f.t * 2) * 5)); drawSquiggle(ctx, { p: pts }, f.t, lum(this.liquid(f)) > .45 ? KU.k : KU.w); }
       var tag = f.s.hadP === 'cotton' ? 'Cotton comes out whole' : 'Wool? No data found';
       ctx.font = '700 13px ' + FONT; var tw = ctx.measureText(tag).width; ctx.fillStyle = KU.k; ctx.fillRect(g.vx + 6, g.vb - 30, tw + 14, 22); ctx.fillStyle = KU.w; ctx.textAlign = 'left'; ctx.fillText(tag, g.vx + 13, g.vb - 14);
     }
@@ -2552,10 +2628,11 @@ SCENES.heat = {
 // Bury it. Microbes eat cellulose; polyester stays whole underground, and in the sun it breaks up instead.
 var ROT = {
   num: [0, 1, 3, 6, 1, 15, AGE],
-  cap: ['days: just buried', 'month underground', 'months underground', 'months underground', 'year underground', 'years underground', 'years: since 1941'],
+  cap: ['days: just buried', 'month in the heap', 'months in the heap', 'months in the heap', 'year in the heap', 'years in the heap', 'years: since 1941'],
   say: ['just buried', '1 month', '3 months', '6 months', '1 year', '15 years', AGE + ' years, since 1941'],
   cot: [1, .72, .38, .1, 0, 0, 0],
-  bits: [1, 1, 1, 1, 3, 10, 26]
+  bits: [1, 1, 1, 1, 3, 10, 26],
+  heat: [15, 60, 48, 30, 16, 15, 15]
 };
 function lerpA(A, u) { u = clamp(u, 0, A.length - 1); var i = Math.floor(u), j = Math.min(A.length - 1, i + 1); return A[i] + (A[j] - A[i]) * (u - i); }
 // an original 1-bit microbe, eyes and wriggling legs
@@ -2571,6 +2648,7 @@ SCENES.rot = {
     f.time = scrub($('rot-n'), { value: 0, snap: [0, 1, 2, 3, 4, 5, 6], fmt: function (v) { return String(ROT.num[v]); }, cap: function (v) { return ROT.cap[v]; }, onChange: function (v) { self.set(f, v); } });
     $('rot-n').setAttribute('aria-valuetext', ROT.say[0]);
     $('rot-bug').addEventListener('click', function () { var b = f.s.bugs[(Math.random() * f.s.bugs.length) | 0]; if (b) self.offer(f, b); });
+    $('rot-worm').addEventListener('click', function () { var w = (f.s.worms || [])[(Math.random() * 2) | 0]; if (w) { self.wiggle(f, w); announce('The worm wriggles off. Worms mix the soil and leave casts full of microbes; fungi and bacteria do most of the work on cotton.'); } });
   },
   // fixed at layout, so a tall card doesn't move the ground
   geo: function (f) {
@@ -2591,7 +2669,7 @@ SCENES.rot = {
   },
   set: function (f, v) {
     var up = v > f.s.s, g = this.geo(f); f.s.s = v; if (v > G.buried) { G.buried = v; renderLabel(); }
-    $('rot-n').setAttribute('aria-valuetext', ROT.say[v]);
+    $('rot-n').setAttribute('aria-valuetext', ROT.say[v] + ', heap about ' + ROT.heat[v] + '°C');
     if (!up) return;
     if (v >= 1 && !f.s.munch) { f.s.munch = true; stamp(f, 'MUNCH', .42 * f.w, g.r1 - 30); }
     if (v >= 2) this.find(f, 'rot');
@@ -2603,6 +2681,7 @@ SCENES.rot = {
   find: function (f, k) { if (!FOUND[k] && f.s.q.indexOf(k) < 0) f.s.q.push(k); },
   // the sun crosses the sky once for every step of time you drag through; at rest it sits high on the right
   sunAt: function (f) { var g = this.geo(f), W = f.w, ph = ((f.s.u + .7) % 1 + 1) % 1, top = g.st.t + 26, hz = g.gy + 26; return { x: -.06 * W + 1.12 * W * ph, y: hz - (hz - top) * Math.sin(Math.PI * ph), up: Math.sin(Math.PI * ph) }; },
+  wiggle: function (f, w) { w.wig = f.t; w.d = -w.d; stamp(f, 'WIGGLE', w.x, w.y - 34); f.touched = true; f.demo = null; },
   // a microbe tries your polyester, and gives up
   offer: function (f, b) {
     var g = this.geo(f), c = f.chain, q = null, qd = 1e9;
@@ -2611,7 +2690,7 @@ SCENES.rot = {
     f.touched = true; f.demo = null;
     if (!FOUND.bug) { card(f, 'bug'); f.s.qt = f.t; }
   },
-  tap: function (f, x, y) { var best = null, bd = 30; f.s.bugs.forEach(function (b) { var d = Math.hypot(b.x - x, b.y - y); if (d < bd) { bd = d; best = b; } }); if (best) this.offer(f, best); },
+  tap: function (f, x, y) { var w = (f.s.worms || []).filter(function (w) { return Math.hypot(w.x - x, w.y - y) < 28; })[0]; if (w) { this.wiggle(f, w); return; } var best = null, bd = 30; f.s.bugs.forEach(function (b) { var d = Math.hypot(b.x - x, b.y - y); if (d < bd) { bd = d; best = b; } }); if (best) this.offer(f, best); },
   demo: function (f) { if (f.s.s > 0) return null; var a = domPt(f, $('rot-n')); return { kind: 'drag', pts: [a, pt(a.x, a.y - 100)], dur: 2.6 }; },
   // in at the top, a zigzag root into the ground, a buried loop, and out under the soil
   path: function (f) {
@@ -2627,19 +2706,26 @@ SCENES.rot = {
     f.s.u = RM ? s : f.s.u + (s - f.s.u) * .045; if (Math.abs(s - f.s.u) < .003) f.s.u = s;
     var u = f.s.u, cl = lerpA(ROT.cot, u), eating = s > u + .01 && cl > .02;
     if (f.s.q.length && f.t - f.s.qt > 3.6) { card(f, f.s.q.shift()); f.s.qt = f.t; }
-    // eaten cotton leaves as carbon dioxide
-    if (eating && !RM && Math.random() < .45) { var row = Math.random() < .5 ? f.cot : f.pc, q = row.p[(Math.random() * row.n) | 0]; f.parts.push({ x: q.x, y: q.y, r: 1.5 + Math.random() * 2.5, v: .5 + Math.random() * .6 }); }
+    // feeding microbes breathe out carbon dioxide, and the same feeding heats the heap: more CO2, more heat
+    var tH = lerpA(ROT.heat, u) + (eating ? 6 : 0); f.s.heat = RM || f.s.heat == null ? tH : f.s.heat + (tH - f.s.heat) * .02;
+    var hot = clamp((f.s.heat - 15) / 45, 0, 1), busy = eating || (cl > .02 && hot > .2);
+    if (hot > .78 && !f.s.steamed) { f.s.steamed = true; stamp(f, 'STEAM', .62 * W, g.gy - 40); this.find(f, 'heap'); }
+    if (!RM && Math.random() < hot * .5 + (eating ? .3 : 0)) { var src = busy && f.s.bugs.length ? f.s.bugs[(Math.random() * f.s.bugs.length) | 0] : null, row = Math.random() < .5 ? f.cot : f.pc, q = src && src.y > g.r1 - 20 ? src : row.p[(Math.random() * row.n) | 0]; f.parts.push({ x: q.x, y: q.y - 6, r: 1.5 + Math.random() * 2.5, v: .5 + Math.random() * .6 }); }
     f.parts = f.parts.filter(function (b) { b.y -= b.v; b.x += Math.sin(b.y * .12) * .3; if (b.y > g.gy + 3) return true; if (b.x > .6 * W && f.s.puffs.length < 2 && Math.random() < .2) f.s.puffs.push({ x: b.x, t: f.t }); return false; });
     f.s.puffs = f.s.puffs.filter(function (p) { return f.t - p.t < 1.6; });
-    // worms eat dead plant matter: they head for the cotton while there is any, and leave casts behind
+    // a hot heap steams
+    f.s.steam = (f.s.steam || []).filter(function (m) { return f.t - m.t < 2.4; });
+    if (!RM && hot > .45 && f.s.steam.length < 7 && Math.random() < hot * .08) f.s.steam.push({ x: (.08 + .84 * Math.random()) * W, t: f.t, ph: Math.random() * 6 });
+    // worms eat dead plant matter: they head for the cotton while there is any, and leave casts behind; tap one and it wriggles off
     (f.s.worms || []).forEach(function (w, i) {
-      if (!RM) { w.x += w.d * (cl > .05 ? .45 : .3); w.ph += .12; }
+      var wig = w.wig && f.t - w.wig < 1.2;
+      if (!RM) { w.x += w.d * (wig ? 1.6 : cl > .05 ? .45 : .3); w.ph += wig ? .55 : .12; }
       if (w.x < 24 || w.x > W - 24) { w.d = -w.d; w.x = clamp(w.x, 24, W - 24); w.ty = cl > .05 ? (i ? g.r1 : g.r2) + 6 : g.gy + 30 + Math.random() * (g.r3 - g.gy); }
       w.y += (w.ty - w.y) * .01;
-      if (cl > .05 && eating && Math.random() < .03) { (f.s.casts = f.s.casts || []).push({ x: w.x - w.d * 50, y: w.y + 6 }); if (f.s.casts.length > 24) f.s.casts.shift(); }
+      if (cl > .05 && busy && Math.random() < .03) { (f.s.casts = f.s.casts || []).push({ x: w.x - w.d * 50, y: w.y + 6 }); if (f.s.casts.length > 24) f.s.casts.shift(); }
     });
-    // microbes multiply where there is food, and thin out when it has gone
-    if (eating && f.s.bugs.length < 13 && Math.random() < .02) { var mum = f.s.bugs[(Math.random() * f.s.bugs.length) | 0]; f.s.bugs.push({ x: mum.x + 6, y: mum.y, tx: mum.x + 20, ty: mum.y, tt: f.t + 1, ph: 0 }); }
+    // microbes multiply where there is food, splitting in two, and thin out when it has gone
+    if (busy && f.s.bugs.length < 13 && Math.random() < .01 + hot * .02) { var mum = f.s.bugs[(Math.random() * f.s.bugs.length) | 0]; f.s.bugs.push({ x: mum.x, y: mum.y, tx: mum.x + 22, ty: mum.y + 4, tt: f.t + 1, ph: 0, born: f.t }); mum.tx = mum.x - 22; mum.tt = f.t + 1; }
     if (cl < .02 && f.s.bugs.length > 7 && Math.random() < .01) f.s.bugs.pop();
     f.s.bugs.forEach(function (b, i) {
       if (f.t > b.tt) {
@@ -2648,9 +2734,10 @@ SCENES.rot = {
         b.tt = f.t + 1.4 + Math.random() * 2.4;
       }
       if (b.nope && f.t > b.nope) { b.nope = 0; stamp(f, 'NOPE', b.x, b.y - 34); b.tx = b.x + (Math.random() - .5) * 90; b.ty = b.y - 26; b.tt = f.t + 1.2; }
-      var sp = RM ? 0 : eating ? .07 : .028;
-      b.x += (b.tx - b.x) * sp + (RM ? 0 : Math.sin(f.t * 5 + i) * .35); b.y += (b.ty - b.y) * sp + (RM ? 0 : Math.cos(f.t * 4 + i * 2) * .25);
-      b.x = clamp(b.x, 12, W - 12); b.y = clamp(b.y, g.gy + 12, f.h - 16); b.ph += RM ? 0 : eating ? .5 : .15;
+      // the hotter the heap, the busier they are
+      var sp = RM ? 0 : (busy ? .05 : .028) * (1 + hot), jig = RM ? 0 : .35 + hot * .6;
+      b.x += (b.tx - b.x) * sp + Math.sin(f.t * 5 + i) * jig; b.y += (b.ty - b.y) * sp + Math.cos(f.t * 4 + i * 2) * jig * .7;
+      b.x = clamp(b.x, 12, W - 12); b.y = clamp(b.y, g.gy + 12, f.h - 16); b.ph += RM ? 0 : busy ? .3 + hot * .4 : .15;
     });
   },
   back: function (ctx, f) {
@@ -2662,15 +2749,19 @@ SCENES.rot = {
     wFade(ctx, KU.k, 0, g.gy - 15, W, 13, 1, 4);
     ctx.fillStyle = KU.k; ctx.beginPath(); ctx.moveTo(-4, f.h + 4); for (var x = -4; x <= W + 8; x += 8) ctx.lineTo(x, g.gy + Math.sin(x * .09) * 2 + Math.sin(x * .31) * 1.2); ctx.lineTo(W + 8, f.h + 4); ctx.closePath(); ctx.fill();
     for (i = 0; i < 24; i++) wDisc(ctx, KU.w, 1, hash(i, 51) * W, g.gy + 14 + hash(i, 52) * (f.h - g.gy - 30), 2 + hash(i, 53) * 5);
+    // heat: the heap glows, woven yellow, around the rows where the microbes feed; steam curls off the top
+    var hot = clamp(((f.s.heat || 15) - 15) / 45, 0, 1), lv = Math.round(hot * 2.4);
+    if (lv > 0) { wRect(ctx, KU.y, lv, 0, g.r1 - 18, W, g.r2 - g.r1 + 36); wRect(ctx, KU.y, lv - 1, 0, g.gy + 8, W, g.r1 - g.gy - 26); wRect(ctx, KU.y, lv - 1, 0, g.r2 + 18, W, g.r3 - g.r2 - 6); }
+    (f.s.steam || []).forEach(function (m) { var a = (f.t - m.t) / 2.4; ctx.globalAlpha = Math.sin(Math.PI * a); ctx.strokeStyle = KU.g; ctx.lineWidth = 2; ctx.beginPath(); for (var k = 0; k <= 8; k++) { var yy = g.gy - 6 - a * 40 - k * 4; ctx.lineTo(m.x + Math.sin(m.ph + k * .8 + f.t * 3) * 4, yy); } ctx.stroke(); ctx.globalAlpha = 1; });
     // worms, and what they leave behind
     (f.s.casts || []).forEach(function (c) { disc(ctx, c.x, c.y, 2.2, KU.g); });
-    (f.s.worms || []).forEach(function (w) { for (var k = 9; k >= 0; k--) { var x = w.x - w.d * k * 5, y = w.y + Math.sin(w.ph - k * .8) * 3; disc(ctx, x, y, k ? 4 : 4.6, '#e7a0b4'); } disc(ctx, w.x + w.d * 1.5, w.y - 1.5, 1.1, KU.k); });
+    (f.s.worms || []).forEach(function (w) { for (var k = 9; k >= 0; k--) { var x = w.x - w.d * k * 5, y = w.y + Math.sin(w.ph - k * .8) * 3; disc(ctx, x, y, k ? 4 : 4.6, KU.w); if (k % 2) ring(ctx, x, y, 4, 1, KU.g); } disc(ctx, w.x + w.d * 1.5, w.y - 1.5, 1.1, KU.k); });
     // once years pass, the sun works on the scrap
     if (u > 3.5) { ctx.globalAlpha = clamp(u - 3.5, 0, 1); ctx.strokeStyle = KU.y; ctx.lineWidth = 2; ctx.setLineDash([4, 6]); ctx.beginPath(); for (i = 0; i < 3; i++) { ctx.moveTo(sn.x - 12 + i * 8, sn.y + 24); ctx.lineTo(g.ox + g.ow * (.2 + i * .3), g.gy - 14); } ctx.stroke(); ctx.setLineDash([]); ctx.globalAlpha = 1; }
   },
   // cotton is a cream strand with loose fibre ends; as microbes eat it, pieces go, leaving crumbs
   cotton: function (ctx, c, left, core) {
-    var p = c.p, n = c.n, cream = '#e8e1cf', i;
+    var p = c.p, n = c.n, cream = KU.w, i;
     if (core) { strokeP(ctx, p, KU.w, 6.4); strokeP(ctx, p, KU.b, 3.2); }
     ctx.lineCap = 'round';
     for (i = 0; i < n - 1; i++) {
@@ -2703,7 +2794,12 @@ SCENES.rot = {
     this.scrap(ctx, g, u);
     f.parts.forEach(function (b) { ring(ctx, b.x, b.y, b.r, 1.2, KU.w); });
     f.s.puffs.forEach(function (p) { var a = (f.t - p.t) / 1.6; ctx.globalAlpha = clamp(1 - a, 0, 1); ctx.font = '700 13px ' + FONT; ctx.fillStyle = KU.k; ctx.textAlign = 'center'; ctx.fillText('CO₂', p.x, g.gy - 12 - a * 26); ctx.textAlign = 'left'; ctx.globalAlpha = 1; });
-    f.s.bugs.forEach(function (b) { microbe(ctx, b.x, b.y - (b.nope ? Math.abs(Math.sin(f.t * 9)) * 4 : 0), b.ph, KU.y); });
+    f.s.bugs.forEach(function (b) { var y = b.y - (b.nope ? Math.abs(Math.sin(f.t * 9)) * 4 : 0), sc = b.born ? .5 + .5 * ease((f.t - b.born) / .7) : 1;
+      if (sc < 1) { ctx.save(); ctx.translate(b.x, y); ctx.scale(sc, sc); ctx.translate(-b.x, -y); } microbe(ctx, b.x, y, b.ph, KU.y); if (sc < 1) ctx.restore(); });
+    // the heap's temperature, read off a little thermometer
+    var T = Math.round(f.s.heat || 15), tx = .06 * W, ty = g.gy + 20, hot = clamp((T - 15) / 45, 0, 1);
+    ctx.fillStyle = KU.w; ctx.fillRect(tx + 1, ty - 13, 6, 12); disc(ctx, tx + 4, ty, 5, KU.w); ctx.fillStyle = KU.y; ctx.fillRect(tx + 2.5, ty - 2 - 10 * hot, 3, 10 * hot + 2); disc(ctx, tx + 4, ty, 3.4, KU.y);
+    label(ctx, f, 'heap ' + T + '°C', tx + 14, ty + 4, 13, T >= 40 ? KU.y : KU.w, 'left');
   }
 };
 
@@ -2736,7 +2832,7 @@ SCENES.check = {
     ['Which yarn sheds more microfibres in the wash?', ['Fine fibres, loosely twisted', 'Thick filament, tightly twisted'], 0, 'Fine fibres and low twist leave more loose ends to break off.', ['', 'Picture the loose ends. Which yarn has more of them, held less tightly?']],
     ['Why does a cotton wrap jam the recycler?', ['Cotton melts too soon', 'Two fibres have to be separated first', 'Cotton is too strong'], 1, 'Melting needs one material. A blend has to come apart first.', ['Cotton does not melt at all; it chars. So what is the real problem?', '', 'Strength is not the issue. What did it take to get the cotton out?']],
     ['What can chemical recycling do that melting cannot?', ['Break every link back into building blocks', 'Keep the chains long by melting gently', 'Turn the polyester into cotton'], 0, 'It runs the linking backwards, so rebuilt PET can be as good as new.', ['', 'Every melt shortens the chains. What did the flasks do instead?', 'Chemistry cannot change one fibre into another. What came out of the tank?']],
-    ['A batch of PET bottles has a few PLA bottles mixed in. Does it matter?', ['No, both are polyester', 'Yes, a little PLA can spoil the batch'], 1, 'In bottle recycling, just 0.1% PLA can spoil a batch of PET.', ['Remember the fork: PLA looked just like PET. What did that mean for the recycler?', '']]
+    ['A batch of PET bottles has a few PLA bottles mixed in. Does it matter?', ['No, both are polyester', 'Yes, recyclers treat even a little as contamination'], 1, 'In 2009 US recyclers said more than 0.1% PLA in recycled PET was not acceptable.', ['Remember the fork: PLA looked just like PET. What did that mean for the recycler?', '']]
   ],
   init: function (f) { var self = this; f.s.k = 0; f.s.ok = []; f.s.first = 0; f.s.tried = false; $('ck-next').addEventListener('click', function () { self.next(f); }); this.show(f); },
   show: function (f) {
@@ -3058,8 +3154,8 @@ function look(f) {
 }
 // Cotton and wool, as a natural fibre round the polyester core. Cotton is smooth and even; wool is lofty, lumpy and hairy.
 function natural(kind, bg) {
-  var wool = kind === 'wool', col = wool ? '#ece0c4' : '#f8f2e2';
-  return { wool: wool, col: col, edge: bg === 'black' ? '#6b655a' : KU.k, hair: bg === 'white' ? '#a8946a' : bg === 'yellow' ? KU.k : col, pitch: wool ? 13 : 10, band: wool ? 4.6 : 3, slant: wool ? 1.5 : 1, over: wool ? 6 : 3.4 };
+  var wool = kind === 'wool', col = KU.w;
+  return { wool: wool, col: col, edge: bg === 'black' ? KU.g : KU.k, hair: bg === 'black' || bg === 'blue' ? col : bg === 'white' ? KU.g : KU.k, pitch: wool ? 13 : 10, band: wool ? 4.6 : 3, slant: wool ? 1.5 : 1, over: wool ? 6 : 3.4 };
 }
 // the fibre winds round the core: diagonal bands a fixed distance apart along the thread, so the core shows between turns.
 // u < 1 when it is going (eaten in the soil): turns drop out and the rest thin

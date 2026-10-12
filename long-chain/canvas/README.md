@@ -11,11 +11,11 @@
 
 ```html
 <iframe src="/courses/COURSE_ID/files/FILE_ID/download"
-  title="The Thread and the Loop: an interactive fibre lab"
+  title="The Thread and the Loop: an interactive fibre resource from the Phygital Materials Studio"
   width="100%" height="760"
   style="width: 100%; height: 85vh; min-height: 640px; border: 0;"
   allow="fullscreen" allowfullscreen="allowfullscreen"></iframe>
-<p><a href="/courses/COURSE_ID/files/FILE_ID/download" target="_blank" rel="noopener">Open the fibre lab in its own tab</a> (best on a phone).</p>
+<p><a href="/courses/COURSE_ID/files/FILE_ID/download" target="_blank" rel="noopener">Open The Thread and the Loop in its own tab</a> (best on a phone).</p>
 ```
 
 ## What to expect
@@ -31,7 +31,7 @@
 
 Canvas cannot see what students do inside the frame, so give it something it can see.
 
-1. **A page with a short brief above the frame.** For example: *Work through the fibre lab on your own. It takes about 20 minutes and works best on a phone: use Full screen, or open it in its own tab. At the end, press Reflect and copy, then paste your care label and answers into the discussion below.*
+1. **A page with a short brief above the frame.** For example: *Work through The Thread and the Loop on your own. It takes about 20 minutes and works best on a phone: use Full screen, or open it in its own tab. At the end, press Reflect and copy, then paste your care label and answers into the discussion below.*
 2. **A discussion (or journal) straight after it** where students paste what they copied. That post is the evidence of engagement, and the labels make good reading for spotting misconceptions.
 3. **Module requirements:** *view* the page, then *contribute to* the discussion.
 

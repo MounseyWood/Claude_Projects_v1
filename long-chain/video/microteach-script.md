@@ -1,6 +1,6 @@
 # Oil to soil? The Thread and the Loop, a 3-minute microteach
 
-Narration script for the motion-graphic version of the lab. Phone format, the lab's own 390 × 844 shape (1080 × 2336), 2:39, AI-generated voice (Google Gemini, voice Charon), with English subtitles. Every spoken claim is rated Strong in the lab's notes except the sunlight line [10], which is Moderate (lab studies, not field measurements); the source for each line is given in brackets and listed at the end.
+Narration script for the motion-graphic version of The Thread and the Loop. Phone format, the lab's own 390 × 844 shape (1080 × 2336), 2:39, AI-generated voice (Google Gemini, voice Charon), with English subtitles. Every spoken claim is rated Strong in the lab's notes except the sunlight line [10], which is Moderate (lab studies, not field measurements); the source for each line is given in brackets and listed at the end.
 
 **Learning outcome:** explain why most polyester does not come back, and how design choices decide that.
 
@@ -67,7 +67,7 @@ Three quick questions. What is PET made from? Why does a blend jam the recycler?
 
 Now, one question for you. What would you design, if every garment had to come back to you?
 
-Try the lab, and find out.
+Try The Thread and the Loop, in the Phygital Materials Studio, and find out.
 
 *Credits: Narration: AI-generated voice (Google Gemini text-to-speech). Script and design: Matthew Mounsey-Wood. Phygital Materials Studio.*
 
@@ -85,13 +85,13 @@ Try the lab, and find out.
 
 1. Textile Exchange (2025), Materials Market Report: polyester 59% of fibre, 88% fossil-based; recycled polyester mostly from bottles. https://textileexchange.org/knowledge-center/reports/materials-market-report-2025/
 2. Terephthalic acid from oil (paraxylene); ethylene glycol from oil naphtha or natural-gas ethane. CPMA, monoethylene glycol. https://cpmaindia.com/knowledge-centre/product-group/-fibre-intermediates/meg
-3. Polycondensation of PET gives off water: standard polymer chemistry (lab notes, source [27]).
-4. Whinfield and Dickson, Calico Printers' Association, 1941 (lab notes, sources [2][3]).
-5. Melt spinning and drawing (lab notes).
-6. Disperse dyeing of polyester at about 130°C under pressure (lab notes, source [18]).
+3. Polycondensation of PET gives off water: standard polymer chemistry (Studio notes, source [27]).
+4. Whinfield and Dickson, Calico Printers' Association, 1941 (Studio notes, sources [2][3]).
+5. Melt spinning and drawing (Studio notes).
+6. Disperse dyeing of polyester at about 130°C under pressure (Studio notes, source [18]).
 7. Blends as a barrier to fibre-to-fibre recycling: ifeu, textile recycling. https://www.ifeu.de/en/topics/industry-and-products/sustainable-textiles/textile-recycling
 8. Ellen MacArthur Foundation (2017), A New Textiles Economy: less than 1% of material used to produce clothing is recycled into new clothing. https://www.ellenmacarthurfoundation.org/a-new-textiles-economy
 9. Li, Frey and Browning (2010), Journal of Engineered Fibers and Fabrics: cotton degraded in compost; polyester remained intact. https://doi.org/10.1177/155892501000500406
-10. Sunlight (UV) embrittles PET and fragments it into microplastics (lab notes, sources [44][45]).
+10. Sunlight (UV) embrittles PET and fragments it into microplastics (Studio notes, sources [44][45]).
 
 Matthew Mounsey-Wood FHEA MA (RCA) LCF Alumni

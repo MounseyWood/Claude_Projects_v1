@@ -1,0 +1,5 @@
+0.3|4.5|title|Oil to soil?
+135.0|137.6|card|What is PET made from?
+137.6|141.0|card|Why does a blend jam the recycler?
+141.0|144.8|card|Where does most recycled polyester come from?
+153.0|159|credit|Voice: AI (Google Gemini) · Script: Matthew Mounsey-Wood

@@ -1,0 +1,54 @@
+# The Thread and the Loop
+
+An interactive, phone-first fibre resource from the Phygital Materials Studio about polyester and recycling. It is built like a hands-on science-museum gallery: twenty-three full-screen exhibits snap like a social feed, and there are no information-only pages. Facts arrive as numbered discovery cards when you do something (42 in all, one hidden). A wrong move gets a question back instead of the answer. A tally on the progress bar opens a drawer of what you have found, with "Go there" links to the exhibits still hiding one.
+
+The look is 1-bit: every shade is woven, drawn with point-paper weave structures (spot, twill, plain weave) as dithering, and each exhibit frays into the colour of the next. The thread unwinds from a spool on the first page and writes "hi" there, with The Dot as the dot on the i. Where a word is worth remembering, the thread writes it: PET under the chain you have just linked, a giant Z for Z twist, and rPET across a slogan tee. Between letters it passes behind the cloth, as in embroidery, so each letter stands on its own. Elsewhere it throws a lasso round the text, as it does round the title, and it swaps sides between exhibits. Each chapter moves the thread its own way (Make steps like pipework, Fibre curves, Yarn coils, loops and stitches, Combine drapes and waves, Return zigzags and sags), so no two exhibits share a route. An original pixel hand demonstrates the gesture when an exhibit sits untouched; comic sound words pop on actions; discovery cards are taped on.
+
+The cover asks one question: polyester has memory, but can it be recycled, or decompose? The exhibits answer it in parts. Turn up the heat shows the memory (heat-setting, as in Issey Miyake's Pleats Please). Bury it answers the last part: microbes eat cotton, polyester stays whole underground, and in the sun it breaks up into microplastics instead of breaking down.
+
+Sound is synthesised in the page with the Web Audio API, so there are no audio files: every comic word on screen (CLICK, ZIP!, HISSS, MUNCH and the rest) has a matching sound effect, discoveries chime, and the air jet whooshes while it is held. A Sound button in the top bar switches it off, and the choice is remembered on that device.
+
+One Verlet-simulated thread runs through every exhibit and is the controller. It keeps what you do to it, so its shape, filament count, texture, form, plies, wrap, colour and recycling history carry forward. The care label at the end reads the thread back and decides whether the loop can close. Text blocks are solid: the thread routes round them.
+
+Exhibits:
+
+- **Warm-up:** guess how much fibre is polyester (59%), then how much of the world's oil goes into synthetic fibre (about 1.35%, one estimate).
+- **Make:** link the chain (EG and TPA from oil and gas, drawn beside the thread, link into PET, which the thread writes out; each link gives off water; 1941 Terylene); melt, push and stretch (draw the fibre).
+- **Fibre:**
+  - Pick a nozzle (round, trilobal, hollow or channelled), then drag a torch, an ice cube or a sweat drop onto the microscope lens.
+  - One strand or hundreds (mono-, multi- and microfilament): the cut end of the thread on the left, the filament count on the right under the thumb.
+- **Yarn:**
+  - Puff it up: hold the air jet to blow loops into the filaments (air-jet texturing), or tap the heater to crimp them (false-twist texturing). The heater fires heat rays at the yarn, which glows and twists as the spindle backs twist up into it; past the spindle it untwists and puffs up into crimp, as in the real process. A feel meter fills from slick to soft. One thick filament won't texture.
+  - Cut it and spin it (staple fibre and twist): the thread draws a Z, the direction most single yarns are spun. Swipe across it to cut it into staple; then the Z lifts and the twist appears underneath, on the right under the thumb, so the page reads in the order you work: cut, then spin.
+  - Ply it: tap up to four bobbins and turn the twist dial. The hanging loop snarls until the ply twist balances the twist in each strand. When a card comes up, the yarn running off the loop lands on it, pools, and slides off the edge.
+- **Combine:**
+  - Wrap it: pull a cotton, wool or elastane yarn off the rail and bring it to the thread, which leans towards it; it snaps on and the wrap spreads out from where it landed (core-spun). Cotton winds on smooth, slim and even; wool lofty, lumpy and hairy; both cover the whole thread, and the polyester (and any dye in it) shows between the turns. Elastane goes inside, as the core, where it usually sits in stretch yarn. Miss, and the yarn swings back to its hook.
+  - Colour it (a dye bath that only works at about 130°C, or pigment into the melt). The melt is a bold extruder on the same scale as the bath: PET and pigment pellets drop into the hopper, the window on the barrel fills with melt and then colour while the screw turns, and the thread comes out coloured. Blends reveal that only the polyester takes the dye.
+- **For and against:** a tug-of-war. Each reason pulls by its evidence (one to three dots, rated in the notes), and by half as much where it matters less for the garment. Switch between a raincoat, a gym top and a T-shirt: the same reasons give a different verdict.
+- **Wear:** the washing machine is the interface: a fibre counter and a Wash button sit across its top, and suds build while it washes. Bubbles rise off the drum and you can pop them. The first pop is honest: it won't save a fibre, because shed fibres leave with the rinse water and end up in sewage sludge. Fine, staple and loose yarns shed more.
+- **Return:**
+  - Where recycled polyester comes from: a bottle (flat cap) to a round-necked slogan tee that reads rPET, and then the loop breaks: the yarn falls off it in curls and piles up on the card, because the shirt usually stops there. One strand is pulled straight off the pile and leaves the page.
+  - Feed the recycler: predict first, then tap the ring. Blends jam it, whether the other fibre is wound round (cotton, wool) or inside (elastane), and none can be stripped off, so chemistry is the next stop. A spool of elastane hangs above: tap it to give your thread an elastane core and see. Each melt breaks links, and the thread shows it.
+  - Unzip the chain: tip a flask of water, glycol or enzymes into the tank and the chain breaks into its building blocks (dye leaches out, cotton comes out whole). Then link it back up, clean.
+  - Spot the PET: the thread forks into two routes that look exactly the same, one PET and one PLA. Tap the PET; the other falls away (or, if you picked PLA, it is spliced in). Then find out where PLA can compost. Try again sits bottom right, under the thumb.
+  - Stretch without elastane: a bicomponent spring, stretch built in from the start. There's no pulling elastane off; if your thread has an elastane core, a card says why it stays.
+  - Turn up the heat: the two plies are drawn exactly alike, because PET and PLA look alike. Only the heat tells them apart: the PLA ply melts first, and PET shows its memory.
+  - Bury it: drag time from today to polyester's whole life since 1941; the sun rises and sets as the days, months and years pass. The ground is a compost heap: as microbes feed they breathe out CO₂ and the heap heats up, to about 60°C, glowing woven yellow and steaming, then cools when the cotton has gone. Microbes split in two while there is food; worms wander, leave casts and wriggle off when tapped. Cotton rots, polycotton loses only its cotton, a natural wrap on your thread rots in the heap but not in the air, and a scrap of polyester in the sun cracks into microplastics. Tap a microbe: it tries your polyester and gives up. The last card asks what a "biodegradable" label should tell you.
+- **Promise:** tie knots.
+- **Check yourself:** five quick questions with hints for wrong answers; each right answer threads an eyelet on the thread.
+- **The end:** the care label reads the thread back. The last question is personal: what would you design if every garment had to come back to you? **Reflect and copy** asks two questions and copies the label and answers as plain text to paste into a Canvas discussion or journal. **Notes and sources** is written for students: outcomes, how it works, questions to think about, confidence ratings and 60 sources.
+
+Colour stays in the KU palette throughout: blends and dye are woven (dithered) or shown as solid palette colour, never a mixed tint.
+
+Access: every action has a button or key route, including hidden helper buttons that appear when a keyboard user reaches them (link the chain, pop a bubble, offer a microbe, tickle a worm). One polite live region reads out results and discoveries for screen-reader users. Motion is kept, and reduced-motion settings are respected.
+
+It is built for asynchronous guided independent study: the notes give the time (about 20 minutes), a pixel hand demonstrates gestures, and nothing needs a tutor or an account. Nothing is saved when the page closes, so the copy step is the record.
+
+- `index.html`: the interactive piece (KU palette, Arial, no italics; retro flat-colour style after *The Dot and the Line*, 1965).
+- `storyboard-v2.html`: the earlier 9:16 storyboard and animatic, kept for reference.
+- `canvas/the-thread-and-the-loop.html`: the Canvas (VLE) version, one self-contained file to upload and embed in an iframe. See `canvas/README.md`. Rebuild it with `python3 long-chain/tools/build_canvas.py` after changing `index.html`.
+- Published view: https://claude.ai/artifact/MG2tU9T3DhzUS1XftDt6xQ
+
+The file is written as an artifact page (no `<html>`/`<head>` wrapper); it still opens directly in a browser.
+
+Matthew Mounsey-Wood FHEA MA (RCA) LCF Alumni

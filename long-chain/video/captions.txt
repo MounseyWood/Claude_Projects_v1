@@ -1,0 +1,34 @@
+0|17.5|L|OIL TO SOIL?
+3|17.5|R|One polyester thread.
+18.3|48.4|L|1  MAKE
+19|25|R|TPA + EG = PET
+25|31|R|Each link gives off water.
+31|37|R|Invented 1941, Lancashire
+37|43|R|59% of all fibre
+43|48.4|R|88% fossil-based
+49.2|82.4|L|2  SHAPE
+49.2|55|R|Melted and stretched
+55|62.4|R|Cut, spun, twisted
+62.4|67.6|R|Wrapped in cotton
+67.6|76|R|Dyed at about 130°C
+76|82.4|R|Every choice decides its future.
+82.8|96.4|L|PAUSE
+84|96.4|R|Will the recycler take it?
+91|96.4|R|Predict, then play.|90
+96.4|117.2|L|3  RETURN
+97|104|R|It jams.
+104|111|R|Most recycled polyester was a bottle.
+111|117.2|R|Under 1% of clothing becomes new clothing.
+117.8|141|L|4  BURY
+121|130|R|Cotton breaks down.
+121|130|R|Polyester stays.|60
+130|137|R|It breaks up, not down.
+137|141|R|Oil to soil? Not yet.
+141.4|161|L|CHECK
+143|146|R|What is PET made from?
+146|149.5|R|Why does a blend jam?
+149.5|153|R|Where does recycled polyester come from?
+153.5|161|R|What would you design?
+161|168|L|OIL TO SOIL?
+161|168|R|Voice: AI (Google Gemini)|-60
+161|168|R|Script: Matthew Mounsey-Wood|70
